@@ -4,9 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#00ff88" />
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
   <link rel="manifest" href="manifest.json" />
   <title>Login - Cidade Real</title>
   <link rel="stylesheet" href="styles.css" />
@@ -19,253 +16,81 @@
       font-size: 14px;
       display: none;
     }
-    
-    .message.error {
-      background: rgba(255, 80, 80, 0.1);
-      border: 1px solid #ff5050;
-      color: #cc3333;
-      display: block;
-    }
-    
-    .message.success {
-      background: rgba(0, 255, 136, 0.1);
-      border: 1px solid #00ff88;
-      color: #008844;
-      display: block;
-    }
-    
-    .message.info {
-      background: rgba(0, 150, 255, 0.1);
-      border: 1px solid #0096ff;
-      color: #0066cc;
-      display: block;
-    }
-    
-    .info-text {
-      margin-top: 20px;
-      padding: 12px;
-      background: rgba(0, 255, 136, 0.05);
-      border-radius: 16px;
-      font-size: 13px;
-      color: #5a7a7a;
-      text-align: center;
-    }
-    
-    .info-text strong {
-      color: #00aa55;
-    }
-    
-    .toggle-mode {
-      text-align: center;
-      margin-top: 20px;
-    }
-    
-    .toggle-btn {
-      background: none;
-      border: none;
-      color: #00aa55;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: underline;
-      width: auto;
-      padding: 8px 16px;
-      background: rgba(0, 255, 136, 0.1);
-      border-radius: 20px;
-      font-size: 14px;
-    }
-    
-    .toggle-btn:hover {
-      background: rgba(0, 255, 136, 0.2);
-      transform: none;
-      box-shadow: none;
-    }
-    
-    .forgot-link {
-      text-align: center;
-      margin-top: 10px;
-    }
-    
-    .forgot-link a {
-      color: #666;
-      text-decoration: none;
-      font-size: 13px;
-    }
-    
-    .forgot-link a:hover {
-      color: #00ff88;
-    }
-    
-    .admin-link {
-      text-align: center;
-      margin-top: 15px;
-      padding-top: 15px;
-      border-top: 1px solid #e0e5e8;
-    }
-    
-    .admin-link a {
-      color: #666;
-      text-decoration: none;
-      font-size: 12px;
-    }
-    
-    .admin-link a:hover {
-      color: #ffaa33;
-    }
-    
-    .senha-requirements {
-      font-size: 12px;
-      color: #666;
-      margin-top: -15px;
-      margin-bottom: 15px;
-      padding-left: 10px;
-    }
-    
-    .senha-requirements ul {
-      margin: 5px 0 0 20px;
-    }
-    
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(5px);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
-    
-    .modal-content {
-      background: white;
-      border-radius: 28px;
-      padding: 30px;
-      max-width: 500px;
-      width: 90%;
-      position: relative;
-      animation: fadeInUp 0.3s ease;
-    }
-    
-    .modal-content h2 {
-      margin-top: 0;
-      color: #00aa55;
-    }
-    
-    .close-modal {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      font-size: 24px;
-      cursor: pointer;
-      color: #999;
-    }
-    
-    .close-modal:hover {
-      color: #ff5050;
-    }
+    .message.error { background: rgba(255, 80, 80, 0.1); border: 1px solid #ff5050; color: #cc3333; display: block; }
+    .message.success { background: rgba(0, 255, 136, 0.1); border: 1px solid #00ff88; color: #008844; display: block; }
+    .message.info { background: rgba(0, 150, 255, 0.1); border: 1px solid #0096ff; color: #0066cc; display: block; }
+    .info-text { margin-top: 20px; padding: 12px; background: rgba(0, 255, 136, 0.05); border-radius: 16px; font-size: 13px; color: #5a7a7a; text-align: center; }
+    .info-text strong { color: #00aa55; }
+    .toggle-mode { text-align: center; margin-top: 20px; }
+    .toggle-btn { background: none; border: none; color: #00aa55; font-weight: 600; cursor: pointer; text-decoration: underline; width: auto; padding: 8px 16px; background: rgba(0, 255, 136, 0.1); border-radius: 20px; font-size: 14px; }
+    .toggle-btn:hover { background: rgba(0, 255, 136, 0.2); transform: none; box-shadow: none; }
+    .forgot-link { text-align: center; margin-top: 10px; }
+    .forgot-link a { color: #666; text-decoration: none; font-size: 13px; }
+    .forgot-link a:hover { color: #00ff88; }
+    .admin-link { text-align: center; margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0e5e8; }
+    .admin-link a { color: #666; text-decoration: none; font-size: 12px; }
+    .admin-link a:hover { color: #ffaa33; }
+    .senha-requirements { font-size: 12px; color: #666; margin-top: -15px; margin-bottom: 15px; padding-left: 10px; }
+    .senha-requirements ul { margin: 5px 0 0 20px; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); z-index: 1000; justify-content: center; align-items: center; }
+    .modal-content { background: white; border-radius: 28px; padding: 30px; max-width: 500px; width: 90%; position: relative; animation: fadeInUp 0.3s ease; }
+    .modal-content h2 { margin-top: 0; color: #00aa55; }
+    .close-modal { position: absolute; top: 20px; right: 20px; font-size: 24px; cursor: pointer; color: #999; }
+    .close-modal:hover { color: #ff5050; }
   </style>
 </head>
 <body>
-
 <header><h1>Cidade Real</h1></header>
-
 <div class="container">
   <section class="screen">
     <h1 id="formTitle">Acesso ao Sistema</h1>
-    
     <input type="text" id="matricula" placeholder="Digite sua Matrícula" autocomplete="off" />
-    
-    <div id="senhaContainer">
-      <input type="password" id="senha" placeholder="Digite sua Senha" />
-    </div>
-    
+    <div id="senhaContainer"><input type="password" id="senha" placeholder="Digite sua Senha" /></div>
     <div id="confirmarContainer" style="display:none;">
       <input type="password" id="confirmarSenha" placeholder="Confirmar Nova Senha" />
-      <div class="senha-requirements">
-        <ul>
-          <li>A senha deve ter no mínimo 4 caracteres</li>
-          <li>Use letras, números ou símbolos</li>
-        </ul>
-      </div>
+      <div class="senha-requirements"><ul><li>A senha deve ter no mínimo 4 caracteres</li><li>Use letras, números ou símbolos</li></ul></div>
     </div>
-    
     <button id="btnAcao" onclick="handleAction()">Entrar</button>
-    
-    <div class="toggle-mode">
-      <button id="btnToggleModo" class="toggle-btn" onclick="toggleModo()">
-        🔑 Primeiro acesso? Cadastrar minha senha
-      </button>
-    </div>
-    
-    <div class="forgot-link">
-      <a href="#" onclick="abrirModalRecuperarSenha()">🔒 Esqueci minha senha</a>
-    </div>
-    
+    <div class="toggle-mode"><button id="btnToggleModo" class="toggle-btn" onclick="toggleModo()">🔑 Primeiro acesso? Cadastrar minha senha</button></div>
+    <div class="forgot-link"><a href="#" onclick="abrirModalRecuperarSenha()">🔒 Esqueci minha senha</a></div>
     <div id="message" class="message"></div>
-    
-    <div class="info-text">
-      ⚡ <strong>Sistema de Gestão Operacional</strong><br/>
-      • Primeiro acesso: clique em <strong>"Cadastrar minha senha"</strong><br/>
-      • Digite sua <strong>MATRÍCULA</strong> e crie uma <strong>SENHA PESSOAL</strong><br/>
-      • Esqueceu a senha? Clique em <strong>"Esqueci minha senha"</strong>
-    </div>
-    
-    <div class="admin-link">
-      <a href="admin.html">🔧 Painel Administrativo (Acesso Restrito)</a>
-    </div>
+    <div class="info-text">⚡ <strong>Sistema de Gestão Operacional</strong><br/>• Primeiro acesso: clique em <strong>"Cadastrar minha senha"</strong><br/>• Digite sua <strong>MATRÍCULA</strong> e crie uma <strong>SENHA PESSOAL</strong><br/>• Esqueceu a senha? Clique em <strong>"Esqueci minha senha"</strong></div>
+    <div class="admin-link"><a href="admin.html">🔧 Painel Administrativo (Acesso Restrito)</a></div>
   </section>
 </div>
-
-<!-- Modal para recuperar senha -->
 <div id="modalRecuperar" class="modal">
   <div class="modal-content">
     <span class="close-modal" onclick="fecharModalRecuperar()">&times;</span>
     <h2>🔐 Recuperar Senha</h2>
     <p>Digite sua matrícula para criar uma nova senha</p>
-    
     <input type="text" id="recMatricula" placeholder="Digite sua matrícula" />
     <input type="password" id="recNovaSenha" placeholder="Nova senha" />
     <input type="password" id="recConfirmarSenha" placeholder="Confirmar nova senha" />
-    
     <button onclick="recuperarSenha()" class="btn">Alterar Senha</button>
     <div id="recMessage" style="margin-top: 15px;"></div>
   </div>
 </div>
-
 <script>
   let db = null;
   let modoCadastro = false;
-
   function initDB() {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open('CidadeRealDB', 6);
-      
       request.onerror = () => reject('Erro ao abrir banco de dados');
-      
-      request.onsuccess = (event) => {
-        db = event.target.result;
-        console.log('Banco de dados conectado');
-        resolve(db);
-      };
-      
+      request.onsuccess = (event) => { db = event.target.result; console.log('Banco de dados conectado'); resolve(db); };
       request.onupgradeneeded = (event) => {
         const db = event.target.result;
-        
         if (!db.objectStoreNames.contains('colaboradores')) {
           const store = db.createObjectStore('colaboradores', { keyPath: 'matricula' });
           store.createIndex('matricula', 'matricula', { unique: true });
           store.createIndex('nome', 'nome', { unique: false });
           store.createIndex('tipo', 'tipo', { unique: false });
-          
           const colaboradoresPadrao = [
             { matricula: "2024001", senha: null, nome: "Carlos Eduardo Silva", tipo: "gestor", pagina: "gestor.html", cargo: "Gestor Geral", primeiroAcesso: true, ativo: true, dataCadastro: new Date().toISOString() },
             { matricula: "2024002", senha: null, nome: "Mariana Oliveira Santos", tipo: "fiscalizacao", pagina: "fiscalizacao.html", cargo: "Fiscal de Operações", primeiroAcesso: true, ativo: true, dataCadastro: new Date().toISOString() },
             { matricula: "2024003", senha: null, nome: "Roberto Almeida Costa", tipo: "instrutor", pagina: "instrucao.html", cargo: "Instrutor de Campo", primeiroAcesso: true, ativo: true, dataCadastro: new Date().toISOString() },
             { matricula: "2024004", senha: null, nome: "Fernanda Lima Rocha", tipo: "gestor", pagina: "gestor.html", cargo: "Coordenadora Administrativa", primeiroAcesso: true, ativo: true, dataCadastro: new Date().toISOString() }
           ];
-          
           const transaction = db.transaction(['colaboradores'], 'readwrite');
           const userStore = transaction.objectStore('colaboradores');
           colaboradoresPadrao.forEach(user => userStore.add(user));
@@ -273,88 +98,62 @@
       };
     });
   }
-
   async function buscarColaborador(matricula) {
     return new Promise((resolve, reject) => {
-      if (!db) {
-        reject('Banco não inicializado');
-        return;
-      }
-      
+      if (!db) { reject('Banco não inicializado'); return; }
       const transaction = db.transaction(['colaboradores'], 'readonly');
       const store = transaction.objectStore('colaboradores');
       const request = store.get(matricula);
-      
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject('Erro ao buscar colaborador');
     });
   }
-
   async function salvarColaborador(colaborador) {
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(['colaboradores'], 'readwrite');
       const store = transaction.objectStore('colaboradores');
       const request = store.put(colaborador);
-      
       request.onsuccess = () => resolve(true);
       request.onerror = () => reject('Erro ao salvar');
     });
   }
-
   async function cadastrarSenha(matricula, novaSenha) {
     const colaborador = await buscarColaborador(matricula);
-    
     if (!colaborador) throw new Error('❌ Matrícula não encontrada');
     if (!colaborador.ativo) throw new Error('❌ Matrícula desativada');
-    if (colaborador.senha && colaborador.senha !== null && colaborador.senha !== '') {
-      throw new Error('⚠️ Esta matrícula já possui senha! Use "Esqueci minha senha" se necessário.');
-    }
+    if (colaborador.senha && colaborador.senha !== null && colaborador.senha !== '') throw new Error('⚠️ Esta matrícula já possui senha! Use "Esqueci minha senha" se necessário.');
     if (novaSenha.length < 4) throw new Error('❌ A senha deve ter no mínimo 4 caracteres');
-    
     colaborador.senha = novaSenha;
     colaborador.primeiroAcesso = false;
     colaborador.dataUltimaAlteracao = new Date().toISOString();
-    
     await salvarColaborador(colaborador);
     return true;
   }
-
   async function trocarSenha(matricula, novaSenha) {
     const colaborador = await buscarColaborador(matricula);
-    
     if (!colaborador) throw new Error('❌ Matrícula não encontrada');
     if (!colaborador.ativo) throw new Error('❌ Matrícula desativada');
     if (novaSenha.length < 4) throw new Error('❌ A senha deve ter no mínimo 4 caracteres');
-    
     colaborador.senha = novaSenha;
     colaborador.primeiroAcesso = false;
     colaborador.dataUltimaAlteracao = new Date().toISOString();
-    
     await salvarColaborador(colaborador);
     return true;
   }
-
   async function validarLogin(matricula, senha) {
     const colaborador = await buscarColaborador(matricula);
-    
     if (!colaborador) throw new Error('❌ Matrícula não encontrada');
     if (!colaborador.ativo) throw new Error('❌ Matrícula desativada');
     if (!colaborador.senha || colaborador.senha === null) throw new Error('primeiro_acesso');
     if (colaborador.senha !== senha) throw new Error('❌ Senha incorreta');
-    
     return colaborador;
   }
-
   function showMessage(text, type = 'error', elementId = 'message') {
     const msgDiv = document.getElementById(elementId);
     msgDiv.textContent = text;
     msgDiv.className = `message ${type}`;
-    setTimeout(() => {
-      msgDiv.style.display = 'none';
-      msgDiv.className = 'message';
-    }, 5000);
+    setTimeout(() => { msgDiv.style.display = 'none'; msgDiv.className = 'message'; }, 5000);
   }
-
   function toggleModo() {
     modoCadastro = !modoCadastro;
     const title = document.getElementById('formTitle');
@@ -362,7 +161,6 @@
     const toggleBtn = document.getElementById('btnToggleModo');
     const confirmarContainer = document.getElementById('confirmarContainer');
     const senhaInput = document.getElementById('senha');
-    
     if (modoCadastro) {
       title.textContent = '📝 Cadastrar Minha Senha';
       btn.textContent = 'Cadastrar Senha';
@@ -381,91 +179,63 @@
       senhaInput.value = '';
       showMessage('Modo de login: Digite sua matrícula e senha cadastrada', 'info');
     }
-    
-    // Resetar o botão para estado normal
-    const btnAcao = document.getElementById('btnAcao');
-    btnAcao.disabled = false;
   }
-
   async function handleAction() {
     const matricula = document.getElementById('matricula').value.trim();
     const senha = document.getElementById('senha').value;
     const confirmarSenha = document.getElementById('confirmarSenha')?.value;
     const btn = document.getElementById('btnAcao');
     const textoOriginal = btn.textContent;
-    
-    if (!matricula) {
-      showMessage('Digite sua matrícula', 'error');
-      return;
-    }
-    if (!senha) {
-      showMessage('Digite a senha', 'error');
-      return;
-    }
-    
-    // Desabilita o botão e muda o texto
+    if (!matricula) return showMessage('Digite sua matrícula', 'error');
+    if (!senha) return showMessage('Digite a senha', 'error');
     btn.disabled = true;
     btn.textContent = 'Processando...';
-    
-    try {
-      if (modoCadastro) {
-        // Modo de cadastro
-        if (senha !== confirmarSenha) {
-          showMessage('❌ As senhas não coincidem!', 'error');
-          btn.disabled = false;
-          btn.textContent = textoOriginal;
-          return;
-        }
-        
+    if (modoCadastro) {
+      if (senha !== confirmarSenha) {
+        showMessage('❌ As senhas não coincidem!', 'error');
+        btn.disabled = false;
+        btn.textContent = textoOriginal;
+        return;
+      }
+      try {
         await cadastrarSenha(matricula, senha);
         showMessage('✅ Senha cadastrada com sucesso! Faça login.', 'success');
-        
-        // Limpa os campos e volta para modo login
         setTimeout(() => {
           if (modoCadastro) toggleModo();
           document.getElementById('matricula').value = '';
           document.getElementById('senha').value = '';
           btn.disabled = false;
           btn.textContent = textoOriginal;
-          document.getElementById('matricula').focus();
         }, 2000);
-        
-      } else {
-        // Modo de login
-        const colaborador = await validarLogin(matricula, senha);
-        showMessage(`✅ Bem-vindo(a), ${colaborador.nome}!`, 'success');
-        sessionStorage.setItem('usuarioLogado', JSON.stringify({
-          matricula: colaborador.matricula,
-          nome: colaborador.nome,
-          tipo: colaborador.tipo,
-          cargo: colaborador.cargo
-        }));
-        
-        setTimeout(() => {
-          window.location.href = colaborador.pagina;
-        }, 1500);
+      } catch (error) {
+        showMessage(error.message, 'error');
+        btn.disabled = false;
+        btn.textContent = textoOriginal;
       }
+      return;
+    }
+    try {
+      const colaborador = await validarLogin(matricula, senha);
+      showMessage(`✅ Bem-vindo(a), ${colaborador.nome}!`, 'success');
+      sessionStorage.setItem('usuarioLogado', JSON.stringify({
+        matricula: colaborador.matricula,
+        nome: colaborador.nome,
+        tipo: colaborador.tipo,
+        cargo: colaborador.cargo
+      }));
+      setTimeout(() => window.location.href = colaborador.pagina, 1500);
     } catch (error) {
-      // Em caso de erro, restaura o botão
       if (error.message === 'primeiro_acesso') {
         showMessage('🔐 Matrícula sem senha! Clique em "Primeiro acesso?" para cadastrar.', 'info');
-        if (!modoCadastro) {
-          setTimeout(() => {
-            if (confirm('Cadastrar senha para esta matrícula?')) toggleModo();
-          }, 500);
-        }
+        if (!modoCadastro) setTimeout(() => { if (confirm('Cadastrar senha para esta matrícula?')) toggleModo(); }, 500);
       } else {
         showMessage(error.message, 'error');
       }
-      
-      // Restaura o botão
       btn.disabled = false;
       btn.textContent = textoOriginal;
       document.getElementById('senha').value = '';
-      document.getElementById('matricula').focus();
     }
   }
-
   function abrirModalRecuperarSenha() {
     document.getElementById('modalRecuperar').style.display = 'flex';
     document.getElementById('recMatricula').value = '';
@@ -473,99 +243,24 @@
     document.getElementById('recConfirmarSenha').value = '';
     document.getElementById('recMessage').innerHTML = '';
   }
-
-  function fecharModalRecuperar() {
-    document.getElementById('modalRecuperar').style.display = 'none';
-  }
-
+  function fecharModalRecuperar() { document.getElementById('modalRecuperar').style.display = 'none'; }
   async function recuperarSenha() {
     const matricula = document.getElementById('recMatricula').value.trim();
     const novaSenha = document.getElementById('recNovaSenha').value;
     const confirmarSenha = document.getElementById('recConfirmarSenha').value;
-    const btn = event.target;
-    const textoOriginal = btn.textContent;
-    
-    if (!matricula) {
-      showMessage('Digite sua matrícula', 'error', 'recMessage');
-      return;
-    }
-    if (!novaSenha) {
-      showMessage('Digite a nova senha', 'error', 'recMessage');
-      return;
-    }
-    if (novaSenha !== confirmarSenha) {
-      showMessage('As senhas não coincidem', 'error', 'recMessage');
-      return;
-    }
-    if (novaSenha.length < 4) {
-      showMessage('A senha deve ter no mínimo 4 caracteres', 'error', 'recMessage');
-      return;
-    }
-    
-    btn.disabled = true;
-    btn.textContent = 'Processando...';
-    
+    if (!matricula) { showMessage('Digite sua matrícula', 'error', 'recMessage'); return; }
+    if (!novaSenha) { showMessage('Digite a nova senha', 'error', 'recMessage'); return; }
+    if (novaSenha !== confirmarSenha) { showMessage('As senhas não coincidem', 'error', 'recMessage'); return; }
+    if (novaSenha.length < 4) { showMessage('A senha deve ter no mínimo 4 caracteres', 'error', 'recMessage'); return; }
     try {
       await trocarSenha(matricula, novaSenha);
       showMessage('✅ Senha alterada com sucesso! Agora faça login.', 'success', 'recMessage');
-      setTimeout(() => {
-        fecharModalRecuperar();
-        document.getElementById('matricula').value = matricula;
-        document.getElementById('senha').value = novaSenha;
-        btn.disabled = false;
-        btn.textContent = textoOriginal;
-      }, 2000);
-    } catch (error) {
-      showMessage(error.message, 'error', 'recMessage');
-      btn.disabled = false;
-      btn.textContent = textoOriginal;
-    }
+      setTimeout(() => { fecharModalRecuperar(); document.getElementById('matricula').value = matricula; document.getElementById('senha').value = novaSenha; }, 2000);
+    } catch (error) { showMessage(error.message, 'error', 'recMessage'); }
   }
-
-  // Função para resetar o formulário quando a página carrega
-  function resetarFormulario() {
-    const btn = document.getElementById('btnAcao');
-    if (btn) {
-      btn.disabled = false;
-      btn.textContent = modoCadastro ? 'Cadastrar Senha' : 'Entrar';
-    }
-    document.getElementById('matricula').value = '';
-    document.getElementById('senha').value = '';
-    const confirmar = document.getElementById('confirmarSenha');
-    if (confirmar) confirmar.value = '';
-    document.getElementById('matricula').focus();
-  }
-
-  // Eventos de tecla
-  document.getElementById('senha').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAction();
-    }
-  });
-
-  document.getElementById('matricula').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      document.getElementById('senha').focus();
-    }
-  });
-
-  const confirmarSenhaInput = document.getElementById('confirmarSenha');
-  if (confirmarSenhaInput) {
-    confirmarSenhaInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        handleAction();
-      }
-    });
-  }
-
-  // Inicialização
-  window.addEventListener('load', () => {
-    initDB();
-    resetarFormulario();
-  });
+  document.getElementById('senha').addEventListener('keypress', (e) => { if (e.key === 'Enter') handleAction(); });
+  document.getElementById('matricula').addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('senha').focus(); });
+  window.addEventListener('load', () => initDB());
 </script>
 <footer style="text-align: center; padding: 15px; font-size: 12px; color: #666; border-top: 1px solid #e0e0e0; margin-top: 30px;">
   <p>🚀 Sistema desenvolvido por <strong>Tiago Gazzoni Tagliabui</strong> | © 2026 - TgT Análise Desenvolvimento de Sistemas</p>
