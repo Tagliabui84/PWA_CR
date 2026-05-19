@@ -969,10 +969,11 @@
     }
     
     function sairSistema() {
-      if (confirm("Deseja realmente sair e voltar para a tela de login?")) {
-        window.location.href = "login.html";
-      }
+    if (confirm("Deseja realmente sair?")) {
+        sessionStorage.clear();
+        window.location.href = "index.html";
     }
+}
     
     // Inicializar
     carregarDadosSalvos();
