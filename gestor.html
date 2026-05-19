@@ -315,7 +315,7 @@
 </div>
 
 <nav class="nav-bottom">
-  <button class="nav-btn" onclick="window.history.back()">← Voltar</button>
+  <button class="nav-btn" onclick="voltarLogin()">← Voltar ao Login</button>
   <button class="nav-btn" onclick="sairSistema()">🚪 Sair</button>
 </nav>
 
@@ -539,11 +539,15 @@
     event.target.classList.add('active');
   }
   
-  function sairSistema() {
+function sairSistema() {
     if (confirm("Deseja realmente sair?")) {
         sessionStorage.clear();
         window.location.href = "index.html";
     }
+}
+  function voltarLogin() {
+    sessionStorage.clear();
+    window.location.href = "index.html";
 }
   
   // Função para gerar PDF completo da fiscalização
