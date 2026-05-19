@@ -9,71 +9,6 @@
   <link rel="stylesheet" href="styles.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
-  // Adicionar no início do gestor.html
-<script src="database.js"></script>
-
-<script>
-    // Variável global do banco
-    let database;
-
-    // Inicializar ao carregar a página
-    document.addEventListener('DOMContentLoaded', async () => {
-        database = db;
-        await database.init();
-        await carregarTodosOsDados();
-    });
-
-    async function carregarTodosOsDados() {
-        // Buscar dados do relatório completo
-        const relatorio = await database.getRelatorioCompleto();
-        
-        // Atualizar estatísticas do gestor
-        document.getElementById('totalOcorrencias').textContent = relatorio.ocorrencias.total;
-        document.getElementById('totalCarros').textContent = relatorio.fiscalizacao.carros.total;
-        document.getElementById('totalViagensPerdidas').textContent = relatorio.fiscalizacao.viagensPerdidas.total;
-        document.getElementById('totalTrocas').textContent = relatorio.fiscalizacao.trocas.total;
-        
-        // Carregar ocorrências do instrutor
-        carregarOcorrencias(relatorio.ocorrencias.dados);
-        
-        // Carregar dados da fiscalização
-        carregarFiscalizacao(relatorio.fiscalizacao);
-    }
-
-    function carregarOcorrencias(ocorrencias) {
-        const container = document.getElementById('listaOcorrencias');
-        if (!ocorrencias.length) {
-            container.innerHTML = '<p>Nenhuma ocorrência registrada</p>';
-            return;
-        }
-        
-        container.innerHTML = ocorrencias.map(occ => `
-            <div class="card-ocorrencia">
-                <strong>DBO: ${occ.nroDBO}</strong> - Motorista: ${occ.nomeMotorista}<br>
-                Data: ${occ.dataOcorrencia} - ${occ.localOcorrencia}
-            </div>
-        `).join('');
-    }
-
-    function carregarFiscalizacao(fiscalizacao) {
-        // Carregar carros
-        const containerCarros = document.getElementById('listaCarros');
-        containerCarros.innerHTML = fiscalizacao.carros.dados.map(carro => `
-            <div class="card-item">
-                Carro ${carro.ordem} - ${carro.itinerario} - Motorista: ${carro.motorista}
-                (${carro.viagens?.length || 0} viagens)
-            </div>
-        `).join('');
-        
-        // Carregar viagens perdidas
-        const containerViagens = document.getElementById('listaViagens');
-        containerViagens.innerHTML = fiscalizacao.viagensPerdidas.dados.map(viagem => `
-            <div class="card-item">
-                Carro ${viagem.ordemCarro} - ${viagem.linha} - Perda às ${viagem.horarioPerda}
-            </div>
-        `).join('');
-    }
-</script>
   <style>
     .abas-gestor {
       display: flex;
@@ -315,11 +250,11 @@
 </div>
 
 <nav class="nav-bottom">
-  <button class="nav-btn" onclick="sairSistema()">← Sair do Sistema</button>
-  <button class="nav-btn" onclick="sairSistema()">🚪 Sair</button>
+  <button class="nav-btn" onclick="sairSistema()">🚪 Sair do Sistema</button>
 </nav>
 
 <script>
+  let db = null;
   let dadosCarros = [];
   let dadosViagens = [];
   let dadosTrocas = [];
@@ -327,6 +262,79 @@
   let dadosMensagens = [];
   let colaboradores = [];
   let usuarioAtual = null;
+
+  // Inicializar banco de dados
+  function initDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open('CidadeRealDB', 6);
+      
+      request.onerror = () => reject('Erro ao abrir banco');
+      request.onsuccess = (event) => {
+        db = event.target.result;
+        resolve(db);
+      };
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains('colaboradores')) {
+          db.createObjectStore('colaboradores', { keyPath: 'matricula' });
+        }
+        if (!db.objectStoreNames.contains('fiscalizacao_carros')) {
+          db.createObjectStore('fiscalizacao_carros', { keyPath: 'id', autoIncrement: true });
+        }
+        if (!db.objectStoreNames.contains('fiscalizacao_viagens')) {
+          db.createObjectStore('fiscalizacao_viagens', { keyPath: 'id', autoIncrement: true });
+        }
+        if (!db.objectStoreNames.contains('fiscalizacao_trocas')) {
+          db.createObjectStore('fiscalizacao_trocas', { keyPath: 'id', autoIncrement: true });
+        }
+        if (!db.objectStoreNames.contains('ocorrencias')) {
+          db.createObjectStore('ocorrencias', { keyPath: 'id', autoIncrement: true });
+        }
+        if (!db.objectStoreNames.contains('mensagens')) {
+          db.createObjectStore('mensagens', { keyPath: 'id', autoIncrement: true });
+        }
+      };
+    });
+  }
+
+  async function getStoreData(storeName) {
+    return new Promise((resolve, reject) => {
+      if (!db) return reject('Banco não inicializado');
+      const transaction = db.transaction([storeName], 'readonly');
+      const store = transaction.objectStore(storeName);
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = () => reject('Erro ao buscar dados');
+    });
+  }
+
+  async function addToStore(storeName, data) {
+    return new Promise((resolve, reject) => {
+      if (!db) return reject('Banco não inicializado');
+      const transaction = db.transaction([storeName], 'readwrite');
+      const store = transaction.objectStore(storeName);
+      const request = store.add(data);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject('Erro ao adicionar');
+    });
+  }
+
+  async function getAllColaboradores() {
+    return getStoreData('colaboradores');
+  }
+
+  async function enviarMensagem(remetente, destinatario, titulo, mensagem) {
+    const novaMensagem = {
+      remetente,
+      destinatario,
+      titulo,
+      mensagem,
+      data: new Date().toLocaleString('pt-BR'),
+      lida: false,
+      dataEnvio: new Date().toISOString()
+    };
+    return addToStore('mensagens', novaMensagem);
+  }
 
   async function carregarDados() {
     dadosCarros = await getStoreData('fiscalizacao_carros') || [];
@@ -444,8 +452,8 @@
     if (mensagensRecebidas.length === 0) {
       container.innerHTML = '<p>Nenhuma mensagem recebida.</p>';
     } else {
-      container.innerHTML = mensagensRecebidas.map(msg => `
-        <div class="mensagem-item ${!msg.lida ? 'nao-lida' : ''}" onclick="lerMensagem(${msg.id})">
+      container.innerHTML = mensagensRecebidas.map((msg, idx) => `
+        <div class="mensagem-item ${!msg.lida ? 'nao-lida' : ''}" onclick="lerMensagem(${idx})">
           <div class="mensagem-titulo">📧 ${msg.titulo}</div>
           <div class="mensagem-data">De: ${msg.remetente} | ${msg.data}</div>
           <div class="mensagem-resumo">${msg.mensagem.substring(0, 100)}${msg.mensagem.length > 100 ? '...' : ''}</div>
@@ -472,7 +480,7 @@
   }
   
   function lerMensagem(id) {
-    const msg = dadosMensagens.find(m => m.id === id);
+    const msg = dadosMensagens[id];
     if (msg) {
       alert(`📧 ${msg.titulo}\n\nDe: ${msg.remetente}\nData: ${msg.data}\n\n${msg.mensagem}`);
     }
@@ -507,7 +515,6 @@
     
     doc.save(`relatorio_geral_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.pdf`);
     
-    // Simular envio por email
     const emailGestor = prompt('Digite seu email para receber o relatório:', 'gestor@cidadereal.com');
     if (emailGestor) {
       alert(`📧 Relatório enviado para ${emailGestor}`);
@@ -539,18 +546,14 @@
     event.target.classList.add('active');
   }
   
-function sairSistema() {
-    if (confirm("Deseja realmente sair?")) {
-        sessionStorage.clear();
-        window.location.href = "index.html";
+  // Função SAIR corrigida
+  function sairSistema() {
+    if (confirm("Deseja realmente sair do sistema?")) {
+      sessionStorage.clear();
+      window.location.href = "index.html";
     }
-}
-  function voltarLogin() {
-    sessionStorage.clear();
-    window.location.href = "index.html";
-}
+  }
   
-  // Função para gerar PDF completo da fiscalização
   async function gerarPDFCompletoFiscalizacao() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
@@ -621,6 +624,9 @@ function sairSistema() {
     if (usuarioStr) {
       usuarioAtual = JSON.parse(usuarioStr);
       document.getElementById('nomeGestor').textContent = usuarioAtual.nome.split(' ')[0];
+    } else {
+      // Se não tiver usuário logado, redireciona para o login
+      window.location.href = "index.html";
     }
   }
   
