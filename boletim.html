@@ -32,11 +32,16 @@
   </nav>
 
 <script>
-  function sairSistema() {
+ function sairSistema() {
     if (confirm("Deseja realmente sair?")) {
         sessionStorage.clear();
         window.location.href = "index.html";
     }
+}
+
+function voltarLogin() {
+    sessionStorage.clear();
+    window.location.href = "index.html";
 }
 </script>
 <footer style="text-align: center; padding: 15px; font-size: 12px; color: #666; border-top: 1px solid #e0e0e0; margin-top: 30px;">
