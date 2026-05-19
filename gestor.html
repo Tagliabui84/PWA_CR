@@ -10,106 +10,25 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
   <style>
-    .abas-gestor {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 30px;
-      flex-wrap: wrap;
-      border-bottom: 2px solid #e0e5e8;
-      padding-bottom: 10px;
-    }
-    .aba-gestor-btn {
-      background: none;
-      border: none;
-      padding: 12px 24px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      color: #666;
-      border-radius: 12px;
-      transition: all 0.3s ease;
-    }
-    .aba-gestor-btn:hover {
-      background: rgba(0, 170, 85, 0.1);
-      color: #00aa55;
-    }
-    .aba-gestor-btn.active {
-      background: rgba(0, 170, 85, 0.15);
-      color: #00aa55;
-    }
-    .mensagem-item {
-      background: #f8f8f8;
-      border-radius: 16px;
-      padding: 15px;
-      margin-bottom: 15px;
-      border-left: 4px solid #00aa55;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-    .mensagem-item.nao-lida {
-      background: #fff8e8;
-      border-left-color: #ffaa33;
-    }
-    .mensagem-item:hover {
-      transform: translateX(5px);
-    }
-    .mensagem-titulo {
-      font-weight: bold;
-      color: #00aa55;
-    }
-    .mensagem-data {
-      font-size: 11px;
-      color: #999;
-      margin-bottom: 8px;
-    }
-    .mensagem-resumo {
-      color: #666;
-      font-size: 13px;
-    }
-    .modal-mensagem {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      backdrop-filter: blur(5px);
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-content {
-      background: white;
-      border-radius: 28px;
-      padding: 30px;
-      max-width: 600px;
-      width: 90%;
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-    .enviar-mensagem {
-      background: #f0f5f0;
-      padding: 20px;
-      border-radius: 16px;
-      margin-bottom: 20px;
-    }
-    @media (max-width: 768px) {
-      .abas-gestor { gap: 5px; }
-      .aba-gestor-btn { padding: 8px 16px; font-size: 14px; }
-    }
+    .abas-gestor { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; border-bottom: 2px solid #e0e5e8; padding-bottom: 10px; }
+    .aba-gestor-btn { background: none; border: none; padding: 12px 24px; font-size: 16px; font-weight: 600; cursor: pointer; color: #666; border-radius: 12px; transition: all 0.3s ease; }
+    .aba-gestor-btn:hover { background: rgba(0, 170, 85, 0.1); color: #00aa55; }
+    .aba-gestor-btn.active { background: rgba(0, 170, 85, 0.15); color: #00aa55; }
+    .mensagem-item { background: #f8f8f8; border-radius: 16px; padding: 15px; margin-bottom: 15px; border-left: 4px solid #00aa55; cursor: pointer; transition: all 0.3s ease; }
+    .mensagem-item.nao-lida { background: #fff8e8; border-left-color: #ffaa33; }
+    .mensagem-item:hover { transform: translateX(5px); }
+    .mensagem-titulo { font-weight: bold; color: #00aa55; }
+    .mensagem-data { font-size: 11px; color: #999; margin-bottom: 8px; }
+    .mensagem-resumo { color: #666; font-size: 13px; }
+    @media (max-width: 768px) { .abas-gestor { gap: 5px; } .aba-gestor-btn { padding: 8px 16px; font-size: 14px; } }
   </style>
 </head>
 <body>
-
 <header><h1>Cidade Real • Painel do Gestor</h1></header>
-
 <div class="container">
   <div class="screen">
     <h1>Bem-vindo, <span id="nomeGestor">Gestor</span></h1>
     <p>Visualize todos os registros do sistema e gerencie as operações</p>
-    
-    <!-- Abas do Gestor -->
     <div class="abas-gestor">
       <button class="aba-gestor-btn active" onclick="trocarAbaGestor('resumo')">📊 Resumo</button>
       <button class="aba-gestor-btn" onclick="trocarAbaGestor('fiscalizacao')">📋 Registros de Fiscalização</button>
@@ -117,126 +36,52 @@
       <button class="aba-gestor-btn" onclick="trocarAbaGestor('mensagens')">💬 Mensagens</button>
       <button class="aba-gestor-btn" onclick="trocarAbaGestor('relatorios')">📄 Relatórios</button>
     </div>
-    
-    <!-- Aba Resumo -->
     <div id="resumo" class="section active">
       <h2>📊 Resumo do Sistema</h2>
       <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-number" id="totalCarros">0</div>
-          <div class="stat-label">Carros na Escala</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number" id="totalViagensPerdidas">0</div>
-          <div class="stat-label">Viagens Perdidas</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number" id="totalTrocas">0</div>
-          <div class="stat-label">Trocas de Carros</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number" id="totalOcorrencias">0</div>
-          <div class="stat-label">Ocorrências</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number" id="totalMensagens">0</div>
-          <div class="stat-label">Mensagens</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number" id="totalColaboradores">0</div>
-          <div class="stat-label">Colaboradores</div>
-        </div>
+        <div class="stat-card"><div class="stat-number" id="totalCarros">0</div><div class="stat-label">Carros na Escala</div></div>
+        <div class="stat-card"><div class="stat-number" id="totalViagensPerdidas">0</div><div class="stat-label">Viagens Perdidas</div></div>
+        <div class="stat-card"><div class="stat-number" id="totalTrocas">0</div><div class="stat-label">Trocas de Carros</div></div>
+        <div class="stat-card"><div class="stat-number" id="totalOcorrencias">0</div><div class="stat-label">Ocorrências</div></div>
+        <div class="stat-card"><div class="stat-number" id="totalMensagens">0</div><div class="stat-label">Mensagens</div></div>
+        <div class="stat-card"><div class="stat-number" id="totalColaboradores">0</div><div class="stat-label">Colaboradores</div></div>
       </div>
-      
       <h3>📋 Últimas Atualizações</h3>
       <div id="ultimasAtualizacoes"></div>
     </div>
-    
-    <!-- Aba Fiscalização -->
     <div id="fiscalizacao" class="section">
       <h2>📋 Registros de Fiscalização</h2>
-      
       <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-number" id="fisCarrosCount">0</div>
-          <div class="stat-label">Carros na Escala</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number" id="fisViagensCount">0</div>
-          <div class="stat-label">Viagens Perdidas</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number" id="fisTrocasCount">0</div>
-          <div class="stat-label">Trocas de Carros</div>
-        </div>
+        <div class="stat-card"><div class="stat-number" id="fisCarrosCount">0</div><div class="stat-label">Carros na Escala</div></div>
+        <div class="stat-card"><div class="stat-number" id="fisViagensCount">0</div><div class="stat-label">Viagens Perdidas</div></div>
+        <div class="stat-card"><div class="stat-number" id="fisTrocasCount">0</div><div class="stat-label">Trocas de Carros</div></div>
       </div>
-      
       <h3>🚌 Escala de Carros</h3>
       <div id="listaCarros"></div>
-      
       <h3>🚫 Viagens Perdidas</h3>
-      <div class="table-responsive">
-        <table id="tabelaViagensPerdidas">
-          <thead><tr><th>Carro</th><th>Linha</th><th>Horário Programado</th><th>Horário Perda</th><th>Motivo</th></tr></thead>
-          <tbody id="viagensPerdidasBody"></tbody>
-        </table>
-      </div>
-      
+      <div class="table-responsive"><table id="tabelaViagensPerdidas"><thead><tr><th>Carro</th><th>Linha</th><th>Horário Programado</th><th>Horário Perda</th><th>Motivo</th></tr></thead><tbody id="viagensPerdidasBody"></tbody></table></div>
       <h3>🔄 Trocas de Carros</h3>
-      <div class="table-responsive">
-        <table id="tabelaTrocas">
-          <thead><tr><th>Carro Original</th><th>Carro Substituto</th><th>Linha</th><th>Horário</th><th>Motivo</th></tr></thead>
-          <tbody id="trocasBody"></tbody>
-        </table>
-      </div>
+      <div class="table-responsive"><table id="tabelaTrocas"><thead><tr><th>Carro Original</th><th>Carro Substituto</th><th>Linha</th><th>Horário</th><th>Motivo</th></tr></thead><tbody id="trocasBody"></tbody></table></div>
     </div>
-    
-    <!-- Aba Ocorrências -->
     <div id="ocorrencias" class="section">
       <h2>📝 Boletins de Ocorrências</h2>
       <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-number" id="occTotal">0</div>
-          <div class="stat-label">Total de Ocorrências</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number" id="occMes">0</div>
-          <div class="stat-label">Este Mês</div>
-        </div>
+        <div class="stat-card"><div class="stat-number" id="occTotal">0</div><div class="stat-label">Total de Ocorrências</div></div>
+        <div class="stat-card"><div class="stat-number" id="occMes">0</div><div class="stat-label">Este Mês</div></div>
       </div>
       <div id="listaOcorrencias"></div>
     </div>
-    
-    <!-- Aba Mensagens -->
     <div id="mensagens" class="section">
       <h2>💬 Central de Mensagens</h2>
-      
-      <div class="enviar-mensagem">
+      <div class="enviar-mensagem" style="background:#f0f5f0;padding:20px;border-radius:16px;margin-bottom:20px;">
         <h3>📨 Enviar Nova Mensagem</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Destinatário</label>
-            <select id="destinatarioMsg">
-              <option value="">Selecione...</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Título</label>
-            <input type="text" id="tituloMsg" placeholder="Título da mensagem" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Mensagem</label>
-          <textarea id="conteudoMsg" rows="4" placeholder="Digite sua mensagem..."></textarea>
-        </div>
+        <div class="form-row"><div class="form-group"><label>Destinatário</label><select id="destinatarioMsg"><option value="">Selecione...</option></select></div><div class="form-group"><label>Título</label><input type="text" id="tituloMsg" placeholder="Título da mensagem" /></div></div>
+        <div class="form-group"><label>Mensagem</label><textarea id="conteudoMsg" rows="4" placeholder="Digite sua mensagem..."></textarea></div>
         <button class="btn" onclick="enviarMensagemGestor()">📤 Enviar Mensagem</button>
       </div>
-      
       <h3>📥 Mensagens Recebidas</h3>
       <div id="listaMensagens"></div>
     </div>
-    
-    <!-- Aba Relatórios -->
     <div id="relatorios" class="section">
       <h2>📄 Relatórios Gerenciais</h2>
       <div class="menu-grid">
@@ -248,51 +93,27 @@
     </div>
   </div>
 </div>
-
-<nav class="nav-bottom">
-  <button class="nav-btn" onclick="sairSistema()">🚪 Sair do Sistema</button>
+<nav class="nav-bottom" style="position:fixed;bottom:0;left:0;right:0;background:white;padding:12px;text-align:center;border-top:1px solid #ddd;">
+  <button class="nav-btn" id="btnSairSistema" style="background:#ff5050;color:white;padding:12px 24px;border:none;border-radius:8px;font-size:16px;cursor:pointer;">🚪 Sair do Sistema</button>
 </nav>
-
 <script>
   let db = null;
-  let dadosCarros = [];
-  let dadosViagens = [];
-  let dadosTrocas = [];
-  let dadosOcorrencias = [];
-  let dadosMensagens = [];
-  let colaboradores = [];
+  let dadosCarros = [], dadosViagens = [], dadosTrocas = [], dadosOcorrencias = [], dadosMensagens = [], colaboradores = [];
   let usuarioAtual = null;
 
-  // Inicializar banco de dados
   function initDB() {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open('CidadeRealDB', 6);
-      
       request.onerror = () => reject('Erro ao abrir banco');
-      request.onsuccess = (event) => {
-        db = event.target.result;
-        resolve(db);
-      };
+      request.onsuccess = (event) => { db = event.target.result; resolve(db); };
       request.onupgradeneeded = (event) => {
         const db = event.target.result;
-        if (!db.objectStoreNames.contains('colaboradores')) {
-          db.createObjectStore('colaboradores', { keyPath: 'matricula' });
-        }
-        if (!db.objectStoreNames.contains('fiscalizacao_carros')) {
-          db.createObjectStore('fiscalizacao_carros', { keyPath: 'id', autoIncrement: true });
-        }
-        if (!db.objectStoreNames.contains('fiscalizacao_viagens')) {
-          db.createObjectStore('fiscalizacao_viagens', { keyPath: 'id', autoIncrement: true });
-        }
-        if (!db.objectStoreNames.contains('fiscalizacao_trocas')) {
-          db.createObjectStore('fiscalizacao_trocas', { keyPath: 'id', autoIncrement: true });
-        }
-        if (!db.objectStoreNames.contains('ocorrencias')) {
-          db.createObjectStore('ocorrencias', { keyPath: 'id', autoIncrement: true });
-        }
-        if (!db.objectStoreNames.contains('mensagens')) {
-          db.createObjectStore('mensagens', { keyPath: 'id', autoIncrement: true });
-        }
+        if (!db.objectStoreNames.contains('colaboradores')) db.createObjectStore('colaboradores', { keyPath: 'matricula' });
+        if (!db.objectStoreNames.contains('fiscalizacao_carros')) db.createObjectStore('fiscalizacao_carros', { keyPath: 'id', autoIncrement: true });
+        if (!db.objectStoreNames.contains('fiscalizacao_viagens')) db.createObjectStore('fiscalizacao_viagens', { keyPath: 'id', autoIncrement: true });
+        if (!db.objectStoreNames.contains('fiscalizacao_trocas')) db.createObjectStore('fiscalizacao_trocas', { keyPath: 'id', autoIncrement: true });
+        if (!db.objectStoreNames.contains('ocorrencias')) db.createObjectStore('ocorrencias', { keyPath: 'id', autoIncrement: true });
+        if (!db.objectStoreNames.contains('mensagens')) db.createObjectStore('mensagens', { keyPath: 'id', autoIncrement: true });
       };
     });
   }
@@ -319,20 +140,10 @@
     });
   }
 
-  async function getAllColaboradores() {
-    return getStoreData('colaboradores');
-  }
+  async function getAllColaboradores() { return getStoreData('colaboradores'); }
 
   async function enviarMensagem(remetente, destinatario, titulo, mensagem) {
-    const novaMensagem = {
-      remetente,
-      destinatario,
-      titulo,
-      mensagem,
-      data: new Date().toLocaleString('pt-BR'),
-      lida: false,
-      dataEnvio: new Date().toISOString()
-    };
+    const novaMensagem = { remetente, destinatario, titulo, mensagem, data: new Date().toLocaleString('pt-BR'), lida: false, dataEnvio: new Date().toISOString() };
     return addToStore('mensagens', novaMensagem);
   }
 
@@ -343,7 +154,6 @@
     dadosOcorrencias = await getStoreData('ocorrencias') || [];
     dadosMensagens = await getStoreData('mensagens') || [];
     colaboradores = await getAllColaboradores();
-    
     atualizarResumo();
     atualizarFiscalizacao();
     atualizarOcorrencias();
@@ -357,121 +167,54 @@
     document.getElementById('totalOcorrencias').textContent = dadosOcorrencias.length;
     document.getElementById('totalMensagens').textContent = dadosMensagens.filter(m => m.destinatario === 'gestor' || m.destinatario === 'todos').length;
     document.getElementById('totalColaboradores').textContent = colaboradores.length;
-    
     const atualizacoes = [...dadosCarros, ...dadosViagens, ...dadosTrocas, ...dadosOcorrencias];
     atualizacoes.sort((a,b) => new Date(b.dataRegistro) - new Date(a.dataRegistro));
     const ultimas = atualizacoes.slice(0, 10);
-    
     const container = document.getElementById('ultimasAtualizacoes');
-    if (ultimas.length === 0) {
-      container.innerHTML = '<p>Nenhuma atualização recente.</p>';
-    } else {
-      container.innerHTML = ultimas.map(item => `
-        <div class="card-item">
-          <strong>📌 ${item.ordemCarro || item.nomeMotorista || 'Registro'}</strong><br/>
-          <small>${new Date(item.dataRegistro).toLocaleString('pt-BR')}</small>
-        </div>
-      `).join('');
-    }
+    if (ultimas.length === 0) container.innerHTML = '<p>Nenhuma atualização recente.</p>';
+    else container.innerHTML = ultimas.map(item => `<div class="card-item"><strong>📌 ${item.ordemCarro || item.nomeMotorista || 'Registro'}</strong><br/><small>${new Date(item.dataRegistro).toLocaleString('pt-BR')}</small></div>`).join('');
   }
   
   function atualizarFiscalizacao() {
     document.getElementById('fisCarrosCount').textContent = dadosCarros.length;
     document.getElementById('fisViagensCount').textContent = dadosViagens.length;
     document.getElementById('fisTrocasCount').textContent = dadosTrocas.length;
-    
     const carrosContainer = document.getElementById('listaCarros');
-    if (dadosCarros.length === 0) {
-      carrosContainer.innerHTML = '<p>Nenhum carro cadastrado.</p>';
-    } else {
-      carrosContainer.innerHTML = dadosCarros.map(carro => `
-        <div class="card-item">
-          <strong>🚌 Carro: ${carro.ordem}</strong><br/>
-          📍 Itinerário: ${carro.itinerario}<br/>
-          👨‍✈️ Motorista: ${carro.motorista}<br/>
-          📅 Registrado em: ${new Date(carro.dataRegistro).toLocaleString('pt-BR')}
-        </div>
-      `).join('');
-    }
-    
+    if (dadosCarros.length === 0) carrosContainer.innerHTML = '<p>Nenhum carro cadastrado.</p>';
+    else carrosContainer.innerHTML = dadosCarros.map(carro => `<div class="card-item"><strong>🚌 Carro: ${carro.ordem}</strong><br/>📍 Itinerário: ${carro.itinerario}<br/>👨‍✈️ Motorista: ${carro.motorista}<br/>📅 Registrado em: ${new Date(carro.dataRegistro).toLocaleString('pt-BR')}</div>`).join('');
     const viagensBody = document.getElementById('viagensPerdidasBody');
-    if (dadosViagens.length === 0) {
-      viagensBody.innerHTML = '<tr><td colspan="5">Nenhuma viagem perdida registrada</td></tr>';
-    } else {
-      viagensBody.innerHTML = dadosViagens.map(v => `
-        <tr><td>${v.ordemCarro}</td><td>${v.linha}</td><td>${v.horarioProgramado}</td><td>${v.horarioPerda}</td><td>${v.motivo}</td></tr>
-      `).join('');
-    }
-    
+    if (dadosViagens.length === 0) viagensBody.innerHTML = '<tr><td colspan="5">Nenhuma viagem perdida registrada</td></tr>';
+    else viagensBody.innerHTML = dadosViagens.map(v => `<tr><td>${v.ordemCarro}</td><td>${v.linha}</td><td>${v.horarioProgramado}</td><td>${v.horarioPerda}</td><td>${v.motivo}</td></tr>`).join('');
     const trocasBody = document.getElementById('trocasBody');
-    if (dadosTrocas.length === 0) {
-      trocasBody.innerHTML = '<tr><td colspan="5">Nenhuma troca registrada</td></tr>';
-    } else {
-      trocasBody.innerHTML = dadosTrocas.map(t => `
-        <tr><td>${t.carroOriginal}</td><td>${t.carroSubstituto}</td><td>${t.linha}</td><td>${t.horario}</td><td>${t.motivo}</td></tr>
-      `).join('');
-    }
+    if (dadosTrocas.length === 0) trocasBody.innerHTML = '<tr><td colspan="5">Nenhuma troca registrada</td></tr>';
+    else trocasBody.innerHTML = dadosTrocas.map(t => `<tr><td>${t.carroOriginal}</td><td>${t.carroSubstituto}</td><td>${t.linha}</td><td>${t.horario}</td><td>${t.motivo}</td></tr>`).join('');
   }
   
   function atualizarOcorrencias() {
     document.getElementById('occTotal').textContent = dadosOcorrencias.length;
     const dataAtual = new Date();
-    const ocorrenciasMes = dadosOcorrencias.filter(o => {
-      const dataOcc = new Date(o.dataRegistro);
-      return dataOcc.getMonth() === dataAtual.getMonth();
-    });
+    const ocorrenciasMes = dadosOcorrencias.filter(o => { const dataOcc = new Date(o.dataRegistro); return dataOcc.getMonth() === dataAtual.getMonth(); });
     document.getElementById('occMes').textContent = ocorrenciasMes.length;
-    
     const container = document.getElementById('listaOcorrencias');
-    if (dadosOcorrencias.length === 0) {
-      container.innerHTML = '<p>Nenhuma ocorrência registrada.</p>';
-    } else {
-      container.innerHTML = dadosOcorrencias.map(occ => `
-        <div class="card-item">
-          <strong>📋 DBO: ${occ.nroDBO || 'N/A'} | RA: ${occ.nroRA || 'N/A'}</strong><br/>
-          👨‍✈️ Motorista: ${occ.nomeMotorista}<br/>
-          📍 Local: ${occ.localOcorrencia}<br/>
-          📅 Data: ${formatarData(occ.dataOcorrencia)} às ${occ.horarioOcorrencia}<br/>
-          <small>Registrado por: ${occ.responsavelNome} (${occ.responsavelFuncao})</small>
-        </div>
-      `).join('');
-    }
+    if (dadosOcorrencias.length === 0) container.innerHTML = '<p>Nenhuma ocorrência registrada.</p>';
+    else container.innerHTML = dadosOcorrencias.map(occ => `<div class="card-item"><strong>📋 DBO: ${occ.nroDBO || 'N/A'} | RA: ${occ.nroRA || 'N/A'}</strong><br/>👨‍✈️ Motorista: ${occ.nomeMotorista}<br/>📍 Local: ${occ.localOcorrencia}<br/>📅 Data: ${formatarData(occ.dataOcorrencia)} às ${occ.horarioOcorrencia}<br/><small>Registrado por: ${occ.responsavelNome} (${occ.responsavelFuncao})</small></div>`).join('');
   }
   
   function atualizarMensagens() {
     const select = document.getElementById('destinatarioMsg');
     select.innerHTML = '<option value="">Selecione...</option><option value="todos">Todos os colaboradores</option>';
-    colaboradores.forEach(col => {
-      if (col.ativo && col.matricula !== usuarioAtual?.matricula) {
-        select.innerHTML += `<option value="${col.matricula}">${col.nome} (${col.tipo})</option>`;
-      }
-    });
-    
+    colaboradores.forEach(col => { if (col.ativo && col.matricula !== usuarioAtual?.matricula) select.innerHTML += `<option value="${col.matricula}">${col.nome} (${col.tipo})</option>`; });
     const mensagensRecebidas = dadosMensagens.filter(m => m.destinatario === 'gestor' || m.destinatario === 'todos');
     const container = document.getElementById('listaMensagens');
-    if (mensagensRecebidas.length === 0) {
-      container.innerHTML = '<p>Nenhuma mensagem recebida.</p>';
-    } else {
-      container.innerHTML = mensagensRecebidas.map((msg, idx) => `
-        <div class="mensagem-item ${!msg.lida ? 'nao-lida' : ''}" onclick="lerMensagem(${idx})">
-          <div class="mensagem-titulo">📧 ${msg.titulo}</div>
-          <div class="mensagem-data">De: ${msg.remetente} | ${msg.data}</div>
-          <div class="mensagem-resumo">${msg.mensagem.substring(0, 100)}${msg.mensagem.length > 100 ? '...' : ''}</div>
-        </div>
-      `).join('');
-    }
+    if (mensagensRecebidas.length === 0) container.innerHTML = '<p>Nenhuma mensagem recebida.</p>';
+    else container.innerHTML = mensagensRecebidas.map((msg, idx) => `<div class="mensagem-item ${!msg.lida ? 'nao-lida' : ''}" onclick="lerMensagem(${idx})"><div class="mensagem-titulo">📧 ${msg.titulo}</div><div class="mensagem-data">De: ${msg.remetente} | ${msg.data}</div><div class="mensagem-resumo">${msg.mensagem.substring(0, 100)}${msg.mensagem.length > 100 ? '...' : ''}</div></div>`).join('');
   }
   
   async function enviarMensagemGestor() {
     const destinatario = document.getElementById('destinatarioMsg').value;
     const titulo = document.getElementById('tituloMsg').value.trim();
     const conteudo = document.getElementById('conteudoMsg').value.trim();
-    
-    if (!destinatario || !titulo || !conteudo) {
-      alert('Preencha todos os campos!');
-      return;
-    }
-    
+    if (!destinatario || !titulo || !conteudo) { alert('Preencha todos os campos!'); return; }
     await enviarMensagem('Gestor', destinatario, titulo, conteudo);
     alert('✅ Mensagem enviada com sucesso!');
     document.getElementById('tituloMsg').value = '';
@@ -479,74 +222,31 @@
     await carregarDados();
   }
   
-  function lerMensagem(id) {
-    const msg = dadosMensagens[id];
-    if (msg) {
-      alert(`📧 ${msg.titulo}\n\nDe: ${msg.remetente}\nData: ${msg.data}\n\n${msg.mensagem}`);
-    }
-  }
+  function lerMensagem(id) { const msg = dadosMensagens[id]; if (msg) alert(`📧 ${msg.titulo}\n\nDe: ${msg.remetente}\nData: ${msg.data}\n\n${msg.mensagem}`); }
   
   async function gerarRelatorioGeral() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    
-    doc.setFontSize(20);
-    doc.setTextColor(0, 150, 100);
-    doc.text('CIDADE REAL', 105, 20, { align: 'center' });
-    doc.setFontSize(16);
-    doc.text('RELATÓRIO GERAL DO SISTEMA', 105, 35, { align: 'center' });
-    doc.setFontSize(10);
-    doc.text(`Data de emissão: ${new Date().toLocaleString('pt-BR')}`, 105, 45, { align: 'center' });
-    
-    let y = 60;
-    doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0);
-    doc.text('📊 RESUMO GERAL', 14, y);
-    y += 8;
-    doc.text(`Total de colaboradores: ${colaboradores.length}`, 20, y);
-    y += 6;
-    doc.text(`Total de carros na escala: ${dadosCarros.length}`, 20, y);
-    y += 6;
-    doc.text(`Total de viagens perdidas: ${dadosViagens.length}`, 20, y);
-    y += 6;
-    doc.text(`Total de trocas de carros: ${dadosTrocas.length}`, 20, y);
-    y += 6;
-    doc.text(`Total de ocorrências registradas: ${dadosOcorrencias.length}`, 20, y);
-    
+    doc.setFontSize(20); doc.setTextColor(0,150,100); doc.text('CIDADE REAL',105,20,{align:'center'});
+    doc.setFontSize(16); doc.text('RELATÓRIO GERAL DO SISTEMA',105,35,{align:'center'});
+    doc.setFontSize(10); doc.text(`Data de emissão: ${new Date().toLocaleString('pt-BR')}`,105,45,{align:'center'});
+    let y=60; doc.setFontSize(12); doc.setTextColor(0,0,0); doc.text('📊 RESUMO GERAL',14,y); y+=8;
+    doc.text(`Total de colaboradores: ${colaboradores.length}`,20,y); y+=6;
+    doc.text(`Total de carros na escala: ${dadosCarros.length}`,20,y); y+=6;
+    doc.text(`Total de viagens perdidas: ${dadosViagens.length}`,20,y); y+=6;
+    doc.text(`Total de trocas de carros: ${dadosTrocas.length}`,20,y); y+=6;
+    doc.text(`Total de ocorrências registradas: ${dadosOcorrencias.length}`,20,y);
     doc.save(`relatorio_geral_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.pdf`);
-    
     const emailGestor = prompt('Digite seu email para receber o relatório:', 'gestor@cidadereal.com');
-    if (emailGestor) {
-      alert(`📧 Relatório enviado para ${emailGestor}`);
-    }
+    if (emailGestor) alert(`📧 Relatório enviado para ${emailGestor}`);
   }
   
-  function gerarRelatorioFiscalizacao() {
-    gerarPDFCompletoFiscalizacao();
-  }
+  function gerarRelatorioFiscalizacao() { gerarPDFCompletoFiscalizacao(); }
+  function gerarRelatorioOcorrencias() { alert('PDF de Ocorrências gerado!'); }
+  function gerarRelatorioColaboradores() { alert('PDF de Colaboradores gerado!'); }
+  function formatarData(data) { if (!data) return ''; const [ano, mes, dia] = data.split('-'); return `${dia}/${mes}/${ano}`; }
+  function trocarAbaGestor(aba) { document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); document.getElementById(aba).classList.add('active'); document.querySelectorAll('.aba-gestor-btn').forEach(btn => btn.classList.remove('active')); event.target.classList.add('active'); }
   
-  function gerarRelatorioOcorrencias() {
-    alert('PDF de Ocorrências gerado!');
-  }
-  
-  function gerarRelatorioColaboradores() {
-    alert('PDF de Colaboradores gerado!');
-  }
-  
-  function formatarData(data) {
-    if (!data) return '';
-    const [ano, mes, dia] = data.split('-');
-    return `${dia}/${mes}/${ano}`;
-  }
-  
-  function trocarAbaGestor(aba) {
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.getElementById(aba).classList.add('active');
-    document.querySelectorAll('.aba-gestor-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
-  }
-  
-  // Função SAIR corrigida
   function sairSistema() {
     if (confirm("Deseja realmente sair do sistema?")) {
       sessionStorage.clear();
@@ -557,82 +257,30 @@
   async function gerarPDFCompletoFiscalizacao() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    
-    doc.setFontSize(20);
-    doc.setTextColor(0, 150, 100);
-    doc.text('CIDADE REAL', 105, 20, { align: 'center' });
-    doc.setFontSize(14);
-    doc.text('RELATÓRIO DE FISCALIZAÇÃO OPERACIONAL', 105, 35, { align: 'center' });
-    doc.setFontSize(10);
-    doc.text(`Data de emissão: ${new Date().toLocaleString('pt-BR')}`, 105, 45, { align: 'center' });
-    
-    let y = 60;
-    
-    if (dadosCarros.length > 0) {
-      doc.setFontSize(12);
-      doc.text('1. ESCALA DE CARROS', 14, y);
-      y += 8;
-      for (const carro of dadosCarros) {
-        doc.setFontSize(10);
-        doc.text(`Carro: ${carro.ordem} | ${carro.itinerario} | Motorista: ${carro.motorista}`, 14, y);
-        y += 6;
-        if (y > 270) { doc.addPage(); y = 20; }
-      }
-      y += 5;
-    }
-    
-    if (dadosViagens.length > 0) {
-      if (y > 260) { doc.addPage(); y = 20; }
-      doc.setFontSize(12);
-      doc.text('2. VIAGENS PERDIDAS', 14, y);
-      y += 8;
-      const viagensData = dadosViagens.map(v => [v.ordemCarro, v.linha, v.horarioProgramado, v.horarioPerda, v.motivo]);
-      doc.autoTable({
-        startY: y,
-        head: [['Carro', 'Linha', 'Hr Programado', 'Hr Perda', 'Motivo']],
-        body: viagensData,
-        theme: 'striped',
-        headStyles: { fillColor: [0, 150, 100], textColor: [255, 255, 255] },
-        margin: { left: 14, right: 14 }
-      });
-      y = doc.lastAutoTable.finalY + 10;
-    }
-    
-    if (dadosTrocas.length > 0) {
-      if (y > 260) { doc.addPage(); y = 20; }
-      doc.setFontSize(12);
-      doc.text('3. TROCAS DE CARROS', 14, y);
-      y += 8;
-      const trocasData = dadosTrocas.map(t => [t.carroOriginal, t.carroSubstituto, t.linha, t.horario, t.motivo]);
-      doc.autoTable({
-        startY: y,
-        head: [['Carro Original', 'Carro Substituto', 'Linha', 'Horário', 'Motivo']],
-        body: trocasData,
-        theme: 'striped',
-        headStyles: { fillColor: [0, 150, 100], textColor: [255, 255, 255] },
-        margin: { left: 14, right: 14 }
-      });
-    }
-    
+    doc.setFontSize(20); doc.setTextColor(0,150,100); doc.text('CIDADE REAL',105,20,{align:'center'});
+    doc.setFontSize(14); doc.text('RELATÓRIO DE FISCALIZAÇÃO OPERACIONAL',105,35,{align:'center'});
+    doc.setFontSize(10); doc.text(`Data de emissão: ${new Date().toLocaleString('pt-BR')}`,105,45,{align:'center'});
+    let y=60;
+    if (dadosCarros.length>0) { doc.setFontSize(12); doc.text('1. ESCALA DE CARROS',14,y); y+=8; for(const carro of dadosCarros) { doc.setFontSize(10); doc.text(`Carro: ${carro.ordem} | ${carro.itinerario} | Motorista: ${carro.motorista}`,14,y); y+=6; if(y>270){doc.addPage();y=20;} } y+=5; }
+    if (dadosViagens.length>0) { if(y>260){doc.addPage();y=20;} doc.setFontSize(12); doc.text('2. VIAGENS PERDIDAS',14,y); y+=8; const viagensData=dadosViagens.map(v=>[v.ordemCarro,v.linha,v.horarioProgramado,v.horarioPerda,v.motivo]); doc.autoTable({startY:y,head:[['Carro','Linha','Hr Programado','Hr Perda','Motivo']],body:viagensData,theme:'striped',headStyles:{fillColor:[0,150,100],textColor:[255,255,255]},margin:{left:14,right:14}}); y=doc.lastAutoTable.finalY+10; }
+    if (dadosTrocas.length>0) { if(y>260){doc.addPage();y=20;} doc.setFontSize(12); doc.text('3. TROCAS DE CARROS',14,y); y+=8; const trocasData=dadosTrocas.map(t=>[t.carroOriginal,t.carroSubstituto,t.linha,t.horario,t.motivo]); doc.autoTable({startY:y,head:[['Carro Original','Carro Substituto','Linha','Horário','Motivo']],body:trocasData,theme:'striped',headStyles:{fillColor:[0,150,100],textColor:[255,255,255]},margin:{left:14,right:14}}); }
     doc.save(`relatorio_fiscalizacao_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.pdf`);
     const email = prompt('Digite seu email para receber o relatório:', 'gestor@cidadereal.com');
     if (email) alert(`📧 Relatório enviado para ${email}`);
   }
   
-  async function carregarUsuarioLogado() {
+  function verificarLogin() {
     const usuarioStr = sessionStorage.getItem('usuarioLogado');
-    if (usuarioStr) {
-      usuarioAtual = JSON.parse(usuarioStr);
-      document.getElementById('nomeGestor').textContent = usuarioAtual.nome.split(' ')[0];
-    } else {
-      // Se não tiver usuário logado, redireciona para o login
-      window.location.href = "index.html";
-    }
+    if (!usuarioStr) { window.location.href = "index.html"; return; }
+    usuarioAtual = JSON.parse(usuarioStr);
+    document.getElementById('nomeGestor').textContent = usuarioAtual.nome.split(' ')[0];
   }
+  
+  document.getElementById('btnSairSistema').addEventListener('click', sairSistema);
   
   window.addEventListener('load', async () => {
     await initDB();
-    await carregarUsuarioLogado();
+    verificarLogin();
     await carregarDados();
   });
 </script>
