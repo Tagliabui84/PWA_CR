@@ -121,7 +121,6 @@
       margin: 5px 0 0 20px;
     }
     
-    /* Modal para recuperar senha */
     .modal {
       display: none;
       position: fixed;
@@ -233,11 +232,9 @@
 </div>
 
 <script>
-  // ==================== BANCO DE DADOS INDEXEDDB ====================
   let db = null;
   let modoCadastro = false;
 
-  // Inicializar banco de dados
   function initDB() {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open('CidadeRealDB', 6);
@@ -260,63 +257,20 @@
           store.createIndex('tipo', 'tipo', { unique: false });
           
           const colaboradoresPadrao = [
-            {
-              matricula: "2024001",
-              senha: null,
-              nome: "Carlos Eduardo Silva",
-              tipo: "gestor",
-              pagina: "gestor.html",
-              cargo: "Gestor Geral",
-              primeiroAcesso: true,
-              ativo: true,
-              dataCadastro: new Date().toISOString()
-            },
-            {
-              matricula: "2024002",
-              senha: null,
-              nome: "Mariana Oliveira Santos",
-              tipo: "fiscalizacao",
-              pagina: "fiscalizacao.html",
-              cargo: "Fiscal de Operações",
-              primeiroAcesso: true,
-              ativo: true,
-              dataCadastro: new Date().toISOString()
-            },
-            {
-              matricula: "2024003",
-              senha: null,
-              nome: "Roberto Almeida Costa",
-              tipo: "instrutor",
-              pagina: "instrucao.html",
-              cargo: "Instrutor de Campo",
-              primeiroAcesso: true,
-              ativo: true,
-              dataCadastro: new Date().toISOString()
-            },
-            {
-              matricula: "2024004",
-              senha: null,
-              nome: "Fernanda Lima Rocha",
-              tipo: "gestor",
-              pagina: "gestor.html",
-              cargo: "Coordenadora Administrativa",
-              primeiroAcesso: true,
-              ativo: true,
-              dataCadastro: new Date().toISOString()
-            }
+            { matricula: "2024001", senha: null, nome: "Carlos Eduardo Silva", tipo: "gestor", pagina: "gestor.html", cargo: "Gestor Geral", primeiroAcesso: true, ativo: true, dataCadastro: new Date().toISOString() },
+            { matricula: "2024002", senha: null, nome: "Mariana Oliveira Santos", tipo: "fiscalizacao", pagina: "fiscalizacao.html", cargo: "Fiscal de Operações", primeiroAcesso: true, ativo: true, dataCadastro: new Date().toISOString() },
+            { matricula: "2024003", senha: null, nome: "Roberto Almeida Costa", tipo: "instrutor", pagina: "instrucao.html", cargo: "Instrutor de Campo", primeiroAcesso: true, ativo: true, dataCadastro: new Date().toISOString() },
+            { matricula: "2024004", senha: null, nome: "Fernanda Lima Rocha", tipo: "gestor", pagina: "gestor.html", cargo: "Coordenadora Administrativa", primeiroAcesso: true, ativo: true, dataCadastro: new Date().toISOString() }
           ];
           
           const transaction = db.transaction(['colaboradores'], 'readwrite');
           const userStore = transaction.objectStore('colaboradores');
-          colaboradoresPadrao.forEach(user => {
-            userStore.add(user);
-          });
+          colaboradoresPadrao.forEach(user => userStore.add(user));
         }
       };
     });
   }
 
-  // Buscar colaborador
   async function buscarColaborador(matricula) {
     return new Promise((resolve, reject) => {
       if (!db) {
@@ -333,7 +287,6 @@
     });
   }
 
-  // Cadastrar/Atualizar colaborador
   async function salvarColaborador(colaborador) {
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(['colaboradores'], 'readwrite');
@@ -345,7 +298,6 @@
     });
   }
 
-  // Cadastrar senha
   async function cadastrarSenha(matricula, novaSenha) {
     const colaborador = await buscarColaborador(matricula);
     
@@ -364,7 +316,6 @@
     return true;
   }
 
-  // Trocar senha (para recuperação)
   async function trocarSenha(matricula, novaSenha) {
     const colaborador = await buscarColaborador(matricula);
     
@@ -380,7 +331,6 @@
     return true;
   }
 
-  // Validar login
   async function validarLogin(matricula, senha) {
     const colaborador = await buscarColaborador(matricula);
     
@@ -494,7 +444,6 @@
     }
   }
 
-  // Recuperar senha
   function abrirModalRecuperarSenha() {
     document.getElementById('modalRecuperar').style.display = 'flex';
     document.getElementById('recMatricula').value = '';
@@ -534,7 +483,6 @@
       showMessage('✅ Senha alterada com sucesso! Agora faça login.', 'success', 'recMessage');
       setTimeout(() => {
         fecharModalRecuperar();
-        if (modoCadastro && false) toggleModo();
         document.getElementById('matricula').value = matricula;
         document.getElementById('senha').value = novaSenha;
       }, 2000);
@@ -543,7 +491,6 @@
     }
   }
 
-  // Eventos
   document.getElementById('senha').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') handleAction();
   });
@@ -553,7 +500,7 @@
   
   window.addEventListener('load', () => initDB());
 </script>
-<<footer style="text-align: center; padding: 15px; font-size: 12px; color: #666; border-top: 1px solid #e0e0e0; margin-top: 30px;">
+<footer style="text-align: center; padding: 15px; font-size: 12px; color: #666; border-top: 1px solid #e0e0e0; margin-top: 30px;">
   <p>🚀 Sistema desenvolvido por <strong>Tiago Gazzoni Tagliabui</strong> | © 2026 - TgT Análise Desenvolvimento de Sistemas</p>
   <p style="font-size: 10px; margin-top: 5px;">Versão 1.0 | Todos os direitos reservados</p>
 </footer>
