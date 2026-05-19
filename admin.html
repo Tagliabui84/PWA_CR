@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#00ff88" />
+  <link rel="manifest" href="manifest.json" />
+  <title>Admin - Cidade Real</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .admin-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .login-admin {
+      max-width: 400px;
+      margin: 50px auto;
+      text-align: center;
+    }
+    
+    .login-admin input {
+      text-align: center;
+      font-size: 18px;
+      letter-spacing: 2px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid #e0e5e8;
+    }
+    
+    .card h3 {
+      color: #00aa55;
+      margin-bottom: 15px;
+    }
+    
+    .colaborador-item {
+      background: #f8f8f8;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+    
+    .colaborador-item:hover {
+      background: #f0f5f0;
+      transform: translateX(5px);
+    }
+    
+    .colaborador-info {
+      flex: 1;
+    }
+    
+    .colaborador-info strong {
+      color: #00aa55;
+      font-size: 16px;
+    }
+    
+    .colaborador-info p {
+      margin: 5px 0;
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .colaborador-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .btn-small {
+      padding: 8px 16px;
+      font-size: 12px;
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #ff5050, #cc3333);
+    }
+    
+    .btn-warning {
+      background: linear-gradient(135deg, #ffaa33, #cc8822);
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    
+    .status-active {
+      background: rgba(0, 255, 136, 0.2);
+      color: #008844;
+    }
+    
+    .status-inactive {
+      background: rgba(255, 80, 80, 0.2);
+      color: #cc3333;
+    }
+    
+    .status-no-password {
+      background: rgba(255, 170, 51, 0.2);
+      color: #cc8822;
+    }
+    
+    .search-box {
+      margin-bottom: 20px;
+    }
+    
+    .search-box input {
+      margin-bottom: 0;
+    }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 204, 106, 0.05));
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .stat-card .number {
+      font-size: 32px;
+      font-weight: bold;
+      color: #00aa55;
+    }
+    
+    .stat-card .label {
+      font-size: 14px;
+      color: #666;
+      margin-top: 5px;
+    }
+    
+    .reset-password-btn {
+      background: linear-gradient(135deg, #ffaa33, #cc8822);
+      color: #1a1a1a;
+    }
+    
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+      
+      .colaborador-item {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .colaborador-actions {
+        margin-top: 10px;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header><h1>Cidade Real • Painel Administrativo</h1></header>
+
+<div class="container" id="adminContent">
+  <!-- Tela de autenticação -->
+  <div id="authScreen" class="login-admin">
+    <div class="screen">
+      <h2>🔐 Acesso Restrito</h2>
+      <p>Digite a senha master para acessar o painel administrativo</p>
+      <input type="password" id="masterPassword" placeholder="Senha Master" />
+      <button onclick="verificarSenhaMaster()" class="btn">Acessar Painel</button>
+      <div id="authMessage" style="margin-top: 15px;"></div>
+      <div class="admin-link" style="margin-top: 20px;">
+        <a href="login.html">← Voltar ao Login</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conteúdo do admin (oculto inicialmente) -->
+  <div id="adminPanel" style="display: none;">
+    <div class="screen">
+      <h1>👥 Gerenciar Colaboradores</h1>
+      
+      <!-- Estatísticas -->
+      <div class="stats">
+        <div class="stat-card">
+          <div class="number" id="totalColaboradores">0</div>
+          <div class="label">Total de Colaboradores</div>
+        </div>
+        <div class="stat-card">
+          <div class="number" id="ativosCount">0</div>
+          <div class="label">Colaboradores Ativos</div>
+        </div>
+        <div class="stat-card">
+          <div class="number" id="semSenhaCount">0</div>
+          <div class="label">Aguardando 1ª Senha</div>
+        </div>
+        <div class="stat-card">
+          <div class="number" id="comSenhaCount">0</div>
+          <div class="label">Com Senha Cadastrada</div>
+        </div>
+      </div>
+      
+      <!-- Formulário de Cadastro -->
+      <div class="card">
+        <h3>➕ Cadastrar Novo Colaborador</h3>
+        <form id="cadastroForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Matrícula *</label>
+              <input type="text" id="matricula" required placeholder="Ex: 2024008" />
+            </div>
+            <div class="form-group">
+              <label>Nome Completo *</label>
+              <input type="text" id="nome" required placeholder="Nome do colaborador" />
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Cargo/Função</label>
+              <input type="text" id="cargo" placeholder="Ex: Analista, Supervisor..." />
+            </div>
+            <div class="form-group">
+              <label>Tipo de Acesso *</label>
+              <select id="tipo" required>
+                <option value="">Selecione...</option>
+                <option value="gestor">Gestor</option>
+                <option value="fiscalizacao">Fiscalização</option>
+                <option value="instrutor">Instrutor</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Página de Destino</label>
+              <select id="pagina">
+                <option value="gestor.html">Painel Gestor</option>
+                <option value="fiscalizacao.html">Fiscalização</option>
+                <option value="instrucao.html">Instruções</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Status</label>
+              <select id="ativo">
+                <option value="true">Ativo</option>
+                <option value="false">Inativo</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="info-text" style="margin-bottom: 20px; text-align: left;">
+            ℹ️ O colaborador cadastrado <strong>NÃO terá senha definida</strong>. Ele deverá acessar o sistema e clicar em 
+            <strong>"Primeiro acesso? Cadastrar minha senha"</strong> para criar sua própria senha.
+          </div>
+          
+          <button type="submit" class="btn">✅ Cadastrar Colaborador</button>
+        </form>
+      </div>
+      
+      <!-- Lista de Colaboradores -->
+      <div class="card">
+        <h3>📋 Lista de Colaboradores</h3>
+        
+        <div class="search-box">
+          <input type="text" id="search" placeholder="🔍 Buscar por nome ou matrícula..." />
+        </div>
+        
+        <div id="colaboradoresList"></div>
+      </div>
+      
+      <!-- Botões de Ação -->
+      <div style="display: flex; gap: 10px; justify-content: space-between; margin-top: 20px;">
+        <button class="btn" onclick="window.location.href='login.html'">← Voltar ao Login</button>
+        <button class="btn btn-danger" onclick="exportarDados()">📥 Exportar Dados</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<nav class="nav-bottom">
+  <button class="nav-btn" onclick="window.location.href='login.html'">← Login</button>
+  <button class="nav-btn" onclick="sairSistema()">🚪 Sair</button>
+</nav>
+
+<script>
+  let db = null;
+  let colaboradores = [];
+  const SENHA_MASTER = "swordfish";
+
+  // Inicializar banco de dados
+  function initDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open('CidadeRealDB', 6);
+      
+      request.onerror = () => reject('Erro ao abrir banco');
+      request.onsuccess = (event) => {
+        db = event.target.result;
+        resolve(db);
+      };
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains('colaboradores')) {
+          db.createObjectStore('colaboradores', { keyPath: 'matricula' });
+        }
+      };
+    });
+  }
+
+  // Verificar senha master
+  function verificarSenhaMaster() {
+    const senha = document.getElementById('masterPassword').value;
+    const authMessage = document.getElementById('authMessage');
+    
+    if (senha === SENHA_MASTER) {
+      document.getElementById('authScreen').style.display = 'none';
+      document.getElementById('adminPanel').style.display = 'block';
+      carregarColaboradores();
+    } else {
+      authMessage.innerHTML = '<div class="message error">❌ Senha master incorreta! Acesso negado.</div>';
+      setTimeout(() => {
+        authMessage.innerHTML = '';
+      }, 3000);
+      document.getElementById('masterPassword').value = '';
+    }
+  }
+
+  // Carregar colaboradores
+  async function carregarColaboradores() {
+    if (!db) return;
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(['colaboradores'], 'readonly');
+      const store = transaction.objectStore('colaboradores');
+      const request = store.getAll();
+      
+      request.onsuccess = () => {
+        colaboradores = request.result || [];
+        atualizarLista();
+        atualizarStats();
+        resolve(colaboradores);
+      };
+      request.onerror = () => reject('Erro ao carregar');
+    });
+  }
+
+  // Salvar colaborador
+  async function salvarColaborador(colaborador) {
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(['colaboradores'], 'readwrite');
+      const store = transaction.objectStore('colaboradores');
+      const request = store.put(colaborador);
+      
+      request.onsuccess = () => {
+        carregarColaboradores();
+        resolve(true);
+      };
+      request.onerror = () => reject('Erro ao salvar');
+    });
+  }
+
+  // Remover colaborador
+  async function removerColaborador(matricula) {
+    if (confirm('⚠️ Tem certeza que deseja excluir este colaborador permanentemente?')) {
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(['colaboradores'], 'readwrite');
+        const store = transaction.objectStore('colaboradores');
+        const request = store.delete(matricula);
+        
+        request.onsuccess = () => {
+          carregarColaboradores();
+          resolve(true);
+        };
+        request.onerror = () => reject('Erro ao remover');
+      });
+    }
+  }
+
+  // Resetar senha do colaborador
+  async function resetarSenha(matricula) {
+    if (confirm('⚠️ Deseja resetar a senha deste colaborador? Ele precisará cadastrar uma nova senha no próximo acesso.')) {
+      const colaborador = colaboradores.find(c => c.matricula === matricula);
+      if (colaborador) {
+        colaborador.senha = null;
+        colaborador.primeiroAcesso = true;
+        await salvarColaborador(colaborador);
+        alert('✅ Senha resetada com sucesso! O colaborador deverá cadastrar uma nova senha.');
+      }
+    }
+  }
+
+  // Alternar status
+  async function toggleStatus(matricula) {
+    const colaborador = colaboradores.find(c => c.matricula === matricula);
+    if (colaborador) {
+      colaborador.ativo = !(colaborador.ativo === true || colaborador.ativo === 'true');
+      await salvarColaborador(colaborador);
+      alert(`Colaborador ${colaborador.ativo ? 'ativado' : 'desativado'} com sucesso!`);
+    }
+  }
+
+  // Atualizar estatísticas
+  function atualizarStats() {
+    const total = colaboradores.length;
+    const ativos = colaboradores.filter(c => c.ativo === true || c.ativo === 'true').length;
+    const semSenha = colaboradores.filter(c => !c.senha || c.senha === null || c.senha === '').length;
+    const comSenha = total - semSenha;
+    
+    document.getElementById('totalColaboradores').textContent = total;
+    document.getElementById('ativosCount').textContent = ativos;
+    document.getElementById('semSenhaCount').textContent = semSenha;
+    document.getElementById('comSenhaCount').textContent = comSenha;
+  }
+
+  // Atualizar lista
+  function atualizarLista() {
+    const searchTerm = document.getElementById('search')?.value.toLowerCase() || '';
+    const container = document.getElementById('colaboradoresList');
+    
+    let filtrados = colaboradores;
+    if (searchTerm) {
+      filtrados = colaboradores.filter(c => 
+        c.matricula.includes(searchTerm) || 
+        c.nome?.toLowerCase().includes(searchTerm)
+      );
+    }
+    
+    if (filtrados.length === 0) {
+      container.innerHTML = '<div style="text-align: center; padding: 40px;">Nenhum colaborador cadastrado</div>';
+      return;
+    }
+    
+    container.innerHTML = filtrados.map(col => `
+      <div class="colaborador-item">
+        <div class="colaborador-info">
+          <strong>${col.matricula} - ${col.nome}</strong>
+          <p>📌 ${col.cargo || 'Sem cargo'} | 🔐 ${col.tipo} | 📄 ${col.pagina}</p>
+          <p>📅 Cadastro: ${new Date(col.dataCadastro).toLocaleDateString('pt-BR')}</p>
+          <p>🔑 Status senha: ${col.senha ? '✅ Cadastrada' : '⚠️ Aguardando cadastro'}</p>
+        </div>
+        <div class="colaborador-actions">
+          <span class="status-badge ${col.ativo === true || col.ativo === 'true' ? 'status-active' : 'status-inactive'}">
+            ${col.ativo === true || col.ativo === 'true' ? '✅ Ativo' : '❌ Inativo'}
+          </span>
+          <button class="btn-small btn-warning" onclick="toggleStatus('${col.matricula}')">
+            ${col.ativo === true || col.ativo === 'true' ? '🔴 Desativar' : '🟢 Ativar'}
+          </button>
+          <button class="btn-small reset-password-btn" onclick="resetarSenha('${col.matricula}')">
+            🔄 Resetar Senha
+          </button>
+          <button class="btn-small btn-danger" onclick="removerColaborador('${col.matricula}')">
+            🗑️ Excluir
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Exportar dados
+  function exportarDados() {
+    const dataStr = JSON.stringify(colaboradores, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    const exportFileDefaultName = `colaboradores_${new Date().toISOString().slice(0,19)}.json`;
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+  }
+
+  // Cadastrar novo colaborador
+  document.getElementById('cadastroForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const matricula = document.getElementById('matricula').value.trim();
+    const nome = document.getElementById('nome').value.trim();
+    const cargo = document.getElementById('cargo').value.trim();
+    const tipo = document.getElementById('tipo').value;
+    const pagina = document.getElementById('pagina').value;
+    const ativo = document.getElementById('ativo').value === 'true';
+    
+    if (!matricula || !nome || !tipo) {
+      alert('Preencha todos os campos obrigatórios!');
+      return;
+    }
+    
+    if (colaboradores.some(c => c.matricula === matricula)) {
+      alert('⚠️ Esta matrícula já está cadastrada!');
+      return;
+    }
+    
+    const novoColaborador = {
+      matricula,
+      senha: null,
+      nome,
+      cargo: cargo || 'Colaborador',
+      tipo,
+      pagina,
+      ativo,
+      primeiroAcesso: true,
+      dataCadastro: new Date().toISOString()
+    };
+    
+    await salvarColaborador(novoColaborador);
+    alert('✅ Colaborador cadastrado com sucesso! Ele deverá cadastrar sua senha no primeiro acesso.');
+    document.getElementById('cadastroForm').reset();
+  });
+
+  // Busca em tempo real
+  document.getElementById('search')?.addEventListener('input', () => {
+    atualizarLista();
+  });
+
+  function sairSistema() {
+    if (confirm('Deseja sair do sistema?')) {
+      sessionStorage.clear();
+      window.location.href = 'login.html';
+    }
+  }
+
+  // Inicializar
+  window.addEventListener('load', () => {
+    initDB();
+  });
+</script>
+<footer style="text-align: center; padding: 15px; font-size: 12px; color: #666; border-top: 1px solid #e0e0e0; margin-top: 30px;">
+  <p>🚀 Sistema desenvolvido por <strong>Tiago Gazzoni Tagliabui</strong> | © 2026 - TgT Análise Desenvolvimento de Sistemas</p>
+  <p style="font-size: 10px; margin-top: 5px;">Versão 1.0 | Todos os direitos reservados</p>
+</footer>
+</body>
+</html>

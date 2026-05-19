@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#4caf50" />
+  <link rel="manifest" href="manifest.json" />
+
+  <title>Relatórios - Cidade Real</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+  <header><h1>Cidade Real • Relatórios</h1></header>
+
+  <div class="container">
+    <section class="screen">
+      <h1>Relatórios</h1>
+      <p>Gerencie e exporte relatórios em PDF</p>
+
+      <div class="menu-grid">
+        <button onclick="gerarRelatorio('Geral')" class="btn">📊 Relatório Geral</button>
+        <button onclick="gerarRelatorio('Fiscalização')" class="btn">📋 Relatório de Fiscalização</button>
+        <button onclick="gerarRelatorio('Perdas')" class="btn">📉 Relatório de Perdas</button>
+      </div>
+    </section>
+  </div>
+
+  <nav class="nav-bottom">
+    <button class="nav-btn" onclick="window.history.back()">← Voltar</button>
+    <button class="nav-btn" onclick="sairSistema()">🚪 Sair</button>
+  </nav>
+
+<script>
+  function gerarRelatorio(tipo) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text(`Relatório ${tipo}`, 20, 30);
+    doc.save(`Relatorio_${tipo}.pdf`);
+    alert("✅ Relatório gerado!");
+  }
+
+  function sairSistema() {
+    if (confirm("Deseja realmente sair e voltar para a tela de login?")) {
+      window.location.href = "login.html";
+    }
+  }
+</script>
+<footer style="text-align: center; padding: 15px; font-size: 12px; color: #666; border-top: 1px solid #e0e0e0; margin-top: 30px;">
+  <p>🚀 Sistema desenvolvido por <strong>Tiago Gazzoni Tagliabui</strong> | © 2026 - TgT Análise Desenvolvimento de Sistemas</p>
+  <p style="font-size: 10px; margin-top: 5px;">Versão 1.0 | Todos os direitos reservados</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#4caf50" />
+  <link rel="manifest" href="manifest.json" />
+  <title>Fiscalização - Cidade Real</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header>
+    <h1>Cidade Real • Fiscalização Operacional</h1>
+  </header>
+
+  <div class="container">
+    <div class="screen">
+      <h1>Fiscalização Operacional</h1>
+      <p>Sistema de controle e fiscalização das operações</p>
+      
+      <!-- Abas de Navegação -->
+      <div class="menu-grid" style="margin-bottom: 30px;">
+        <button class="btn" id="btnEscala">📊 Escala de Carros PI/PV</button>
+        <button class="btn" id="btnViagens">🚌 Viagens Perdidas</button>
+        <button class="btn" id="btnTrocas">🔄 Trocas de Carros</button>
+      </div>
+
+      <!-- Seção 1: Escala de Carros PI/PV -->
+      <div id="escala" class="section active">
+        <h2>Registro de Escala de Carros</h2>
+        <p>Cadastre os carros com motorista e adicione múltiplas viagens (PI/PV)</p>
+        
+        <div class="stats" id="escalaStats">
+          <p><strong>📊 Total de carros cadastrados:</strong> <span id="escalaCount">0</span></p>
+          <p><strong>⏰ Total de viagens registradas:</strong> <span id="totalViagensCount">0</span></p>
+        </div>
+        
+        <form id="novoCarroForm" style="background: #f8f8f8; padding: 20px; border-radius: 16px; margin-bottom: 30px;">
+          <h3>➕ Adicionar Novo Carro com Motorista</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nº Ordem do Carro:</label>
+              <input type="text" id="novoOrdemCarro" required placeholder="Ex: 001, 002, 1050...">
+            </div>
+            <div class="form-group">
+              <label>Itinerário:</label>
+              <input type="text" id="novoItinerario" required placeholder="Ex: 001.1, 002.2, 100.0...">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nome do Motorista:</label>
+              <input type="text" id="novoMotorista" required placeholder="Ex: João Silva">
+            </div>
+            <div class="form-group">
+              <label>Matrícula:</label>
+              <input type="text" id="novaMatricula" required placeholder="Ex: MT-12345">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Setor de Operação:</label>
+            <select id="novoSetor" required style="width: 100%; padding: 14px 16px; border-radius: 12px; border: 2px solid #e0e0e0;">
+              <option value="">Selecione o setor...</option>
+              <option value="Centro">Pça Rui Barbosa</option>
+              <option value="Zona Norte">Paulo Barbosa</option>
+              <option value="Zona Sul">Eril</option>
+              <option value="Zona Leste">Eril-Corredor</option>
+              <option value="Zona Oeste">Bingen</option>
+            </select>
+          </div>
+          <button type="submit" class="btn">➕ Cadastrar Carro</button>
+        </form>
+        
+        <h3>🚌 Carros Cadastrados</h3>
+        <div id="carrosList"></div>
+        <button class="btn" id="gerarPDFEscala" style="margin-top: 20px; background: linear-gradient(135deg, #00ff88, #00bb55);">📄 Gerar PDF da Escala</button>
+      </div>
+
+      <!-- Seção 2: Viagens Perdidas -->
+      <div id="viagens" class="section">
+        <h2>Registro de Viagens Perdidas</h2>
+        <p>Registre as viagens de ônibus que não foram realizadas conforme programação</p>
+        
+        <div class="stats" id="viagensStats">
+          <p><strong>📊 Total de viagens perdidas:</strong> <span id="viagensCount">0</span></p>
+        </div>
+        
+        <form id="viagensForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nº Ordem do Ônibus:</label>
+              <input type="text" id="ordemCarroViagem" required placeholder="Ex: 001, 002...">
+            </div>
+            <div class="form-group">
+              <label>Linha/Itinerário:</label>
+              <input type="text" id="linhaViagem" required placeholder="Ex: 001.1 - Centro">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Horário Programado:</label>
+              <input type="time" id="horarioProgramado" required>
+            </div>
+            <div class="form-group">
+              <label>Horário da Perda:</label>
+              <input type="time" id="horarioPerda" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Motivo da Perda:</label>
+            <textarea id="motivoPerda" rows="3" required placeholder="Ex: Quebra mecânica, falta de motorista, acidente, trânsito intenso..."></textarea>
+          </div>
+          
+          <div class="action-buttons">
+            <button type="submit" class="btn">➕ Registrar Viagem Perdida</button>
+            <button type="button" class="btn btn-warning" onclick="limparFormViagens()">🗑️ Limpar Formulário</button>
+          </div>
+        </form>
+        
+        <div class="data-table">
+          <h3>Registros de Viagens Perdidas</h3>
+          <table id="viagensTable">
+            <thead>
+              <tr>
+                <th>Nº Ordem</th>
+                <th>Linha/Itinerário</th>
+                <th>Horário Programado</th>
+                <th>Horário da Perda</th>
+                <th>Motivo</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="viagensTableBody">
+              <tr><td colspan="6" style="text-align: center;">Nenhum registro encontrado</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <button class="btn" id="gerarPDFViagens" style="margin-top: 20px; background: linear-gradient(135deg, #00ff88, #00bb55);">📄 Gerar PDF das Viagens Perdidas</button>
+      </div>
+
+      <!-- Seção 3: Trocas de Carros -->
+      <div id="trocas" class="section">
+        <h2>Registro de Trocas de Carros</h2>
+        <p>Registre as trocas de carros realizadas durante a operação</p>
+        
+        <div class="stats" id="trocasStats">
+          <p><strong>📊 Total de trocas registradas:</strong> <span id="trocasCount">0</span></p>
+        </div>
+        
+        <form id="trocasForm">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Carro Original (Nº Ordem):</label>
+              <input type="text" id="carroOriginal" required placeholder="Ex: 001">
+            </div>
+            <div class="form-group">
+              <label>Carro Substituto (Nº Ordem):</label>
+              <input type="text" id="carroSubstituto" required placeholder="Ex: 002">
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label>Linha/Itinerário:</label>
+              <input type="text" id="linhaTroca" required placeholder="Ex: 001.1 - Centro">
+            </div>
+            <div class="form-group">
+              <label>Horário da Troca:</label>
+              <input type="time" id="horarioTroca" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Motivo da Troca:</label>
+            <textarea id="motivoTroca" rows="3" required placeholder="Descreva o motivo da troca..."></textarea>
+          </div>
+          
+          <div class="action-buttons">
+            <button type="submit" class="btn">➕ Registrar Troca</button>
+            <button type="button" class="btn btn-warning" onclick="limparFormTrocas()">🗑️ Limpar Formulário</button>
+          </div>
+        </form>
+        
+        <div class="data-table">
+          <h3>Registros de Trocas</h3>
+          <table id="trocasTable">
+            <thead>
+              <tr>
+                <th>Carro Original</th>
+                <th>Carro Substituto</th>
+                <th>Linha/Itinerário</th>
+                <th>Horário</th>
+                <th>Motivo</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="trocasTableBody">
+              <tr><td colspan="6" style="text-align: center;">Nenhum registro encontrado</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <button class="btn" id="gerarPDFTrocas" style="margin-top: 20px; background: linear-gradient(135deg, #00ff88, #00bb55);">📄 Gerar PDF das Trocas</button>
+      </div>
+
+      <!-- Botões de Ação Global -->
+      <div class="action-buttons" style="margin-top: 30px; border-top: 2px solid #e0e0e0; padding-top: 20px;">
+        <button class="btn" id="gerarPDFCompleto">📄 Gerar Relatório Completo PDF</button>
+        <button class="btn btn-danger" onclick="apagarTodosDados()">⚠️ Apagar Todos os Dados</button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="nav-bottom">
+    <button class="nav-btn" onclick="voltarPagina()">← Voltar</button>
+    <button class="nav-btn" onclick="sairSistema()">Sair</button>
+  </nav>
+
+  <!-- Bibliotecas jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+
+  <script>
+    // Estrutura de dados
+    let carros = [];
+    let dadosViagens = [];
+    let dadosTrocas = [];
+
+    // Carregar dados salvos do localStorage
+    function carregarDadosSalvos() {
+      const carrosSalvos = localStorage.getItem('fiscalizacao_carros');
+      const viagensSalvas = localStorage.getItem('fiscalizacao_viagens');
+      const trocasSalvas = localStorage.getItem('fiscalizacao_trocas');
+      
+      if (carrosSalvos) carros = JSON.parse(carrosSalvos);
+      if (viagensSalvas) dadosViagens = JSON.parse(viagensSalvas);
+      if (trocasSalvas) dadosTrocas = JSON.parse(trocasSalvas);
+      
+      atualizarListaCarros();
+      atualizarTabelaViagens();
+      atualizarTabelaTrocas();
+    }
+
+    function salvarDados() {
+      localStorage.setItem('fiscalizacao_carros', JSON.stringify(carros));
+      localStorage.setItem('fiscalizacao_viagens', JSON.stringify(dadosViagens));
+      localStorage.setItem('fiscalizacao_trocas', JSON.stringify(dadosTrocas));
+    }
+
+    function voltarPagina() {
+      window.history.back();
+    }
+
+    // Função para mostrar a seção ativa
+    function showSection(sectionId) {
+      const sections = document.querySelectorAll('.section');
+      sections.forEach(section => {
+        section.classList.remove('active');
+      });
+      const activeSection = document.getElementById(sectionId);
+      if (activeSection) {
+        activeSection.classList.add('active');
+      }
+    }
+
+    // Eventos das abas
+    document.getElementById('btnEscala').addEventListener('click', function() {
+      showSection('escala');
+    });
+    document.getElementById('btnViagens').addEventListener('click', function() {
+      showSection('viagens');
+    });
+    document.getElementById('btnTrocas').addEventListener('click', function() {
+      showSection('trocas');
+    });
+
+    function atualizarListaCarros() {
+      const container = document.getElementById('carrosList');
+      document.getElementById('escalaCount').textContent = carros.length;
+      
+      let totalViagens = 0;
+      carros.forEach(carro => {
+        totalViagens += carro.viagens.length;
+      });
+      document.getElementById('totalViagensCount').textContent = totalViagens;
+      
+      if (carros.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 40px; background: #f8f8f8; border-radius: 16px;">Nenhum carro cadastrado. Adicione um carro acima.</div>';
+        return;
+      }
+      
+      container.innerHTML = carros.map((carro, carroIndex) => `
+        <div style="border: 1px solid #e0e0e0; border-radius: 12px; margin-bottom: 15px; overflow: hidden;">
+          <div style="background: #f0f0f0; padding: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+              <span>🚌 Carro: ${carro.ordem}</span>
+              <span>📍 Itinerário: ${carro.itinerario}</span>
+              <span>👨‍✈️ Motorista: ${carro.motorista}</span>
+              <span>⏰ ${carro.viagens.length} viagens</span>
+            </div>
+            <div style="display: flex; gap: 10px;">
+              <button style="padding: 5px 10px; background: #ffaa33; border: none; border-radius: 6px; cursor: pointer;" onclick="editarMotorista(${carroIndex})">✏️ Editar Motorista</button>
+              <button style="padding: 5px 10px; background: #ff5050; color: white; border: none; border-radius: 6px; cursor: pointer;" onclick="removerCarro(${carroIndex})">🗑️ Remover Carro</button>
+            </div>
+          </div>
+          <div style="padding: 15px; border-top: 1px solid #e0e0e0;">
+            <div style="background: #f8f8f8; padding: 10px; border-radius: 8px; margin-bottom: 15px; display: flex; gap: 20px; flex-wrap: wrap;">
+              <div><strong>👨‍✈️ Motorista:</strong> ${carro.motorista}</div>
+              <div><strong>🆔 Matrícula:</strong> ${carro.matricula}</div>
+              <div><strong>🏭 Setor:</strong> ${carro.setor}</div>
+            </div>
+            ${carro.viagens.map((viagem, viagemIndex) => `
+              <div style="background: #fff; padding: 10px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div><strong>Viagem ${viagemIndex + 1}</strong></div>
+                <div><strong>PI:</strong> ${viagem.horarioPI || '---'} | <strong>PV:</strong> ${viagem.horarioPV || '---'}</div>
+                <div><strong>Obs:</strong> ${viagem.obs || '-'}</div>
+                <div>
+                  <button style="padding: 3px 8px; background: #ffaa33; border: none; border-radius: 4px; cursor: pointer;" onclick="editarViagem(${carroIndex}, ${viagemIndex})">✏️ Editar</button>
+                  <button style="padding: 3px 8px; background: #ff5050; color: white; border: none; border-radius: 4px; cursor: pointer;" onclick="removerViagem(${carroIndex}, ${viagemIndex})">❌ Remover</button>
+                </div>
+              </div>
+            `).join('')}
+            <div style="padding: 15px 0;">
+              <button style="padding: 8px 15px; background: #00aa55; color: white; border: none; border-radius: 6px; cursor: pointer;" onclick="abrirModalAdicionarViagem(${carroIndex})">+ Adicionar Viagem a este Carro</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      salvarDados();
+    }
+    
+    function editarMotorista(carroIndex) {
+      const carro = carros[carroIndex];
+      const novoMotorista = prompt('Editar Nome do Motorista:', carro.motorista);
+      if (novoMotorista !== null && novoMotorista.trim() !== '') {
+        carro.motorista = novoMotorista.trim();
+      }
+      
+      const novaMatricula = prompt('Editar Matrícula:', carro.matricula);
+      if (novaMatricula !== null && novaMatricula.trim() !== '') {
+        carro.matricula = novaMatricula.trim();
+      }
+      
+      const novoSegmento = prompt('Editar Setor:', carro.setor);
+      if (novoSegmento !== null && novoSegmento.trim() !== '') {
+        carro.setor = novoSegmento.trim();
+      }
+      
+      atualizarListaCarros();
+      alert('Dados do motorista atualizados com sucesso!');
+    }
+    
+    document.getElementById('novoCarroForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const ordem = document.getElementById('novoOrdemCarro').value.trim();
+      const itinerario = document.getElementById('novoItinerario').value.trim();
+      const motorista = document.getElementById('novoMotorista').value.trim();
+      const matricula = document.getElementById('novaMatricula').value.trim();
+      const setor = document.getElementById('novoSetor').value;
+      
+      if (!ordem || !itinerario || !motorista || !matricula || !setor) {
+        alert('Preencha todos os campos!');
+        return;
+      }
+      
+      if (carros.some(c => c.ordem === ordem && c.itinerario === itinerario)) {
+        alert('Este carro com este itinerário já está cadastrado!');
+        return;
+      }
+      
+      carros.push({
+        id: Date.now(),
+        ordem: ordem,
+        itinerario: itinerario,
+        motorista: motorista,
+        matricula: matricula,
+        setor: setor,
+        viagens: []
+      });
+      
+      document.getElementById('novoOrdemCarro').value = '';
+      document.getElementById('novoItinerario').value = '';
+      document.getElementById('novoMotorista').value = '';
+      document.getElementById('novaMatricula').value = '';
+      document.getElementById('novoSetor').value = '';
+      atualizarListaCarros();
+      alert('Carro cadastrado com sucesso!');
+    });
+    
+    function abrirModalAdicionarViagem(carroIndex) {
+      const horarioPI = prompt('Digite o horário PI (Ponto Inicial):\nExemplo: 06:00, 07:30', '');
+      if (horarioPI === null) return;
+      
+      const horarioPV = prompt('Digite o horário PV (Ponto Final):\nExemplo: 06:45, 08:15', '');
+      if (horarioPV === null) return;
+      
+      const obs = prompt('Observações (opcional):', '');
+      
+      carros[carroIndex].viagens.push({
+        horarioPI: horarioPI,
+        horarioPV: horarioPV,
+        obs: obs || ''
+      });
+      
+      atualizarListaCarros();
+      alert('Viagem adicionada com sucesso!');
+    }
+    
+    function editarViagem(carroIndex, viagemIndex) {
+      const viagem = carros[carroIndex].viagens[viagemIndex];
+      const novoPI = prompt('Editar horário PI:', viagem.horarioPI);
+      if (novoPI === null) return;
+      const novoPV = prompt('Editar horário PV:', viagem.horarioPV);
+      if (novoPV === null) return;
+      const novaObs = prompt('Editar observações:', viagem.obs);
+      
+      carros[carroIndex].viagens[viagemIndex] = {
+        horarioPI: novoPI,
+        horarioPV: novoPV,
+        obs: novaObs || ''
+      };
+      atualizarListaCarros();
+      alert('Viagem editada com sucesso!');
+    }
+    
+    function removerViagem(carroIndex, viagemIndex) {
+      if (confirm('Deseja remover esta viagem?')) {
+        carros[carroIndex].viagens.splice(viagemIndex, 1);
+        atualizarListaCarros();
+      }
+    }
+    
+    function removerCarro(carroIndex) {
+      if (confirm(`Deseja remover o carro ${carros[carroIndex].ordem} e todas as suas viagens?`)) {
+        carros.splice(carroIndex, 1);
+        atualizarListaCarros();
+      }
+    }
+    
+    function atualizarTabelaViagens() {
+      const tbody = document.getElementById('viagensTableBody');
+      document.getElementById('viagensCount').textContent = dadosViagens.length;
+      
+      if (dadosViagens.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Nenhum registro encontrado</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = dadosViagens.map((item, index) => `
+        <tr>
+          <td>${item.ordemCarro}</td>
+          <td>${item.linha}</td>
+          <td>${item.horarioProgramado}</td>
+          <td>${item.horarioPerda}</td>
+          <td>${item.motivo}</td>
+          <td><button style="padding: 5px 10px; background: #ff5050; color: white; border: none; border-radius: 4px; cursor: pointer;" onclick="removerRegistro('viagens', ${index})">❌ Remover</button></td>
+        </tr>
+      `).join('');
+      salvarDados();
+    }
+    
+    function limparFormViagens() {
+      document.getElementById('ordemCarroViagem').value = '';
+      document.getElementById('linhaViagem').value = '';
+      document.getElementById('horarioProgramado').value = '';
+      document.getElementById('horarioPerda').value = '';
+      document.getElementById('motivoPerda').value = '';
+    }
+    
+    function atualizarTabelaTrocas() {
+      const tbody = document.getElementById('trocasTableBody');
+      document.getElementById('trocasCount').textContent = dadosTrocas.length;
+      
+      if (dadosTrocas.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Nenhum registro encontrado</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = dadosTrocas.map((item, index) => `
+        <tr>
+          <td>${item.carroOriginal}</td>
+          <td>${item.carroSubstituto}</td>
+          <td>${item.linha}</td>
+          <td>${item.horario}</td>
+          <td>${item.motivo}</td>
+          <td><button style="padding: 5px 10px; background: #ff5050; color: white; border: none; border-radius: 4px; cursor: pointer;" onclick="removerRegistro('trocas', ${index})">❌ Remover</button></td>
+        </tr>
+      `).join('');
+      salvarDados();
+    }
+    
+    function limparFormTrocas() {
+      document.getElementById('carroOriginal').value = '';
+      document.getElementById('carroSubstituto').value = '';
+      document.getElementById('linhaTroca').value = '';
+      document.getElementById('horarioTroca').value = '';
+      document.getElementById('motivoTroca').value = '';
+    }
+    
+    function removerRegistro(tipo, index) {
+      if (confirm('Deseja remover este registro?')) {
+        if (tipo === 'viagens') {
+          dadosViagens.splice(index, 1);
+          atualizarTabelaViagens();
+        } else if (tipo === 'trocas') {
+          dadosTrocas.splice(index, 1);
+          atualizarTabelaTrocas();
+        }
+        salvarDados();
+      }
+    }
+    
+    document.getElementById('viagensForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const registro = {
+        ordemCarro: document.getElementById('ordemCarroViagem').value,
+        linha: document.getElementById('linhaViagem').value,
+        horarioProgramado: document.getElementById('horarioProgramado').value,
+        horarioPerda: document.getElementById('horarioPerda').value,
+        motivo: document.getElementById('motivoPerda').value,
+        dataRegistro: new Date().toLocaleString('pt-BR')
+      };
+      dadosViagens.push(registro);
+      atualizarTabelaViagens();
+      limparFormViagens();
+      alert('Viagem perdida registrada com sucesso!');
+    });
+    
+    document.getElementById('trocasForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const registro = {
+        carroOriginal: document.getElementById('carroOriginal').value,
+        carroSubstituto: document.getElementById('carroSubstituto').value,
+        linha: document.getElementById('linhaTroca').value,
+        horario: document.getElementById('horarioTroca').value,
+        motivo: document.getElementById('motivoTroca').value,
+        dataRegistro: new Date().toLocaleString('pt-BR')
+      };
+      dadosTrocas.push(registro);
+      atualizarTabelaTrocas();
+      limparFormTrocas();
+      alert('Troca registrada com sucesso!');
+    });
+    
+    // ============ FUNÇÕES DE PDF CORRIGIDAS ============
+    
+    // Gerar PDF da Escala de Carros PI/PV
+    function gerarPDFEscala() {
+      if (carros.length === 0) {
+        alert('⚠️ Não há dados de escala para gerar o relatório!');
+        return;
+      }
+      
+      try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        
+        // Cabeçalho
+        doc.setFontSize(20);
+        doc.setTextColor(0, 100, 80);
+        doc.text('CIDADE REAL', 105, 20, { align: 'center' });
+        
+        doc.setFontSize(14);
+        doc.setTextColor(0, 120, 100);
+        doc.text('RELATÓRIO DE ESCALA DE CARROS PI/PV', 105, 35, { align: 'center' });
+        
+        doc.setFontSize(9);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Data de emissão: ${new Date().toLocaleString('pt-BR')}`, 105, 45, { align: 'center' });
+        
+        let yOffset = 60;
+        
+        // Para cada carro cadastrado
+        for (let i = 0; i < carros.length; i++) {
+          const carro = carros[i];
+          
+          // Verificar se precisa de nova página
+          if (yOffset > 250) {
+            doc.addPage();
+            yOffset = 20;
+          }
+          
+          // Informações do carro
+          doc.setFontSize(11);
+          doc.setTextColor(0, 0, 0);
+          doc.setFont(undefined, 'bold');
+          doc.text(`Carro: ${carro.ordem} | Itinerário: ${carro.itinerario}`, 14, yOffset);
+          yOffset += 6;
+          
+          doc.setFontSize(9);
+          doc.setFont(undefined, 'normal');
+          doc.text(`Motorista: ${carro.motorista} | Matrícula: ${carro.matricula} | Setor: ${carro.setor}`, 14, yOffset);
+          yOffset += 10;
+          
+          // Tabela de viagens
+          if (carro.viagens && carro.viagens.length > 0) {
+            const viagensData = carro.viagens.map((viagem, idx) => [
+              idx + 1,
+              viagem.horarioPI || '---',
+              viagem.horarioPV || '---',
+              viagem.obs || '---'
+            ]);
+            
+            doc.autoTable({
+              startY: yOffset,
+              head: [['#', 'Horário PI', 'Horário PV', 'Observações']],
+              body: viagensData,
+              theme: 'striped',
+              headStyles: { 
+                fillColor: [0, 120, 100], 
+                textColor: [255, 255, 255], 
+                fontStyle: 'bold',
+                fontSize: 9
+              },
+              bodyStyles: { fontSize: 8 },
+              margin: { left: 14, right: 14 },
+              columnStyles: {
+                0: { cellWidth: 15 },
+                1: { cellWidth: 35 },
+                2: { cellWidth: 35 },
+                3: { cellWidth: 'auto' }
+              }
+            });
+            
+            yOffset = doc.lastAutoTable.finalY + 10;
+          } else {
+            doc.setFontSize(9);
+            doc.text('Sem viagens registradas para este carro.', 14, yOffset);
+            yOffset += 10;
+          }
+        }
+        
+        const nomeArquivo = `relatorio_escala_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.pdf`;
+        doc.save(nomeArquivo);
+        alert('✅ PDF da Escala gerado com sucesso!');
+        
+      } catch (error) {
+        console.error('Erro ao gerar PDF:', error);
+        alert('❌ Erro ao gerar o PDF. Tente novamente.');
+      }
+    }
+    
+    // Gerar PDF de Viagens Perdidas
+    function gerarPDFViagens() {
+      if (dadosViagens.length === 0) {
+        alert('⚠️ Não há registros de viagens perdidas para gerar o relatório!');
+        return;
+      }
+      
+      try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+        
+        // Cabeçalho
+        doc.setFontSize(20);
+        doc.setTextColor(0, 100, 80);
+        doc.text('CIDADE REAL', 148, 20, { align: 'center' });
+        
+        doc.setFontSize(14);
+        doc.setTextColor(0, 120, 100);
+        doc.text('RELATÓRIO DE VIAGENS PERDIDAS', 148, 35, { align: 'center' });
+        
+        doc.setFontSize(9);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Data de emissão: ${new Date().toLocaleString('pt-BR')}`, 148, 45, { align: 'center' });
+        
+        // Preparar dados para a tabela
+        const viagensData = dadosViagens.map(item => [
+          item.ordemCarro,
+          item.linha,
+          item.horarioProgramado,
+          item.horarioPerda,
+          item.motivo.length > 50 ? item.motivo.substring(0, 47) + '...' : item.motivo,
+          item.dataRegistro || new Date().toLocaleString('pt-BR')
+        ]);
+        
+        doc.autoTable({
+          startY: 60,
+          head: [['Nº Ordem', 'Linha/Itinerário', 'Horário Programado', 'Horário Perda', 'Motivo', 'Registrado em']],
+          body: viagensData,
+          theme: 'striped',
+          headStyles: { 
+            fillColor: [0, 120, 100], 
+            textColor: [255, 255, 255], 
+            fontStyle: 'bold',
+            fontSize: 9
+          },
+          bodyStyles: { fontSize: 8 },
+          margin: { left: 10, right: 10 },
+          columnStyles: {
+            0: { cellWidth: 20 },
+            1: { cellWidth: 40 },
+            2: { cellWidth: 25 },
+            3: { cellWidth: 25 },
+            4: { cellWidth: 'auto' },
+            5: { cellWidth: 30 }
+          }
+        });
+        
+        const nomeArquivo = `relatorio_viagens_perdidas_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.pdf`;
+        doc.save(nomeArquivo);
+        alert('✅ PDF das Viagens Perdidas gerado com sucesso!');
+        
+      } catch (error) {
+        console.error('Erro ao gerar PDF:', error);
+        alert('❌ Erro ao gerar o PDF. Tente novamente.');
+      }
+    }
+    
+    // Gerar PDF de Trocas de Carros
+    function gerarPDFTrocas() {
+      if (dadosTrocas.length === 0) {
+        alert('⚠️ Não há registros de trocas para gerar o relatório!');
+        return;
+      }
+      
+      try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+        
+        // Cabeçalho
+        doc.setFontSize(20);
+        doc.setTextColor(0, 100, 80);
+        doc.text('CIDADE REAL', 148, 20, { align: 'center' });
+        
+        doc.setFontSize(14);
+        doc.setTextColor(0, 120, 100);
+        doc.text('RELATÓRIO DE TROCAS DE CARROS', 148, 35, { align: 'center' });
+        
+        doc.setFontSize(9);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Data de emissão: ${new Date().toLocaleString('pt-BR')}`, 148, 45, { align: 'center' });
+        
+        // Preparar dados para a tabela
+        const trocasData = dadosTrocas.map(item => [
+          item.carroOriginal,
+          item.carroSubstituto,
+          item.linha,
+          item.horario,
+          item.motivo.length > 50 ? item.motivo.substring(0, 47) + '...' : item.motivo,
+          item.dataRegistro || new Date().toLocaleString('pt-BR')
+        ]);
+        
+        doc.autoTable({
+          startY: 60,
+          head: [['Carro Original', 'Carro Substituto', 'Linha/Itinerário', 'Horário', 'Motivo', 'Registrado em']],
+          body: trocasData,
+          theme: 'striped',
+          headStyles: { 
+            fillColor: [0, 120, 100], 
+            textColor: [255, 255, 255], 
+            fontStyle: 'bold',
+            fontSize: 9
+          },
+          bodyStyles: { fontSize: 8 },
+          margin: { left: 10, right: 10 },
+          columnStyles: {
+            0: { cellWidth: 25 },
+            1: { cellWidth: 25 },
+            2: { cellWidth: 40 },
+            3: { cellWidth: 20 },
+            4: { cellWidth: 'auto' },
+            5: { cellWidth: 30 }
+          }
+        });
+        
+        const nomeArquivo = `relatorio_trocas_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.pdf`;
+        doc.save(nomeArquivo);
+        alert('✅ PDF das Trocas gerado com sucesso!');
+        
+      } catch (error) {
+        console.error('Erro ao gerar PDF:', error);
+        alert('❌ Erro ao gerar o PDF. Tente novamente.');
+      }
+    }
+    
+    // Gerar PDF Completo
+    function gerarPDFCompleto() {
+      const totalViagens = carros.reduce((sum, c) => sum + (c.viagens ? c.viagens.length : 0), 0);
+      
+      if (carros.length === 0 && dadosViagens.length === 0 && dadosTrocas.length === 0) {
+        alert('⚠️ Não há dados para gerar o relatório completo!');
+        return;
+      }
+      
+      try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        
+        // Cabeçalho
+        doc.setFontSize(22);
+        doc.setTextColor(0, 100, 80);
+        doc.text('CIDADE REAL', 105, 20, { align: 'center' });
+        
+        doc.setFontSize(16);
+        doc.setTextColor(0, 120, 100);
+        doc.text('RELATÓRIO COMPLETO DE FISCALIZAÇÃO', 105, 35, { align: 'center' });
+        
+        doc.setFontSize(10);
+        doc.setTextColor(100, 100, 100);
+        doc.text(`Data de emissão: ${new Date().toLocaleString('pt-BR')}`, 105, 45, { align: 'center' });
+        
+        // Resumo estatístico
+        doc.setFontSize(11);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`Resumo Geral:`, 14, 60);
+        doc.setFontSize(9);
+        doc.text(`• Total de carros cadastrados: ${carros.length}`, 20, 68);
+        doc.text(`• Total de viagens registradas: ${totalViagens}`, 20, 74);
+        doc.text(`• Total de viagens perdidas: ${dadosViagens.length}`, 20, 80);
+        doc.text(`• Total de trocas de carros: ${dadosTrocas.length}`, 20, 86);
+        
+        let yOffset = 95;
+        
+        // Seção 1: Escala de Carros
+        if (carros.length > 0) {
+          if (yOffset > 250) {
+            doc.addPage();
+            yOffset = 20;
+          }
+          
+          doc.setFontSize(12);
+          doc.setTextColor(0, 120, 100);
+          doc.setFont(undefined, 'bold');
+          doc.text('1. ESCALA DE CARROS PI/PV', 14, yOffset);
+          yOffset += 10;
+          
+          for (const carro of carros) {
+            if (yOffset > 260) {
+              doc.addPage();
+              yOffset = 20;
+            }
+            
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.setFont(undefined, 'bold');
+            doc.text(`Carro: ${carro.ordem} | Itinerário: ${carro.itinerario}`, 14, yOffset);
+            yOffset += 6;
+            
+            doc.setFontSize(8);
+            doc.setFont(undefined, 'normal');
+            doc.text(`Motorista: ${carro.motorista} | Matrícula: ${carro.matricula} | Setor: ${carro.setor}`, 14, yOffset);
+            yOffset += 8;
+            
+            if (carro.viagens && carro.viagens.length > 0) {
+              const viagensData = carro.viagens.map((viagem, idx) => [
+                idx + 1,
+                viagem.horarioPI || '---',
+                viagem.horarioPV || '---',
+                viagem.obs || '---'
+              ]);
+              
+              doc.autoTable({
+                startY: yOffset,
+                head: [['#', 'Horário PI', 'Horário PV', 'Observações']],
+                body: viagensData,
+                theme: 'striped',
+                headStyles: { fillColor: [0, 120, 100], textColor: [255, 255, 255], fontSize: 8 },
+                bodyStyles: { fontSize: 7 },
+                margin: { left: 14, right: 14 }
+              });
+              
+              yOffset = doc.lastAutoTable.finalY + 8;
+            } else {
+              doc.text('Sem viagens registradas.', 14, yOffset);
+              yOffset += 8;
+            }
+            yOffset += 5;
+          }
+          yOffset += 5;
+        }
+        
+        // Seção 2: Viagens Perdidas
+        if (dadosViagens.length > 0) {
+          if (yOffset > 250) {
+            doc.addPage();
+            yOffset = 20;
+          }
+          
+          doc.setFontSize(12);
+          doc.setTextColor(0, 120, 100);
+          doc.setFont(undefined, 'bold');
+          doc.text('2. VIAGENS PERDIDAS', 14, yOffset);
+          yOffset += 10;
+          
+          const viagensData = dadosViagens.map(item => [
+            item.ordemCarro,
+            item.linha,
+            item.horarioProgramado,
+            item.horarioPerda,
+            item.motivo.length > 40 ? item.motivo.substring(0, 37) + '...' : item.motivo
+          ]);
+          
+          doc.autoTable({
+            startY: yOffset,
+            head: [['Nº Ordem', 'Linha/Itinerário', 'H. Programado', 'H. Perda', 'Motivo']],
+            body: viagensData,
+            theme: 'striped',
+            headStyles: { fillColor: [0, 120, 100], textColor: [255, 255, 255], fontSize: 8 },
+            bodyStyles: { fontSize: 7 },
+            margin: { left: 14, right: 14 }
+          });
+          
+          yOffset = doc.lastAutoTable.finalY + 10;
+        }
+        
+        // Seção 3: Trocas
+        if (dadosTrocas.length > 0) {
+          if (yOffset > 250) {
+            doc.addPage();
+            yOffset = 20;
+          }
+          
+          doc.setFontSize(12);
+          doc.setTextColor(0, 120, 100);
+          doc.setFont(undefined, 'bold');
+          doc.text('3. TROCAS DE CARROS', 14, yOffset);
+          yOffset += 10;
+          
+          const trocasData = dadosTrocas.map(item => [
+            item.carroOriginal,
+            item.carroSubstituto,
+            item.linha,
+            item.horario,
+            item.motivo.length > 40 ? item.motivo.substring(0, 37) + '...' : item.motivo
+          ]);
+          
+          doc.autoTable({
+            startY: yOffset,
+            head: [['Carro Original', 'Carro Substituto', 'Linha/Itinerário', 'Horário', 'Motivo']],
+            body: trocasData,
+            theme: 'striped',
+            headStyles: { fillColor: [0, 120, 100], textColor: [255, 255, 255], fontSize: 8 },
+            bodyStyles: { fontSize: 7 },
+            margin: { left: 14, right: 14 }
+          });
+        }
+        
+        const nomeArquivo = `relatorio_completo_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.pdf`;
+        doc.save(nomeArquivo);
+        alert('✅ Relatório completo gerado com sucesso!');
+        
+      } catch (error) {
+        console.error('Erro ao gerar PDF:', error);
+        alert('❌ Erro ao gerar o PDF completo. Tente novamente.');
+      }
+    }
+    
+    // Eventos dos botões de PDF
+    document.getElementById('gerarPDFEscala').addEventListener('click', gerarPDFEscala);
+    document.getElementById('gerarPDFViagens').addEventListener('click', gerarPDFViagens);
+    document.getElementById('gerarPDFTrocas').addEventListener('click', gerarPDFTrocas);
+    document.getElementById('gerarPDFCompleto').addEventListener('click', gerarPDFCompleto);
+    
+    function apagarTodosDados() {
+      if (confirm('⚠️ ATENÇÃO: Isso apagará TODOS os registros (escalas, viagens perdidas e trocas)! Confirmar ação?')) {
+        carros = [];
+        dadosViagens = [];
+        dadosTrocas = [];
+        atualizarListaCarros();
+        atualizarTabelaViagens();
+        atualizarTabelaTrocas();
+        salvarDados();
+        alert('✅ Todos os dados foram apagados com sucesso!');
+      }
+    }
+    
+    function sairSistema() {
+      if (confirm("Deseja realmente sair e voltar para a tela de login?")) {
+        window.location.href = "login.html";
+      }
+    }
+    
+    // Inicializar
+    carregarDadosSalvos();
+  </script>
+  <footer style="text-align: center; padding: 15px; font-size: 12px; color: #666; border-top: 1px solid #e0e0e0; margin-top: 30px;">
+  <p>🚀 Sistema desenvolvido por <strong>Tiago Gazzoni Tagliabui</strong> | © 2026 - TgT Análise Desenvolvimento de Sistemas</p>
+  <p style="font-size: 10px; margin-top: 5px;">Versão 1.0 | Todos os direitos reservados</p>
+</footer>
+</body>
+</html>
