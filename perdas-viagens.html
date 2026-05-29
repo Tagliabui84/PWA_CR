@@ -5,78 +5,142 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#4caf50" />
   <link rel="manifest" href="manifest.json" />
-
   <title>Perdas de Viagens - Cidade Real</title>
   <link rel="stylesheet" href="styles.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-
   <header><h1>Cidade Real • Perdas de Viagens</h1></header>
-
   <div class="container">
     <section class="screen">
       <h1>Registro de Perdas de Viagens</h1>
-
       <form id="perdasForm">
         <input type="text" id="linha" placeholder="Linha / Descrição" required />
         <input type="text" id="carro" placeholder="Nº de Ordem do Carro" required />
         <input type="text" id="motorista" placeholder="Nome do Motorista" required />
         <input type="time" id="horario" required />
         <textarea id="motivo" placeholder="Motivo da perda de viagem" rows="4" required></textarea>
-
         <button type="button" onclick="salvarPerda()" class="btn">Registrar Perda</button>
         <button type="button" onclick="gerarPDFPerdas()" class="btn">Gerar PDF das Perdas</button>
       </form>
+      <div id="listaPerdas" style="margin-top: 30px;"></div>
     </section>
   </div>
-
   <nav class="nav-bottom">
-    <button class="nav-btn" onclick="window.history.back()">← Voltar</button>
+    <button class="nav-btn" onclick="voltarPagina()">← Voltar</button>
     <button class="nav-btn" onclick="sairSistema()">🚪 Sair</button>
   </nav>
-
-<script>
-  let perdas = [];
-
-  function salvarPerda() {
-    const perda = {
-      linha: document.getElementById('linha').value,
-      carro: document.getElementById('carro').value,
-      motorista: document.getElementById('motorista').value,
-      horario: document.getElementById('horario').value,
-      motivo: document.getElementById('motivo').value,
-      data: new Date().toLocaleString('pt-BR')
-    };
-    perdas.push(perda);
-    alert("✅ Perda registrada com sucesso!");
-    document.getElementById('perdasForm').reset();
-  }
-
-  function gerarPDFPerdas() {
-    if (perdas.length === 0) return alert("Nenhuma perda registrada.");
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    doc.text("Relatório de Perdas de Viagens", 20, 20);
-    // ... (mesmo código anterior)
-    doc.save("Perdas_Viagens.pdf");
-  }
-
- function sairSistema() {
-    if (confirm("Deseja realmente sair?")) {
+  <script>
+    let perdas = [];
+    
+    function carregarPerdas() {
+      const salvas = localStorage.getItem('perdas_viagens');
+      if (salvas) {
+        perdas = JSON.parse(salvas);
+        atualizarLista();
+      }
+    }
+    
+    function salvarPerdas() {
+      localStorage.setItem('perdas_viagens', JSON.stringify(perdas));
+    }
+    
+    function atualizarLista() {
+      const container = document.getElementById('listaPerdas');
+      if (perdas.length === 0) {
+        container.innerHTML = '<p style="text-align:center;">Nenhuma perda registrada.</p>';
+        return;
+      }
+      container.innerHTML = perdas.map((p, i) => `
+        <div class="card-item">
+          <strong>🚌 Carro: ${p.carro}</strong><br/>
+          📍 Linha: ${p.linha}<br/>
+          👨‍✈️ Motorista: ${p.motorista}<br/>
+          ⏰ Horário: ${p.horario}<br/>
+          📝 Motivo: ${p.motivo}<br/>
+          📅 Data: ${p.data}<br/>
+          <button class="btn-small" onclick="removerPerda(${i})" style="margin-top:10px;background:#ff5050;color:white;border:none;padding:5px10px;border-radius:6px;">🗑️ Remover</button>
+        </div>
+      `).join('');
+    }
+    
+    function removerPerda(index) {
+      if (confirm('Remover esta perda?')) {
+        perdas.splice(index, 1);
+        salvarPerdas();
+        atualizarLista();
+        alert('Perda removida!');
+      }
+    }
+    
+    function salvarPerda() {
+      const perda = {
+        linha: document.getElementById('linha').value,
+        carro: document.getElementById('carro').value,
+        motorista: document.getElementById('motorista').value,
+        horario: document.getElementById('horario').value,
+        motivo: document.getElementById('motivo').value,
+        data: new Date().toLocaleString('pt-BR')
+      };
+      
+      if (!perda.linha || !perda.carro || !perda.motorista || !perda.horario || !perda.motivo) {
+        alert('Preencha todos os campos!');
+        return;
+      }
+      
+      perdas.push(perda);
+      salvarPerdas();
+      atualizarLista();
+      alert("✅ Perda registrada com sucesso!");
+      document.getElementById('perdasForm').reset();
+    }
+    
+    function gerarPDFPerdas() {
+      if (perdas.length === 0) {
+        alert("Nenhuma perda registrada.");
+        return;
+      }
+      
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      let y = 20;
+      
+      doc.setFontSize(16);
+      doc.text("Relatório de Perdas de Viagens", 105, y, { align: 'center' });
+      y += 15;
+      
+      perdas.forEach((p, i) => {
+        if (y > 270) { doc.addPage(); y = 20; }
+        doc.setFontSize(10);
+        doc.text(`${i+1}. Carro: ${p.carro} - ${p.linha}`, 20, y);
+        y += 6;
+        doc.text(`   Motorista: ${p.motorista} - Horário: ${p.horario}`, 25, y);
+        y += 6;
+        doc.text(`   Motivo: ${p.motivo.substring(0, 80)}`, 25, y);
+        y += 6;
+        doc.text(`   Data: ${p.data}`, 25, y);
+        y += 10;
+      });
+      
+      doc.save(`Perdas_Viagens_${new Date().toISOString().slice(0,10)}.pdf`);
+      alert("✅ PDF gerado com sucesso!");
+    }
+    
+    function voltarPagina() {
+      window.history.back();
+    }
+    
+    function sairSistema() {
+      if (confirm("Deseja realmente sair?")) {
         sessionStorage.clear();
         window.location.href = "index.html";
+      }
     }
-}
-
-function voltarLogin() {
-    sessionStorage.clear();
-    window.location.href = "index.html";
-}
-</script>
-<footer style="text-align: center; padding: 15px; font-size: 12px; color: #666; border-top: 1px solid #e0e0e0; margin-top: 30px;">
-  <p>🚀 Sistema desenvolvido por <strong>Tiago Gazzoni Tagliabui</strong> | © 2026 - TgT Análise Desenvolvimento de Sistemas</p>
-  <p style="font-size: 10px; margin-top: 5px;">Versão 1.0 | Todos os direitos reservados</p>
-</footer>
+    
+    carregarPerdas();
+  </script>
+  <footer style="text-align: center; padding: 15px; font-size: 12px; color: #666; border-top: 1px solid #e0e0e0; margin-top: 30px;">
+    <p>🚀 Sistema desenvolvido por <strong>Tiago Gazzoni Tagliabui</strong> | © 2026 - TgT Análise Desenvolvimento de Sistemas</p>
+  </footer>
 </body>
 </html>
