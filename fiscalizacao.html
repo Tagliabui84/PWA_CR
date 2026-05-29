@@ -42,11 +42,38 @@
             <div class="form-group">
               <label>Nº Ordem do Carro:</label>
               <input type="text" id="novoOrdemCarro" required placeholder="Ex: 001, 002, 1050...">
+              
             </div>
             <div class="form-group">
               <label>Itinerário:</label>
-              <input type="text" id="novoItinerario" required placeholder="Ex: 001.1, 002.2, 100.0...">
-            </div>
+              <select type="text" id="novoItinerario" required placeholder="Ex: 001.1, 002.2, 100.0...">
+              <option value=" "></option>
+              <option value="124.2.1">124.2.1</option>
+              <option value="172.2.1">172.2.1</option>
+              <option value="172.2.2">172.2.2</option>
+              <option value="172.2.3">172.2.3</option>
+              <option value="172.2.4">172.2.4</option>
+              <option value="173.2.1">173.2.1</option>
+              <option value="174.2.1">174.2.1</option>
+              <option value="175.2.1">175.2.1</option>
+              <option value="176.2.1">176.2.1</option>
+              <option value="176.2.2">176.2.2</option>
+              <option value="178.2.1">178.2.1</option>
+              <option value="178.2.2">178.2.2</option>
+              <option value="179.2.1">179.2.1</option>
+              <option value="181.2.1">181.2.1</option>
+              <option value="182.2.2">182.2.2</option>
+              <option value="183.2.3">183.2.3</option>
+              <option value="184.2.1">184.2.1</option>
+              <option value="185.2.2">185.2.2</option>
+              <option value="187.2.1">187.2.1</option>
+              <option value="188.2.1">188.2.1</option>
+              <option value="189.2.2">189.2.1</option>
+              <option value="192.2.1">192.2.1</option>
+              <option value="193.2.2">193.2.2</option>
+              <option value="195.2.1">195.2.1</option>
+            </select> 
+              </div>
           </div>
           <div class="form-row">
             <div class="form-group">
@@ -62,11 +89,11 @@
             <label>Setor de Operação:</label>
             <select id="novoSetor" required style="width: 100%; padding: 14px 16px; border-radius: 12px; border: 2px solid #e0e0e0;">
               <option value="">Selecione o setor...</option>
-              <option value="Centro">Pça Rui Barbosa</option>
-              <option value="Zona Norte">Paulo Barbosa</option>
-              <option value="Zona Sul">Eril</option>
-              <option value="Zona Leste">Eril-Corredor</option>
-              <option value="Zona Oeste">Bingen</option>
+              <option value="Pça Rui Barbosa">Pça Rui Barbosa</option>
+              <option value="Paulo Barbosa">Paulo Barbosa</option>
+              <option value="Eril">Eril</option>
+              <option value="Eril Corredor">Eril-Corredor</option>
+              <option value="Bingen">Bingen</option>
             </select>
           </div>
           <button type="submit" class="btn">➕ Cadastrar Carro</button>
@@ -222,7 +249,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
-
   <script>
     // Estrutura de dados
     let carros = [];
@@ -252,6 +278,13 @@
 
     function voltarPagina() {
       window.history.back();
+    }
+
+    function sairSistema() {
+      if (confirm("Deseja realmente sair do sistema?")) {
+        sessionStorage.clear();
+        window.location.href = 'index.html';
+      }
     }
 
     // Função para mostrar a seção ativa
@@ -299,6 +332,7 @@
               <span>🚌 Carro: ${carro.ordem}</span>
               <span>📍 Itinerário: ${carro.itinerario}</span>
               <span>👨‍✈️ Motorista: ${carro.motorista}</span>
+              <span>🏭 Setor: ${carro.setor}</span>
               <span>⏰ ${carro.viagens.length} viagens</span>
             </div>
             <div style="display: flex; gap: 10px;">
@@ -378,6 +412,7 @@
         motorista: motorista,
         matricula: matricula,
         setor: setor,
+        dataRegistro: new Date().toISOString(),
         viagens: []
       });
       
@@ -545,9 +580,8 @@
       alert('Troca registrada com sucesso!');
     });
     
-    // ============ FUNÇÕES DE PDF CORRIGIDAS ============
+    // ============ FUNÇÕES DE PDF CORRIGIDAS COM SETOR ============
     
-    // Gerar PDF da Escala de Carros PI/PV
     function gerarPDFEscala() {
       if (carros.length === 0) {
         alert('⚠️ Não há dados de escala para gerar o relatório!');
@@ -558,7 +592,6 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
         
-        // Cabeçalho
         doc.setFontSize(20);
         doc.setTextColor(0, 100, 80);
         doc.text('CIDADE REAL', 105, 20, { align: 'center' });
@@ -573,17 +606,14 @@
         
         let yOffset = 60;
         
-        // Para cada carro cadastrado
         for (let i = 0; i < carros.length; i++) {
           const carro = carros[i];
           
-          // Verificar se precisa de nova página
           if (yOffset > 250) {
             doc.addPage();
             yOffset = 20;
           }
           
-          // Informações do carro
           doc.setFontSize(11);
           doc.setTextColor(0, 0, 0);
           doc.setFont(undefined, 'bold');
@@ -595,7 +625,6 @@
           doc.text(`Motorista: ${carro.motorista} | Matrícula: ${carro.matricula} | Setor: ${carro.setor}`, 14, yOffset);
           yOffset += 10;
           
-          // Tabela de viagens
           if (carro.viagens && carro.viagens.length > 0) {
             const viagensData = carro.viagens.map((viagem, idx) => [
               idx + 1,
@@ -643,7 +672,6 @@
       }
     }
     
-    // Gerar PDF de Viagens Perdidas
     function gerarPDFViagens() {
       if (dadosViagens.length === 0) {
         alert('⚠️ Não há registros de viagens perdidas para gerar o relatório!');
@@ -654,7 +682,6 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
         
-        // Cabeçalho
         doc.setFontSize(20);
         doc.setTextColor(0, 100, 80);
         doc.text('CIDADE REAL', 148, 20, { align: 'center' });
@@ -667,7 +694,6 @@
         doc.setTextColor(100, 100, 100);
         doc.text(`Data de emissão: ${new Date().toLocaleString('pt-BR')}`, 148, 45, { align: 'center' });
         
-        // Preparar dados para a tabela
         const viagensData = dadosViagens.map(item => [
           item.ordemCarro,
           item.linha,
@@ -710,7 +736,6 @@
       }
     }
     
-    // Gerar PDF de Trocas de Carros
     function gerarPDFTrocas() {
       if (dadosTrocas.length === 0) {
         alert('⚠️ Não há registros de trocas para gerar o relatório!');
@@ -721,7 +746,6 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
         
-        // Cabeçalho
         doc.setFontSize(20);
         doc.setTextColor(0, 100, 80);
         doc.text('CIDADE REAL', 148, 20, { align: 'center' });
@@ -734,7 +758,6 @@
         doc.setTextColor(100, 100, 100);
         doc.text(`Data de emissão: ${new Date().toLocaleString('pt-BR')}`, 148, 45, { align: 'center' });
         
-        // Preparar dados para a tabela
         const trocasData = dadosTrocas.map(item => [
           item.carroOriginal,
           item.carroSubstituto,
@@ -777,7 +800,6 @@
       }
     }
     
-    // Gerar PDF Completo
     function gerarPDFCompleto() {
       const totalViagens = carros.reduce((sum, c) => sum + (c.viagens ? c.viagens.length : 0), 0);
       
@@ -790,7 +812,6 @@
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
         
-        // Cabeçalho
         doc.setFontSize(22);
         doc.setTextColor(0, 100, 80);
         doc.text('CIDADE REAL', 105, 20, { align: 'center' });
@@ -803,7 +824,6 @@
         doc.setTextColor(100, 100, 100);
         doc.text(`Data de emissão: ${new Date().toLocaleString('pt-BR')}`, 105, 45, { align: 'center' });
         
-        // Resumo estatístico
         doc.setFontSize(11);
         doc.setTextColor(0, 0, 0);
         doc.text(`Resumo Geral:`, 14, 60);
@@ -815,7 +835,6 @@
         
         let yOffset = 95;
         
-        // Seção 1: Escala de Carros
         if (carros.length > 0) {
           if (yOffset > 250) {
             doc.addPage();
@@ -873,7 +892,6 @@
           yOffset += 5;
         }
         
-        // Seção 2: Viagens Perdidas
         if (dadosViagens.length > 0) {
           if (yOffset > 250) {
             doc.addPage();
@@ -907,7 +925,6 @@
           yOffset = doc.lastAutoTable.finalY + 10;
         }
         
-        // Seção 3: Trocas
         if (dadosTrocas.length > 0) {
           if (yOffset > 250) {
             doc.addPage();
@@ -968,24 +985,12 @@
       }
     }
     
-    function sairSistema() {
-    if (confirm("Deseja realmente sair?")) {
-        sessionStorage.clear();
-        window.location.href = "index.html";
-    }
-}
-
-function voltarLogin() {
-    sessionStorage.clear();
-    window.location.href = "index.html";
-}
-    
     // Inicializar
     carregarDadosSalvos();
   </script>
   <footer style="text-align: center; padding: 15px; font-size: 12px; color: #666; border-top: 1px solid #e0e0e0; margin-top: 30px;">
-  <p>🚀 Sistema desenvolvido por <strong>Tiago Gazzoni Tagliabui</strong> | © 2026 - TgT Análise Desenvolvimento de Sistemas</p>
-  <p style="font-size: 10px; margin-top: 5px;">Versão 1.0 | Todos os direitos reservados</p>
-</footer>
+    <p>🚀 Sistema desenvolvido por <strong>Tiago Gazzoni Tagliabui</strong> | © 2026 - TgT Análise Desenvolvimento de Sistemas</p>
+    <p style="font-size: 10px; margin-top: 5px;">Versão 1.0 | Todos os direitos reservados</p>
+  </footer>
 </body>
 </html>
