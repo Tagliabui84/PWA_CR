@@ -5,58 +5,155 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#4caf50" />
   <link rel="manifest" href="manifest.json" />
-
   <title>Relatórios - Cidade Real</title>
   <link rel="stylesheet" href="styles.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-
   <header><h1>Cidade Real • Relatórios</h1></header>
-
   <div class="container">
     <section class="screen">
       <h1>Relatórios</h1>
       <p>Gerencie e exporte relatórios em PDF</p>
-
       <div class="menu-grid">
-        <button onclick="gerarRelatorio('Geral')" class="btn">📊 Relatório Geral</button>
-        <button onclick="gerarRelatorio('Fiscalização')" class="btn">📋 Relatório de Fiscalização</button>
-        <button onclick="gerarRelatorio('Perdas')" class="btn">📉 Relatório de Perdas</button>
+        <button onclick="gerarRelatorioGeral()" class="btn">📊 Relatório Geral</button>
+        <button onclick="gerarRelatorioFiscalizacao()" class="btn">📋 Relatório de Fiscalização</button>
+        <button onclick="gerarRelatorioPerdas()" class="btn">📉 Relatório de Perdas</button>
+        <button onclick="gerarRelatorioOcorrencias()" class="btn">📝 Relatório de Ocorrências</button>
       </div>
     </section>
   </div>
-
   <nav class="nav-bottom">
-    <button class="nav-btn" onclick="window.history.back()">← Voltar</button>
+    <button class="nav-btn" onclick="voltarPagina()">← Voltar</button>
     <button class="nav-btn" onclick="sairSistema()">🚪 Sair</button>
   </nav>
-
-<script>
-  function gerarRelatorio(tipo) {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    doc.setFontSize(18);
-    doc.text(`Relatório ${tipo}`, 20, 30);
-    doc.save(`Relatorio_${tipo}.pdf`);
-    alert("✅ Relatório gerado!");
-  }
-
- function sairSistema() {
-    if (confirm("Deseja realmente sair?")) {
+  <script>
+    function gerarRelatorioGeral() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFontSize(18);
+      doc.text('Relatório Geral do Sistema', 105, 30, { align: 'center' });
+      doc.setFontSize(10);
+      doc.text(`Data: ${new Date().toLocaleString('pt-BR')}`, 105, 40, { align: 'center' });
+      
+      let y = 60;
+      const dados = {
+        carros: localStorage.getItem('fiscalizacao_carros'),
+        viagens: localStorage.getItem('fiscalizacao_viagens'),
+        trocas: localStorage.getItem('fiscalizacao_trocas'),
+        ocorrencias: localStorage.getItem('ocorrencias_completas')
+      };
+      
+      doc.text(`Carros cadastrados: ${dados.carros ? JSON.parse(dados.carros).length : 0}`, 20, y); y += 8;
+      doc.text(`Viagens perdidas: ${dados.viagens ? JSON.parse(dados.viagens).length : 0}`, 20, y); y += 8;
+      doc.text(`Trocas registradas: ${dados.trocas ? JSON.parse(dados.trocas).length : 0}`, 20, y); y += 8;
+      doc.text(`Ocorrências: ${dados.ocorrencias ? JSON.parse(dados.ocorrencias).length : 0}`, 20, y);
+      
+      doc.save(`Relatorio_Geral_${new Date().toISOString().slice(0,10)}.pdf`);
+      alert("✅ Relatório geral gerado!");
+    }
+    
+    function gerarRelatorioFiscalizacao() {
+      const carros = JSON.parse(localStorage.getItem('fiscalizacao_carros') || '[]');
+      const viagens = JSON.parse(localStorage.getItem('fiscalizacao_viagens') || '[]');
+      
+      if (carros.length === 0 && viagens.length === 0) {
+        alert('Nenhum dado de fiscalização encontrado!');
+        return;
+      }
+      
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text('Relatório de Fiscalização', 105, 25, { align: 'center' });
+      doc.text(`Data: ${new Date().toLocaleString('pt-BR')}`, 105, 35, { align: 'center' });
+      
+      let y = 50;
+      doc.setFontSize(12);
+      doc.text(`Carros na escala: ${carros.length}`, 20, y); y += 10;
+      doc.text(`Viagens perdidas: ${viagens.length}`, 20, y);
+      
+      doc.save(`Relatorio_Fiscalizacao_${new Date().toISOString().slice(0,10)}.pdf`);
+      alert("✅ Relatório de fiscalização gerado!");
+    }
+    
+    function gerarRelatorioPerdas() {
+      const perdas = JSON.parse(localStorage.getItem('perdas_viagens') || '[]');
+      if (perdas.length === 0) {
+        alert('Nenhuma perda registrada!');
+        return;
+      }
+      
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      let y = 20;
+      
+      doc.setFontSize(16);
+      doc.text('Relatório de Perdas de Viagens', 105, y, { align: 'center' });
+      y += 15;
+      
+      perdas.forEach((p, i) => {
+        if (y > 270) { doc.addPage(); y = 20; }
+        doc.setFontSize(10);
+        doc.text(`${i+1}. Carro: ${p.carro} - ${p.linha}`, 20, y);
+        y += 6;
+        doc.text(`   Motorista: ${p.motorista} - ${p.horario}`, 25, y);
+        y += 6;
+        doc.text(`   Motivo: ${p.motivo.substring(0, 60)}`, 25, y);
+        y += 10;
+      });
+      
+      doc.save(`Relatorio_Perdas_${new Date().toISOString().slice(0,10)}.pdf`);
+      alert("✅ Relatório de perdas gerado!");
+    }
+    
+    function gerarRelatorioOcorrencias() {
+      const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias_completas') || '[]');
+      if (ocorrencias.length === 0) {
+        alert('Nenhuma ocorrência registrada!');
+        return;
+      }
+      
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'landscape' });
+      
+      doc.setFontSize(16);
+      doc.text('Relatório de Ocorrências', 148, 20, { align: 'center' });
+      doc.text(`Total: ${ocorrencias.length} ocorrências`, 148, 30, { align: 'center' });
+      
+      const data = ocorrencias.map(o => [
+        o.nroDBO || 'N/A',
+        o.nomeMotorista,
+        o.dataOcorrencia,
+        o.localOcorrencia,
+        o.ordemCarro
+      ]);
+      
+      doc.autoTable({
+        startY: 40,
+        head: [['DBO', 'Motorista', 'Data', 'Local', 'Carro']],
+        body: data,
+        theme: 'striped',
+        headStyles: { fillColor: [0, 150, 100] }
+      });
+      
+      doc.save(`Relatorio_Ocorrencias_${new Date().toISOString().slice(0,10)}.pdf`);
+      alert("✅ Relatório de ocorrências gerado!");
+    }
+    
+    function voltarPagina() {
+      window.history.back();
+    }
+    
+    function sairSistema() {
+      if (confirm("Deseja realmente sair?")) {
         sessionStorage.clear();
         window.location.href = "index.html";
+      }
     }
-}
-
-function voltarLogin() {
-    sessionStorage.clear();
-    window.location.href = "index.html";
-}
-</script>
-<footer style="text-align: center; padding: 15px; font-size: 12px; color: #666; border-top: 1px solid #e0e0e0; margin-top: 30px;">
-  <p>🚀 Sistema desenvolvido por <strong>Tiago Gazzoni Tagliabui</strong> | © 2026 - TgT Análise Desenvolvimento de Sistemas</p>
-  <p style="font-size: 10px; margin-top: 5px;">Versão 1.0 | Todos os direitos reservados</p>
-</footer>
+  </script>
+  <footer style="text-align: center; padding: 15px; font-size: 12px; color: #666; border-top: 1px solid #e0e0e0; margin-top: 30px;">
+    <p>🚀 Sistema desenvolvido por <strong>Tiago Gazzoni Tagliabui</strong> | © 2026 - TgT Análise Desenvolvimento de Sistemas</p>
+  </footer>
 </body>
 </html>
