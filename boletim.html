@@ -5,44 +5,467 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#4caf50" />
   <link rel="manifest" href="manifest.json" />
-
   <title>Boletim - Cidade Real</title>
   <link rel="stylesheet" href="styles.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    .filtros-boletim {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .filtros-boletim input {
+      flex: 1;
+      min-width: 150px;
+      margin-bottom: 0;
+    }
+    .boletim-item {
+      background: #f8f8f8;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-left: 4px solid #ffaa33;
+      transition: all 0.3s ease;
+    }
+    .boletim-item:hover {
+      background: #f0f5f0;
+      transform: translateX(5px);
+    }
+    .stats-boletim-page {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 12px;
+      margin-top: 10px;
+      background: linear-gradient(135deg, #ff5050, #cc3333);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn-print {
+      background: linear-gradient(135deg, #00aa55, #008844);
+    }
+  </style>
 </head>
 <body>
 
-  <header><h1>Cidade Real • Boletim de Ocorrências</h1></header>
+<header><h1>Cidade Real • Boletim de Ocorrências</h1></header>
 
-  <div class="container">
-    <section class="screen">
-      <h1>Boletim de Ocorrências</h1>
-      <input type="text" id="tipo" placeholder="Tipo de Ocorrência" />
-      <input type="text" id="local" placeholder="Local / Linha" />
-      <textarea id="desc" placeholder="Descrição da ocorrência" rows="5"></textarea>
-      
-      <button onclick="registrar()" class="btn">Registrar Ocorrência</button>
-      <button onclick="gerarPDF()" class="btn">Gerar PDF</button>
-    </section>
-  </div>
+<div class="container">
+  <section class="screen">
+    <h1>📋 Boletim de Ocorrências</h1>
+    
+    <!-- Formulário de Registro -->
+    <div class="form-card" style="background: #f8f8f8; padding: 20px; border-radius: 16px; margin-bottom: 30px;">
+      <h3>➕ Registrar Nova Ocorrência</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tipo de Ocorrência</label>
+          <input type="text" id="tipo" placeholder="Ex: Acidente, Falha Mecânica, Assalto..." />
+        </div>
+        <div class="form-group">
+          <label>Local / Linha</label>
+          <input type="text" id="local" placeholder="Ex: Av. Brasil, Linha 001..." />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Descrição da Ocorrência</label>
+        <textarea id="desc" placeholder="Descreva detalhadamente a ocorrência..." rows="5"></textarea>
+      </div>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button onclick="registrar()" class="btn">✅ Registrar Ocorrência</button>
+        <button onclick="limparFormulario()" class="btn btn-warning">🗑️ Limpar</button>
+      </div>
+    </div>
+    
+    <!-- Estatísticas -->
+    <div class="stats-boletim-page">
+      <div class="stat-card-boletim">
+        <div class="stat-number" id="totalBoletins">0</div>
+        <div class="stat-label">Total de Ocorrências</div>
+      </div>
+      <div class="stat-card-boletim">
+        <div class="stat-number" id="boletinsMes">0</div>
+        <div class="stat-label">Este Mês</div>
+      </div>
+      <div class="stat-card-boletim">
+        <div class="stat-number" id="boletinsHoje">0</div>
+        <div class="stat-label">Hoje</div>
+      </div>
+    </div>
+    
+    <!-- Filtros -->
+    <div class="filtros-boletim">
+      <input type="text" id="filtroTipo" placeholder="🔍 Filtrar por tipo..." />
+      <input type="text" id="filtroLocal" placeholder="🔍 Filtrar por local..." />
+      <button class="btn btn-filtrar" onclick="filtrarBoletins()">🔍 Filtrar</button>
+      <button class="btn btn-filtrar" onclick="limparFiltrosBoletins()">🗑️ Limpar</button>
+    </div>
+    
+    <!-- Botões de Ação -->
+    <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+      <button onclick="gerarPDF()" class="btn">📄 Gerar PDF Completo</button>
+      <button onclick="gerarPDFResumo()" class="btn">📊 Gerar PDF Resumo</button>
+      <button onclick="window.print()" class="btn btn-print">🖨️ Imprimir Página</button>
+      <button onclick="exportarJSON()" class="btn btn-secondary">📥 Exportar JSON</button>
+    </div>
+    
+    <!-- Lista de Boletins -->
+    <h3>📋 Lista de Ocorrências Registradas</h3>
+    <div id="listaBoletins">
+      <div style="text-align: center; padding: 40px; color: #888;">
+        Nenhuma ocorrência registrada ainda.
+      </div>
+    </div>
+  </section>
+</div>
 
-  <nav class="nav-bottom">
-    <button class="nav-btn" onclick="window.history.back()">← Voltar</button>
-    <button class="nav-btn" onclick="sairSistema()">🚪 Sair</button>
-  </nav>
+<nav class="nav-bottom">
+  <button class="nav-btn" onclick="voltarPagina()">← Voltar</button>
+  <button class="nav-btn" onclick="sairSistema()">🚪 Sair</button>
+</nav>
 
 <script>
- function sairSistema() {
-    if (confirm("Deseja realmente sair?")) {
-        sessionStorage.clear();
-        window.location.href = "index.html";
+  let boletins = [];
+  let boletinsFiltrados = [];
+  
+  // Carregar dados salvos
+  function carregarBoletins() {
+    const salvos = localStorage.getItem('boletins_ocorrencias');
+    if (salvos) {
+      boletins = JSON.parse(salvos);
+    } else {
+      boletins = [];
     }
-}
-
-function voltarLogin() {
-    sessionStorage.clear();
-    window.location.href = "index.html";
-}
+    atualizarLista();
+    atualizarEstatisticas();
+  }
+  
+  function salvarBoletins() {
+    localStorage.setItem('boletins_ocorrencias', JSON.stringify(boletins));
+  }
+  
+  function atualizarEstatisticas() {
+    const total = boletins.length;
+    const hoje = new Date().toISOString().split('T')[0];
+    const dataAtual = new Date();
+    
+    const boletinsMes = boletins.filter(b => {
+      const dataOcc = new Date(b.data);
+      return dataOcc.getMonth() === dataAtual.getMonth() && 
+             dataOcc.getFullYear() === dataAtual.getFullYear();
+    });
+    
+    const boletinsHoje = boletins.filter(b => {
+      const dataOcc = b.data.split(' ')[0];
+      return dataOcc === hoje;
+    });
+    
+    document.getElementById('totalBoletins').textContent = total;
+    document.getElementById('boletinsMes').textContent = boletinsMes.length;
+    document.getElementById('boletinsHoje').textContent = boletinsHoje.length;
+  }
+  
+  function atualizarLista() {
+    const filtroTipo = document.getElementById('filtroTipo')?.value.toLowerCase() || '';
+    const filtroLocal = document.getElementById('filtroLocal')?.value.toLowerCase() || '';
+    
+    boletinsFiltrados = boletins.filter(b => {
+      const matchTipo = !filtroTipo || (b.tipo || '').toLowerCase().includes(filtroTipo);
+      const matchLocal = !filtroLocal || (b.local || '').toLowerCase().includes(filtroLocal);
+      return matchTipo && matchLocal;
+    });
+    
+    const container = document.getElementById('listaBoletins');
+    
+    if (boletinsFiltrados.length === 0) {
+      container.innerHTML = '<div style="text-align: center; padding: 40px; color: #888;">Nenhuma ocorrência encontrada.</div>';
+      return;
+    }
+    
+    container.innerHTML = boletinsFiltrados.map((b, index) => `
+      <div class="boletim-item" data-id="${b.id || index}">
+        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+          <strong style="color: #ffaa33;">📋 ${b.tipo || 'Sem tipo'}</strong>
+          <small style="color: #888;">📅 ${b.data || new Date().toLocaleString('pt-BR')}</small>
+        </div>
+        <div><strong>📍 Local:</strong> ${b.local || 'Não informado'}</div>
+        <div><strong>📝 Descrição:</strong> ${b.desc || 'Sem descrição'}</div>
+        <div style="margin-top: 15px;">
+          <button class="btn-small" onclick="removerBoletim(${index})">🗑️ Excluir</button>
+          <button class="btn-small btn-print" onclick="gerarPDFIndividual(${index})" style="background:#00aa55;">📄 Gerar PDF</button>
+        </div>
+      </div>
+    `).join('');
+  }
+  
+  function filtrarBoletins() {
+    atualizarLista();
+  }
+  
+  function limparFiltrosBoletins() {
+    document.getElementById('filtroTipo').value = '';
+    document.getElementById('filtroLocal').value = '';
+    atualizarLista();
+  }
+  
+  function registrar() {
+    const tipo = document.getElementById('tipo').value.trim();
+    const local = document.getElementById('local').value.trim();
+    const desc = document.getElementById('desc').value.trim();
+    
+    if (!tipo || !local || !desc) {
+      alert('❌ Preencha todos os campos!');
+      return;
+    }
+    
+    const novoBoletim = {
+      id: Date.now(),
+      tipo: tipo,
+      local: local,
+      desc: desc,
+      data: new Date().toLocaleString('pt-BR'),
+      dataISO: new Date().toISOString()
+    };
+    
+    boletins.unshift(novoBoletim);
+    salvarBoletins();
+    limparFormulario();
+    atualizarLista();
+    atualizarEstatisticas();
+    alert('✅ Ocorrência registrada com sucesso!');
+  }
+  
+  function limparFormulario() {
+    document.getElementById('tipo').value = '';
+    document.getElementById('local').value = '';
+    document.getElementById('desc').value = '';
+  }
+  
+  function removerBoletim(index) {
+    const boletimReal = boletinsFiltrados[index];
+    const indexReal = boletins.findIndex(b => b.id === boletimReal.id);
+    
+    if (confirm('⚠️ Tem certeza que deseja excluir esta ocorrência?')) {
+      boletins.splice(indexReal, 1);
+      salvarBoletins();
+      atualizarLista();
+      atualizarEstatisticas();
+      alert('✅ Ocorrência excluída com sucesso!');
+    }
+  }
+  
+  // Funções de PDF
+  function gerarPDF() {
+    if (boletins.length === 0) {
+      alert('⚠️ Nenhuma ocorrência registrada para gerar o PDF!');
+      return;
+    }
+    
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    let y = 20;
+    
+    // Cabeçalho
+    doc.setFontSize(20);
+    doc.setTextColor(0, 150, 100);
+    doc.text('CIDADE REAL', 105, y, { align: 'center' });
+    y += 10;
+    
+    doc.setFontSize(14);
+    doc.setTextColor(0, 120, 100);
+    doc.text('RELATÓRIO DE OCORRÊNCIAS', 105, y, { align: 'center' });
+    y += 10;
+    
+    doc.setFontSize(9);
+    doc.setTextColor(100, 100, 100);
+    doc.text(`Data de emissão: ${new Date().toLocaleString('pt-BR')}`, 105, y, { align: 'center' });
+    y += 15;
+    
+    // Resumo
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Total de ocorrências: ${boletins.length}`, 20, y);
+    y += 8;
+    
+    const hoje = new Date().toISOString().split('T')[0];
+    const ocorrenciasHoje = boletins.filter(b => {
+      const dataB = b.data.split(' ')[0];
+      return dataB === hoje;
+    }).length;
+    doc.text(`Ocorrências hoje: ${ocorrenciasHoje}`, 20, y);
+    y += 15;
+    
+    // Lista de ocorrências
+    for (let i = 0; i < boletins.length; i++) {
+      const b = boletins[i];
+      
+      if (y > 250) {
+        doc.addPage();
+        y = 20;
+      }
+      
+      doc.setFontSize(10);
+      doc.setTextColor(0, 170, 85);
+      doc.setFont(undefined, 'bold');
+      doc.text(`OCORRÊNCIA #${i + 1} - ${b.tipo}`, 20, y);
+      y += 6;
+      
+      doc.setFontSize(8);
+      doc.setTextColor(0, 0, 0);
+      doc.setFont(undefined, 'normal');
+      doc.text(`Data: ${b.data}`, 25, y);
+      y += 5;
+      doc.text(`Local: ${b.local}`, 25, y);
+      y += 5;
+      
+      const descText = doc.splitTextToSize(`Descrição: ${b.desc}`, 160);
+      descText.forEach(line => {
+        if (y > 270) {
+          doc.addPage();
+          y = 20;
+        }
+        doc.text(line, 25, y);
+        y += 5;
+      });
+      y += 5;
+      
+      doc.setDrawColor(200, 200, 200);
+      doc.line(20, y, 190, y);
+      y += 5;
+    }
+    
+    const nomeArquivo = `relatorio_ocorrencias_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.pdf`;
+    doc.save(nomeArquivo);
+    alert('✅ PDF gerado com sucesso!');
+  }
+  
+  function gerarPDFResumo() {
+    if (boletins.length === 0) {
+      alert('⚠️ Nenhuma ocorrência registrada!');
+      return;
+    }
+    
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    
+    doc.setFontSize(16);
+    doc.setTextColor(0, 150, 100);
+    doc.text('RESUMO DE OCORRÊNCIAS', 148, 20, { align: 'center' });
+    doc.setFontSize(9);
+    doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 148, 32, { align: 'center' });
+    
+    const tableData = boletins.map((b, i) => [
+      i + 1,
+      b.tipo,
+      b.local,
+      b.data.split(' ')[0],
+      b.desc.substring(0, 60) + (b.desc.length > 60 ? '...' : '')
+    ]);
+    
+    doc.autoTable({
+      startY: 45,
+      head: [['#', 'Tipo', 'Local', 'Data', 'Descrição']],
+      body: tableData,
+      theme: 'striped',
+      headStyles: { fillColor: [0, 150, 100], textColor: [255, 255, 255], fontSize: 9 },
+      bodyStyles: { fontSize: 8 },
+      margin: { left: 10, right: 10 }
+    });
+    
+    doc.save(`resumo_ocorrencias_${new Date().toISOString().slice(0, 10)}.pdf`);
+    alert('✅ PDF Resumo gerado com sucesso!');
+  }
+  
+  function gerarPDFIndividual(index) {
+    const boletim = boletinsFiltrados[index];
+    if (!boletim) {
+      alert('Ocorrência não encontrada!');
+      return;
+    }
+    
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    let y = 20;
+    
+    doc.setFontSize(18);
+    doc.setTextColor(0, 150, 100);
+    doc.text('BOLETIM DE OCORRÊNCIA', 105, y, { align: 'center' });
+    y += 15;
+    
+    doc.setFontSize(11);
+    doc.setTextColor(0, 0, 0);
+    doc.setFont(undefined, 'bold');
+    doc.text('DADOS DA OCORRÊNCIA', 20, y);
+    y += 8;
+    
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'normal');
+    doc.text(`Tipo: ${boletim.tipo}`, 25, y);
+    y += 7;
+    doc.text(`Local: ${boletim.local}`, 25, y);
+    y += 7;
+    doc.text(`Data/Hora: ${boletim.data}`, 25, y);
+    y += 10;
+    
+    doc.setFont(undefined, 'bold');
+    doc.text('DESCRIÇÃO DETALHADA', 20, y);
+    y += 8;
+    doc.setFont(undefined, 'normal');
+    
+    const descText = doc.splitTextToSize(boletim.desc, 160);
+    descText.forEach(line => {
+      if (y > 250) {
+        doc.addPage();
+        y = 20;
+      }
+      doc.text(line, 25, y);
+      y += 6;
+    });
+    y += 15;
+    
+    doc.setDrawColor(0, 0, 0);
+    doc.line(20, y, 90, y);
+    doc.text('Assinatura do Responsável', 55, y + 5, { align: 'center' });
+    doc.line(110, y, 180, y);
+    doc.text('Assinatura do Envolvido', 145, y + 5, { align: 'center' });
+    
+    doc.save(`boletim_${boletim.id}_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.pdf`);
+    alert('✅ PDF individual gerado com sucesso!');
+  }
+  
+  function exportarJSON() {
+    const dataStr = JSON.stringify(boletins, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+    const nomeArquivo = `boletins_exportados_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', nomeArquivo);
+    linkElement.click();
+    alert('✅ Dados exportados com sucesso!');
+  }
+  
+  // Funções de Navegação
+  function voltarPagina() {
+    window.history.back();
+  }
+  
+  function sairSistema() {
+    if (confirm("Deseja realmente sair do sistema?")) {
+      sessionStorage.clear();
+      window.location.href = "index.html";
+    }
+  }
+  
+  // Inicializar
+  carregarBoletins();
 </script>
 <footer style="text-align: center; padding: 15px; font-size: 12px; color: #666; border-top: 1px solid #e0e0e0; margin-top: 30px;">
   <p>🚀 Sistema desenvolvido por <strong>Tiago Gazzoni Tagliabui</strong> | © 2026 - TgT Análise Desenvolvimento de Sistemas</p>
