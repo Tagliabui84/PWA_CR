@@ -261,6 +261,20 @@
   document.getElementById('senha').addEventListener('keypress', (e) => { if (e.key === 'Enter') handleAction(); });
   document.getElementById('matricula').addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('senha').focus(); });
   window.addEventListener('load', () => initDB());
+  
+  // Função global para voltar ao login
+  window.voltarLogin = function() {
+    sessionStorage.clear();
+    window.location.href = 'index.html';
+  };
+  
+  // Função global para sair do sistema
+  window.sairSistema = function() {
+    if (confirm("Deseja realmente sair do sistema?")) {
+      sessionStorage.clear();
+      window.location.href = 'index.html';
+    }
+  };
 </script>
 <footer style="text-align: center; padding: 15px; font-size: 12px; color: #666; border-top: 1px solid #e0e0e0; margin-top: 30px;">
   <p>🚀 Sistema desenvolvido por <strong>Tiago Gazzoni Tagliabui</strong> | © 2026 - TgT Análise Desenvolvimento de Sistemas</p>
