@@ -2,125 +2,207 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#4caf50" />
-  <link rel="manifest" href="manifest.json" />
-  <title>Boletim - Cidade Real</title>
-  <link rel="stylesheet" href="styles.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="theme-color" content="#00ff88" />
+  <meta name="author" content="Tiago Gazzoni Tagliabui" />
+  <title>Fiscalização - Cidade Real</title>
   <style>
-    .filtros-boletim {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-    .filtros-boletim input {
-      flex: 1;
-      min-width: 150px;
-      margin-bottom: 0;
-    }
-    .boletim-item {
-      background: #f8f8f8;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 15px;
-      border-left: 4px solid #ffaa33;
-      transition: all 0.3s ease;
-    }
-    .boletim-item:hover {
-      background: #f0f5f0;
-      transform: translateX(5px);
-    }
-    .stats-boletim-page {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 15px;
-      margin-bottom: 25px;
-    }
-    .btn-small {
-      padding: 6px 12px;
-      font-size: 12px;
-      margin-top: 10px;
-      background: linear-gradient(135deg, #ff5050, #cc3333);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .btn-print {
-      background: linear-gradient(135deg, #00aa55, #008844);
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; }
+    header { background: #1a1a2e; color: #00ff88; padding: 15px; text-align: center; }
+    .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+    .screen { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+    h1 { color: #00aa55; margin-bottom: 20px; }
+    h2 { color: #333; margin: 20px 0 15px; border-bottom: 2px solid #00aa55; padding-bottom: 5px; }
+    .abas { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; border-bottom: 2px solid #e0e5e8; padding-bottom: 10px; }
+    .aba-btn { padding: 12px 24px; background: none; border: none; font-size: 16px; font-weight: 600; cursor: pointer; color: #666; border-radius: 12px; }
+    .aba-btn:hover { background: rgba(0, 170, 85, 0.1); color: #00aa55; }
+    .aba-btn.active { background: rgba(0, 170, 85, 0.15); color: #00aa55; }
+    .tab-content { display: none; animation: fadeIn 0.3s ease; }
+    .tab-content.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .form-row { display: flex; gap: 20px; margin-bottom: 15px; flex-wrap: wrap; }
+    .form-group { flex: 1; min-width: 200px; }
+    .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #3a5a5a; }
+    .form-group label.required::after { content: '*'; color: #ff5050; margin-left: 4px; }
+    input, select, textarea { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 10px; font-size: 14px; }
+    input:focus, select:focus, textarea:focus { border-color: #00aa55; outline: none; }
+    .section-title { background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 204, 106, 0.05)); padding: 12px 16px; border-radius: 12px; margin: 25px 0 20px 0; font-weight: bold; color: #00aa55; border-left: 4px solid #00ff88; }
+    .btn { padding: 12px 24px; background: #00aa55; color: white; border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; margin: 5px; }
+    .btn:hover { background: #008844; }
+    .btn-warning { background: #ffaa33; color: #333; }
+    .btn-danger { background: #ff5050; }
+    .btn-small { padding: 6px 12px; font-size: 12px; margin: 5px; }
+    .btn-imprimir { background: #00aa55; color: white; }
+    .veiculo-item, .testemunha-item { background: #f8f9fa; border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid #e0e5e8; }
+    .btn-add { background: #00aa55; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+    .btn-remove { background: #ff5050; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+    .ocorrencia-item { background: #f8f9fa; border-radius: 16px; padding: 20px; margin-bottom: 15px; border-left: 4px solid #ffaa33; }
+    .ocorrencia-item:hover { transform: translateX(5px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .stats-boletim { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 25px; }
+    .stat-card-boletim { background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 204, 106, 0.05)); border-radius: 16px; padding: 15px; text-align: center; }
+    .stat-number { font-size: 28px; font-weight: bold; color: #00aa55; }
+    .stat-label { font-size: 12px; color: #666; margin-top: 5px; }
+    .filtros { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .filtros input { flex: 1; min-width: 150px; margin-bottom: 0; }
+    .nav-bottom { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a2e; padding: 12px; display: flex; justify-content: space-around; z-index: 100; }
+    .nav-btn { padding: 10px 20px; background: #333; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+    .nav-btn:first-child { background: #666; }
+    footer { text-align: center; padding: 15px; background: #1a1a2e; color: #888; font-size: 12px; margin-top: 80px; }
+    .radio-group { display: flex; gap: 20px; align-items: center; }
+    .radio-group label { display: flex; align-items: center; gap: 5px; font-weight: normal; margin-bottom: 0; }
+    @media (max-width: 768px) { .form-row { flex-direction: column; gap: 0; } .aba-btn { padding: 8px 16px; font-size: 14px; } }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 
-<header><h1>Cidade Real • Boletim de Ocorrências</h1></header>
+<header><h1>Cidade Real • Fiscalização Operacional</h1></header>
 
 <div class="container">
   <section class="screen">
-    <h1>📋 Boletim de Ocorrências</h1>
+    <h1>📋 Boletim de Ocorrências Operacionais</h1>
     
-    <!-- Formulário de Registro -->
-    <div class="form-card" style="background: #f8f8f8; padding: 20px; border-radius: 16px; margin-bottom: 30px;">
-      <h3>➕ Registrar Nova Ocorrência</h3>
-      <div class="form-row">
+    <div class="abas">
+      <button class="aba-btn active" onclick="trocarAba('nova')">➕ Nova Ocorrência</button>
+      <button class="aba-btn" onclick="trocarAba('lista')">📋 Lista de Ocorrências</button>
+      <button class="aba-btn" onclick="trocarAba('instrucoes')">📚 Instruções</button>
+    </div>
+    
+    <!-- Aba Nova Ocorrência -->
+    <div id="tabNova" class="tab-content active">
+      <h2>Registrar Nova Ocorrência</h2>
+      <form id="formOcorrencia">
+        <div class="section-title">📋 DADOS BÁSICOS</div>
+        <div class="form-row">
+          <div class="form-group"><label>Nº DBO</label><input type="text" id="nroDBO" placeholder="Número do DBO" /></div>
+          <div class="form-group"><label>Nº R.A</label><input type="text" id="nroRA" placeholder="Número do R.A" /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="required">Nome do Motorista</label><input type="text" id="nomeMotorista" required /></div>
+          <div class="form-group"><label class="required">Matrícula</label><input type="text" id="matriculaMotorista" required /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="required">Local da Ocorrência</label><input type="text" id="localOcorrencia" required /></div>
+          <div class="form-group"><label class="required">Condições do Tempo</label>
+            <select id="condicoesTempo" required>
+              <option value="">Selecione</option><option value="Ensolarado">☀️ Ensolarado</option>
+              <option value="Nublado">☁️ Nublado</option><option value="Chuvoso">🌧️ Chuvoso</option>
+              <option value="Nevoeiro">🌫️ Nevoeiro</option><option value="Ventania">💨 Ventania</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="required">Data da Ocorrência</label><input type="date" id="dataOcorrencia" required /></div>
+          <div class="form-group"><label class="required">Horário</label><input type="time" id="horarioOcorrencia" required /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="required">Nº Ordem do Carro</label><input type="text" id="ordemCarro" required /></div>
+          <div class="form-group"><label class="required">Itinerário</label><input type="text" id="itinerario" required /></div>
+        </div>
+        
+        <div class="section-title">🚗 VEÍCULOS ENVOLVIDOS</div>
+        <div id="veiculosContainer">
+          <div class="veiculo-item">
+            <div class="form-row"><div class="form-group"><label>Veículo</label><input type="text" class="veiculo-nome" placeholder="Ex: Ônibus" /></div>
+            <div class="form-group"><label>Placa</label><input type="text" class="veiculo-placa" placeholder="Ex: ABC-1234" /></div></div>
+            <div class="form-row"><div class="form-group"><label>Modelo</label><input type="text" class="veiculo-modelo" placeholder="Ex: Mercedes" /></div>
+            <div class="form-group"><label>Cor</label><input type="text" class="veiculo-cor" placeholder="Ex: Branco" /></div></div>
+            <div class="form-row"><div class="form-group"><label>Proprietário</label><input type="text" class="veiculo-proprietario" placeholder="Nome" /></div>
+            <div class="form-group"><label>RG</label><input type="text" class="veiculo-rg" placeholder="RG" /></div></div>
+            <div class="form-row"><div class="form-group"><label>CNH</label><input type="text" class="veiculo-cnh" placeholder="CNH" /></div>
+            <div class="form-group"><label>Validade CNH</label><input type="date" class="veiculo-cnhValidade" /></div></div>
+            <div class="form-row"><div class="form-group"><label>Condutor - Nome</label><input type="text" class="condutor-nome" placeholder="Nome" /></div>
+            <div class="form-group"><label>Condutor - RG</label><input type="text" class="condutor-rg" placeholder="RG" /></div></div>
+            <div class="form-row"><div class="form-group"><label>Condutor - CNH</label><input type="text" class="condutor-cnh" placeholder="CNH" /></div>
+            <div class="form-group"><label>Validade CNH</label><input type="date" class="condutor-cnhValidade" /></div></div>
+            <button type="button" class="btn-remove" onclick="removerVeiculo(this)">🗑️ Remover</button>
+          </div>
+        </div>
+        <button type="button" class="btn-add" onclick="adicionarVeiculo()">➕ Adicionar veículo</button>
+        
+        <div class="section-title">👥 VÍTIMAS E DANOS</div>
+        <div class="form-row">
+          <div class="form-group"><label>Houve Vítimas?</label>
+            <div class="radio-group"><label><input type="radio" name="houveVitimas" value="sim" onclick="mostrarVitimas(true)"> Sim</label>
+            <label><input type="radio" name="houveVitimas" value="nao" onclick="mostrarVitimas(false)" checked> Não</label></div>
+          </div>
+          <div class="form-group"><label>Houve Danos?</label>
+            <div class="radio-group"><label><input type="radio" name="houveDanos" value="sim" onclick="mostrarDanos(true)"> Sim</label>
+            <label><input type="radio" name="houveDanos" value="nao" onclick="mostrarDanos(false)" checked> Não</label></div>
+          </div>
+        </div>
+        <div id="vitimasContainer" style="display:none;"><div class="form-group"><label>Descrição das Vítimas</label><textarea id="descricaoVitimas" rows="3" placeholder="Descreva as vítimas, ferimentos..."></textarea></div></div>
+        <div id="danosContainer" style="display:none;"><div class="form-group"><label>Descrição dos Danos</label><textarea id="descricaoDanos" rows="3" placeholder="Descreva os danos..."></textarea></div></div>
+        
+        <div class="section-title">👁️ TESTEMUNHAS</div>
+        <div id="testemunhasContainer">
+          <div class="testemunha-item">
+            <div class="form-row"><div class="form-group"><label>Nome</label><input type="text" class="testemunha-nome" placeholder="Nome" /></div>
+            <div class="form-group"><label>RG/CPF</label><input type="text" class="testemunha-documento" placeholder="RG/CPF" /></div></div>
+            <div class="form-group"><label>Telefone</label><input type="tel" class="testemunha-telefone" placeholder="(00) 00000-0000" /></div>
+            <button type="button" class="btn-remove" onclick="removerTestemunha(this)">🗑️ Remover</button>
+          </div>
+        </div>
+        <button type="button" class="btn-add" onclick="adicionarTestemunha()">➕ Adicionar testemunha</button>
+        
+        <div class="section-title">📝 DESCRIÇÃO DETALHADA</div>
+        <div class="form-group"><label class="required">Descrição do Acidente</label><textarea id="descricaoAcidente" rows="5" required placeholder="Descreva detalhadamente..."></textarea></div>
+        
+        <!-- NOVOS CAMPOS: RELATO DO MOTORISTA E RELATO DE TERCEIROS -->
+        <div class="section-title">💬 RELATOS</div>
         <div class="form-group">
-          <label>Tipo de Ocorrência</label>
-          <input type="text" id="tipo" placeholder="Ex: Acidente, Falha Mecânica, Assalto..." />
+          <label>Relato do Motorista (Colaborador)</label>
+          <textarea id="relatoMotorista" rows="4" placeholder="Descreva o relato do motorista sobre o ocorrido..."></textarea>
         </div>
         <div class="form-group">
-          <label>Local / Linha</label>
-          <input type="text" id="local" placeholder="Ex: Av. Brasil, Linha 001..." />
+          <label>Relato de Terceiros</label>
+          <textarea id="relatoTerceiros" rows="4" placeholder="Descreva os relatos de terceiros/passageiros sobre o ocorrido..."></textarea>
         </div>
-      </div>
-      <div class="form-group">
-        <label>Descrição da Ocorrência</label>
-        <textarea id="desc" placeholder="Descreva detalhadamente a ocorrência..." rows="5"></textarea>
-      </div>
-      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <button onclick="registrar()" class="btn">✅ Registrar Ocorrência</button>
-        <button onclick="limparFormulario()" class="btn btn-warning">🗑️ Limpar</button>
-      </div>
+        
+        <div class="section-title">👤 RESPONSÁVEL</div>
+        <div class="form-row"><div class="form-group"><label class="required">Nome</label><input type="text" id="responsavelNome" required /></div>
+        <div class="form-group"><label class="required">Matrícula</label><input type="text" id="responsavelMatricula" required /></div></div>
+        <div class="form-group"><label class="required">Função</label><input type="text" id="responsavelFuncao" required /></div>
+        
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px;">
+          <button type="submit" class="btn">✅ Registrar</button>
+          <button type="button" class="btn btn-warning" onclick="limparFormulario()">🗑️ Limpar</button>
+        </div>
+      </form>
     </div>
     
-    <!-- Estatísticas -->
-    <div class="stats-boletim-page">
-      <div class="stat-card-boletim">
-        <div class="stat-number" id="totalBoletins">0</div>
-        <div class="stat-label">Total de Ocorrências</div>
+    <!-- Aba Lista -->
+    <div id="tabLista" class="tab-content">
+      <h2>📋 Histórico de Ocorrências</h2>
+      <div class="filtros">
+        <input type="text" id="filtroMotorista" placeholder="Filtrar por motorista..." />
+        <input type="text" id="filtroDBO" placeholder="Filtrar por DBO..." />
+        <button class="btn" onclick="filtrarOcorrencias()">🔍 Filtrar</button>
+        <button class="btn btn-warning" onclick="limparFiltros()">🗑️ Limpar</button>
       </div>
-      <div class="stat-card-boletim">
-        <div class="stat-number" id="boletinsMes">0</div>
-        <div class="stat-label">Este Mês</div>
+      <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+        <button class="btn" onclick="gerarPDFCompleto()">📄 PDF Completo (Todos os Dados)</button>
+        <button class="btn" onclick="gerarPDFResumo()">📊 PDF Resumo</button>
       </div>
-      <div class="stat-card-boletim">
-        <div class="stat-number" id="boletinsHoje">0</div>
-        <div class="stat-label">Hoje</div>
+      <div class="stats-boletim">
+        <div class="stat-card-boletim"><div class="stat-number" id="totalOcorrencias">0</div><div class="stat-label">Total</div></div>
+        <div class="stat-card-boletim"><div class="stat-number" id="ocorrenciasHoje">0</div><div class="stat-label">Hoje</div></div>
+        <div class="stat-card-boletim"><div class="stat-number" id="ocorrenciasCriticas">0</div><div class="stat-label">Com Veículos</div></div>
       </div>
+      <div id="listaOcorrencias"><p style="text-align:center;padding:40px;">Nenhuma ocorrência registrada.</p></div>
     </div>
     
-    <!-- Filtros -->
-    <div class="filtros-boletim">
-      <input type="text" id="filtroTipo" placeholder="🔍 Filtrar por tipo..." />
-      <input type="text" id="filtroLocal" placeholder="🔍 Filtrar por local..." />
-      <button class="btn btn-filtrar" onclick="filtrarBoletins()">🔍 Filtrar</button>
-      <button class="btn btn-filtrar" onclick="limparFiltrosBoletins()">🗑️ Limpar</button>
-    </div>
-    
-    <!-- Botões de Ação -->
-    <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
-      <button onclick="gerarPDF()" class="btn">📄 Gerar PDF Completo</button>
-      <button onclick="gerarPDFResumo()" class="btn">📊 Gerar PDF Resumo</button>
-      <button onclick="window.print()" class="btn btn-print">🖨️ Imprimir Página</button>
-      <button onclick="exportarJSON()" class="btn btn-secondary">📥 Exportar JSON</button>
-    </div>
-    
-    <!-- Lista de Boletins -->
-    <h3>📋 Lista de Ocorrências Registradas</h3>
-    <div id="listaBoletins">
-      <div style="text-align: center; padding: 40px; color: #888;">
-        Nenhuma ocorrência registrada ainda.
+    <!-- Aba Instruções -->
+    <div id="tabInstrucoes" class="tab-content">
+      <h2>📚 Instruções Operacionais</h2>
+      <div style="background:#f8f9fa;padding:20px;border-radius:12px;">
+        <h3>🚌 Procedimentos</h3>
+        <p>1. Verificar o veículo antes da viagem</p>
+        <p>2. Respeitar os horários estabelecidos</p>
+        <p>3. Registrar ocorrências imediatamente</p>
+        <p>4. Coletar relatos do motorista e de terceiros</p>
       </div>
     </div>
   </section>
@@ -131,345 +213,409 @@
   <button class="nav-btn" onclick="sairSistema()">🚪 Sair</button>
 </nav>
 
+<footer><p>🚀 Sistema desenvolvido por Tiago Gazzoni Tagliabui | © 2026</p></footer>
+
 <script>
-  let boletins = [];
-  let boletinsFiltrados = [];
+  let ocorrencias = [];
   
-  // Carregar dados salvos
-  function carregarBoletins() {
-    const salvos = localStorage.getItem('boletins_ocorrencias');
-    if (salvos) {
-      boletins = JSON.parse(salvos);
-    } else {
-      boletins = [];
-    }
-    atualizarLista();
-    atualizarEstatisticas();
+  // Funções auxiliares
+  function adicionarVeiculo() {
+    const container = document.getElementById('veiculosContainer');
+    const novo = document.createElement('div');
+    novo.className = 'veiculo-item';
+    novo.innerHTML = `<div class="form-row"><div class="form-group"><label>Veículo</label><input type="text" class="veiculo-nome" /></div>
+    <div class="form-group"><label>Placa</label><input type="text" class="veiculo-placa" /></div></div>
+    <div class="form-row"><div class="form-group"><label>Modelo</label><input type="text" class="veiculo-modelo" /></div>
+    <div class="form-group"><label>Cor</label><input type="text" class="veiculo-cor" /></div></div>
+    <div class="form-row"><div class="form-group"><label>Proprietário</label><input type="text" class="veiculo-proprietario" /></div>
+    <div class="form-group"><label>RG</label><input type="text" class="veiculo-rg" /></div></div>
+    <div class="form-row"><div class="form-group"><label>CNH</label><input type="text" class="veiculo-cnh" /></div>
+    <div class="form-group"><label>Validade CNH</label><input type="date" class="veiculo-cnhValidade" /></div></div>
+    <div class="form-row"><div class="form-group"><label>Condutor Nome</label><input type="text" class="condutor-nome" /></div>
+    <div class="form-group"><label>Condutor RG</label><input type="text" class="condutor-rg" /></div></div>
+    <div class="form-row"><div class="form-group"><label>Condutor CNH</label><input type="text" class="condutor-cnh" /></div>
+    <div class="form-group"><label>Validade CNH</label><input type="date" class="condutor-cnhValidade" /></div></div>
+    <button type="button" class="btn-remove" onclick="removerVeiculo(this)">🗑️ Remover</button>`;
+    container.appendChild(novo);
   }
   
-  function salvarBoletins() {
-    localStorage.setItem('boletins_ocorrencias', JSON.stringify(boletins));
+  function removerVeiculo(btn) { if (document.querySelectorAll('.veiculo-item').length > 1) btn.closest('.veiculo-item').remove(); else alert('Deve haver pelo menos um veículo!'); }
+  function adicionarTestemunha() {
+    const container = document.getElementById('testemunhasContainer');
+    const novo = document.createElement('div');
+    novo.className = 'testemunha-item';
+    novo.innerHTML = `<div class="form-row"><div class="form-group"><label>Nome</label><input type="text" class="testemunha-nome" /></div>
+    <div class="form-group"><label>RG/CPF</label><input type="text" class="testemunha-documento" /></div></div>
+    <div class="form-group"><label>Telefone</label><input type="tel" class="testemunha-telefone" /></div>
+    <button type="button" class="btn-remove" onclick="removerTestemunha(this)">🗑️ Remover</button>`;
+    container.appendChild(novo);
   }
+  function removerTestemunha(btn) { btn.closest('.testemunha-item').remove(); }
+  function mostrarVitimas(show) { document.getElementById('vitimasContainer').style.display = show ? 'block' : 'none'; }
+  function mostrarDanos(show) { document.getElementById('danosContainer').style.display = show ? 'block' : 'none'; }
   
-  function atualizarEstatisticas() {
-    const total = boletins.length;
-    const hoje = new Date().toISOString().split('T')[0];
-    const dataAtual = new Date();
-    
-    const boletinsMes = boletins.filter(b => {
-      const dataOcc = new Date(b.data);
-      return dataOcc.getMonth() === dataAtual.getMonth() && 
-             dataOcc.getFullYear() === dataAtual.getFullYear();
+  function coletarVeiculos() {
+    const veiculos = [];
+    document.querySelectorAll('.veiculo-item').forEach(el => {
+      veiculos.push({
+        veiculo: el.querySelector('.veiculo-nome')?.value || '',
+        placa: el.querySelector('.veiculo-placa')?.value || '',
+        modelo: el.querySelector('.veiculo-modelo')?.value || '',
+        cor: el.querySelector('.veiculo-cor')?.value || '',
+        proprietario: el.querySelector('.veiculo-proprietario')?.value || '',
+        rg: el.querySelector('.veiculo-rg')?.value || '',
+        cnh: el.querySelector('.veiculo-cnh')?.value || '',
+        cnhValidade: el.querySelector('.veiculo-cnhValidade')?.value || '',
+        condutorNome: el.querySelector('.condutor-nome')?.value || '',
+        condutorRg: el.querySelector('.condutor-rg')?.value || '',
+        condutorCnh: el.querySelector('.condutor-cnh')?.value || '',
+        condutorCnhValidade: el.querySelector('.condutor-cnhValidade')?.value || ''
+      });
     });
-    
-    const boletinsHoje = boletins.filter(b => {
-      const dataOcc = b.data.split(' ')[0];
-      return dataOcc === hoje;
-    });
-    
-    document.getElementById('totalBoletins').textContent = total;
-    document.getElementById('boletinsMes').textContent = boletinsMes.length;
-    document.getElementById('boletinsHoje').textContent = boletinsHoje.length;
+    return veiculos;
   }
+  
+  function coletarTestemunhas() {
+    const testemunhas = [];
+    document.querySelectorAll('.testemunha-item').forEach(el => {
+      testemunhas.push({
+        nome: el.querySelector('.testemunha-nome')?.value || '',
+        documento: el.querySelector('.testemunha-documento')?.value || '',
+        telefone: el.querySelector('.testemunha-telefone')?.value || ''
+      });
+    });
+    return testemunhas;
+  }
+  
+  function carregarOcorrencias() { const s = localStorage.getItem('ocorrencias_completas'); ocorrencias = s ? JSON.parse(s) : []; atualizarLista(); }
+  function salvarOcorrencias() { localStorage.setItem('ocorrencias_completas', JSON.stringify(ocorrencias)); }
   
   function atualizarLista() {
-    const filtroTipo = document.getElementById('filtroTipo')?.value.toLowerCase() || '';
-    const filtroLocal = document.getElementById('filtroLocal')?.value.toLowerCase() || '';
+    const filtroM = document.getElementById('filtroMotorista')?.value.toLowerCase() || '';
+    const filtroD = document.getElementById('filtroDBO')?.value.toLowerCase() || '';
+    let filtradas = ocorrencias;
+    if (filtroM) filtradas = filtradas.filter(o => o.nomeMotorista?.toLowerCase().includes(filtroM));
+    if (filtroD) filtradas = filtradas.filter(o => o.nroDBO?.toLowerCase().includes(filtroD));
     
-    boletinsFiltrados = boletins.filter(b => {
-      const matchTipo = !filtroTipo || (b.tipo || '').toLowerCase().includes(filtroTipo);
-      const matchLocal = !filtroLocal || (b.local || '').toLowerCase().includes(filtroLocal);
-      return matchTipo && matchLocal;
-    });
+    const container = document.getElementById('listaOcorrencias');
+    if (filtradas.length === 0) { container.innerHTML = '<p style="text-align:center;padding:40px;">Nenhuma ocorrência.</p>'; return; }
     
-    const container = document.getElementById('listaBoletins');
-    
-    if (boletinsFiltrados.length === 0) {
-      container.innerHTML = '<div style="text-align: center; padding: 40px; color: #888;">Nenhuma ocorrência encontrada.</div>';
-      return;
-    }
-    
-    container.innerHTML = boletinsFiltrados.map((b, index) => `
-      <div class="boletim-item" data-id="${b.id || index}">
-        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
-          <strong style="color: #ffaa33;">📋 ${b.tipo || 'Sem tipo'}</strong>
-          <small style="color: #888;">📅 ${b.data || new Date().toLocaleString('pt-BR')}</small>
-        </div>
-        <div><strong>📍 Local:</strong> ${b.local || 'Não informado'}</div>
-        <div><strong>📝 Descrição:</strong> ${b.desc || 'Sem descrição'}</div>
-        <div style="margin-top: 15px;">
-          <button class="btn-small" onclick="removerBoletim(${index})">🗑️ Excluir</button>
-          <button class="btn-small btn-print" onclick="gerarPDFIndividual(${index})" style="background:#00aa55;">📄 Gerar PDF</button>
-        </div>
-      </div>
-    `).join('');
+    container.innerHTML = filtradas.map(occ => `<div class="ocorrencia-item">
+      <div style="display:flex;justify-content:space-between;"><strong>📋 DBO: ${occ.nroDBO || 'N/A'} | RA: ${occ.nroRA || 'N/A'}</strong><small>${occ.dataOcorrencia} ${occ.horarioOcorrencia}</small></div>
+      <div><strong>👨‍✈️ Motorista:</strong> ${occ.nomeMotorista} (${occ.matriculaMotorista})</div>
+      <div><strong>📍 Local:</strong> ${occ.localOcorrencia}</div>
+      <div><strong>🚌 Carro:</strong> ${occ.ordemCarro} | ${occ.itinerario}</div>
+      <div><strong>🚗 Veículos:</strong> ${occ.veiculos?.length || 0}</div>
+      <div><strong>📝 Descrição:</strong> ${occ.descricaoAcidente?.substring(0,100)}...</div>
+      <div><strong>💬 Relato Motorista:</strong> ${occ.relatoMotorista?.substring(0,80) || 'Nenhum relato'}...</div>
+      <div><strong>💬 Relato Terceiros:</strong> ${occ.relatoTerceiros?.substring(0,80) || 'Nenhum relato'}...</div>
+      <div><button class="btn-small btn-imprimir" onclick="gerarPDFIndividual(${occ.id})">📄 Gerar PDF</button>
+      <button class="btn-small" onclick="excluirOcorrencia(${occ.id})" style="background:#ff5050;">🗑️ Excluir</button></div>
+    </div>`).join('');
+    atualizarStats();
   }
   
-  function filtrarBoletins() {
-    atualizarLista();
-  }
-  
-  function limparFiltrosBoletins() {
-    document.getElementById('filtroTipo').value = '';
-    document.getElementById('filtroLocal').value = '';
-    atualizarLista();
-  }
-  
-  function registrar() {
-    const tipo = document.getElementById('tipo').value.trim();
-    const local = document.getElementById('local').value.trim();
-    const desc = document.getElementById('desc').value.trim();
-    
-    if (!tipo || !local || !desc) {
-      alert('❌ Preencha todos os campos!');
-      return;
-    }
-    
-    const novoBoletim = {
-      id: Date.now(),
-      tipo: tipo,
-      local: local,
-      desc: desc,
-      data: new Date().toLocaleString('pt-BR'),
-      dataISO: new Date().toISOString()
-    };
-    
-    boletins.unshift(novoBoletim);
-    salvarBoletins();
-    limparFormulario();
-    atualizarLista();
-    atualizarEstatisticas();
-    alert('✅ Ocorrência registrada com sucesso!');
-  }
+  function formatarData(data) { if (!data) return ''; const [a,m,d] = data.split('-'); return `${d}/${m}/${a}`; }
+  function atualizarStats() { const total = ocorrencias.length; const hoje = new Date().toISOString().split('T')[0]; document.getElementById('totalOcorrencias').textContent = total; document.getElementById('ocorrenciasHoje').textContent = ocorrencias.filter(o => o.dataOcorrencia === hoje).length; document.getElementById('ocorrenciasCriticas').textContent = ocorrencias.filter(o => o.veiculos?.length > 0).length; }
+  function filtrarOcorrencias() { atualizarLista(); }
+  function limparFiltros() { document.getElementById('filtroMotorista').value = ''; document.getElementById('filtroDBO').value = ''; atualizarLista(); }
+  function excluirOcorrencia(id) { if (confirm('Excluir?')) { ocorrencias = ocorrencias.filter(o => o.id !== id); salvarOcorrencias(); atualizarLista(); alert('Excluída!'); } }
+  function adicionarOcorrencia(occ) { occ.id = Date.now(); occ.dataRegistro = new Date().toISOString(); ocorrencias.unshift(occ); salvarOcorrencias(); atualizarLista(); }
   
   function limparFormulario() {
-    document.getElementById('tipo').value = '';
-    document.getElementById('local').value = '';
-    document.getElementById('desc').value = '';
+    document.getElementById('formOcorrencia').reset();
+    document.getElementById('dataOcorrencia').valueAsDate = new Date();
+    document.getElementById('vitimasContainer').style.display = 'none';
+    document.getElementById('danosContainer').style.display = 'none';
+    document.querySelectorAll('input[name="houveVitimas"]')[1].checked = true;
+    document.querySelectorAll('input[name="houveDanos"]')[1].checked = true;
+    const vc = document.getElementById('veiculosContainer'); while (vc.children.length > 1) vc.removeChild(vc.lastChild);
+    const tc = document.getElementById('testemunhasContainer'); while (tc.children.length > 1) tc.removeChild(tc.lastChild);
   }
   
-  function removerBoletim(index) {
-    const boletimReal = boletinsFiltrados[index];
-    const indexReal = boletins.findIndex(b => b.id === boletimReal.id);
-    
-    if (confirm('⚠️ Tem certeza que deseja excluir esta ocorrência?')) {
-      boletins.splice(indexReal, 1);
-      salvarBoletins();
-      atualizarLista();
-      atualizarEstatisticas();
-      alert('✅ Ocorrência excluída com sucesso!');
-    }
+  function trocarAba(aba) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.aba-btn').forEach(b => b.classList.remove('active'));
+    if (aba === 'nova') { document.getElementById('tabNova').classList.add('active'); document.querySelector('.aba-btn:first-child').classList.add('active'); }
+    else if (aba === 'lista') { document.getElementById('tabLista').classList.add('active'); document.querySelector('.aba-btn:nth-child(2)').classList.add('active'); atualizarLista(); }
+    else { document.getElementById('tabInstrucoes').classList.add('active'); document.querySelector('.aba-btn:nth-child(3)').classList.add('active'); }
   }
   
-  // Funções de PDF
-  function gerarPDF() {
-    if (boletins.length === 0) {
-      alert('⚠️ Nenhuma ocorrência registrada para gerar o PDF!');
-      return;
-    }
-    
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    let y = 20;
-    
-    // Cabeçalho
-    doc.setFontSize(20);
-    doc.setTextColor(0, 150, 100);
-    doc.text('CIDADE REAL', 105, y, { align: 'center' });
-    y += 10;
-    
-    doc.setFontSize(14);
-    doc.setTextColor(0, 120, 100);
-    doc.text('RELATÓRIO DE OCORRÊNCIAS', 105, y, { align: 'center' });
-    y += 10;
-    
-    doc.setFontSize(9);
-    doc.setTextColor(100, 100, 100);
-    doc.text(`Data de emissão: ${new Date().toLocaleString('pt-BR')}`, 105, y, { align: 'center' });
-    y += 15;
-    
-    // Resumo
-    doc.setFontSize(11);
-    doc.setTextColor(0, 0, 0);
-    doc.text(`Total de ocorrências: ${boletins.length}`, 20, y);
-    y += 8;
-    
-    const hoje = new Date().toISOString().split('T')[0];
-    const ocorrenciasHoje = boletins.filter(b => {
-      const dataB = b.data.split(' ')[0];
-      return dataB === hoje;
-    }).length;
-    doc.text(`Ocorrências hoje: ${ocorrenciasHoje}`, 20, y);
-    y += 15;
-    
-    // Lista de ocorrências
-    for (let i = 0; i < boletins.length; i++) {
-      const b = boletins[i];
+  function voltarPagina() { window.history.back(); }
+  function sairSistema() { if (confirm('Sair?')) { sessionStorage.clear(); window.location.href = 'index.html'; } }
+  
+  // ==================== PDF COMPLETO COM TODOS OS DADOS ====================
+  async function gerarPDFCompleto() {
+    if (ocorrencias.length === 0) { alert('Nenhuma ocorrência!'); return; }
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      let y = 20;
       
-      if (y > 250) {
-        doc.addPage();
-        y = 20;
-      }
+      // Cabeçalho
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(20); doc.setTextColor(0, 100, 80); doc.text('CIDADE REAL', 105, y, { align: 'center' }); y += 10;
+      doc.setFontSize(16); doc.setTextColor(0, 120, 100); doc.text('BOLETIM DE OCORRENCIA', 105, y, { align: 'center' }); y += 10;
+      doc.setFontSize(10); doc.setTextColor(100, 100, 100); doc.text(`Emitido em: ${new Date().toLocaleString('pt-BR')}`, 105, y, { align: 'center' }); y += 15;
       
-      doc.setFontSize(10);
-      doc.setTextColor(0, 170, 85);
-      doc.setFont(undefined, 'bold');
-      doc.text(`OCORRÊNCIA #${i + 1} - ${b.tipo}`, 20, y);
-      y += 6;
-      
-      doc.setFontSize(8);
-      doc.setTextColor(0, 0, 0);
-      doc.setFont(undefined, 'normal');
-      doc.text(`Data: ${b.data}`, 25, y);
-      y += 5;
-      doc.text(`Local: ${b.local}`, 25, y);
-      y += 5;
-      
-      const descText = doc.splitTextToSize(`Descrição: ${b.desc}`, 160);
-      descText.forEach(line => {
-        if (y > 270) {
-          doc.addPage();
-          y = 20;
+      for (let idx = 0; idx < ocorrencias.length; idx++) {
+        const o = ocorrencias[idx];
+        if (y > 260) { doc.addPage(); y = 20; }
+        
+        doc.setDrawColor(0, 100, 80);
+        doc.line(15, y-2, 195, y-2);
+        
+        doc.setFillColor(0, 100, 80); doc.rect(15, y, 180, 8, 'F'); 
+        doc.setTextColor(255,255,255); doc.setFontSize(11); doc.setFont('helvetica', 'bold');
+        doc.text(`OCORRENCIA #${idx+1} - DBO: ${o.nroDBO || 'N/A'} | RA: ${o.nroRA || 'N/A'}`, 20, y+6); 
+        y += 12;
+        doc.setTextColor(0,0,0); doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+        
+        // DADOS DA OCORRENCIA
+        doc.setFont('helvetica', 'bold'); doc.text('DADOS DA OCORRENCIA', 20, y); y += 6;
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Data/Hora: ${formatarData(o.dataOcorrencia)} as ${o.horarioOcorrencia}`, 25, y); y += 5;
+        doc.text(`Local: ${o.localOcorrencia}`, 25, y); y += 5;
+        doc.text(`Condicoes do Tempo: ${o.condicoesTempo}`, 25, y); y += 8;
+        
+        // DADOS DO MOTORISTA
+        doc.setFont('helvetica', 'bold'); doc.text('DADOS DO MOTORISTA', 20, y); y += 6;
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Nome: ${o.nomeMotorista}`, 25, y); y += 5;
+        doc.text(`Matricula: ${o.matriculaMotorista}`, 25, y); y += 5;
+        doc.text(`Carro: ${o.ordemCarro} - Itinerario: ${o.itinerario}`, 25, y); y += 8;
+        
+        // VEICULOS ENVOLVIDOS
+        if (o.veiculos && o.veiculos.length > 0) {
+          doc.setFont('helvetica', 'bold'); doc.text('VEICULOS ENVOLVIDOS', 20, y); y += 6;
+          doc.setFont('helvetica', 'normal');
+          for (let v = 0; v < o.veiculos.length; v++) {
+            const veic = o.veiculos[v];
+            if (y > 270) { doc.addPage(); y = 20; }
+            doc.text(`Veiculo ${v+1}: ${veic.veiculo || 'N/A'} - Placa: ${veic.placa || 'N/A'}`, 25, y); y += 4;
+            if (veic.modelo) doc.text(`   Modelo: ${veic.modelo} | Cor: ${veic.cor || 'N/A'}`, 30, y); y += 4;
+            if (veic.proprietario) doc.text(`   Proprietario: ${veic.proprietario} | RG: ${veic.rg || 'N/A'}`, 30, y); y += 4;
+            if (veic.cnh) doc.text(`   CNH: ${veic.cnh} | Validade: ${veic.cnhValidade || 'N/A'}`, 30, y); y += 4;
+            if (veic.condutorNome) doc.text(`   Condutor: ${veic.condutorNome} | RG: ${veic.condutorRg || 'N/A'}`, 30, y); y += 4;
+            if (veic.condutorCnh) doc.text(`   CNH Condutor: ${veic.condutorCnh} | Validade: ${veic.condutorCnhValidade || 'N/A'}`, 30, y); y += 4;
+          }
+          y += 3;
         }
-        doc.text(line, 25, y);
+        
+        // VITIMAS
+        if (o.houveVitimas === 'sim' && o.descricaoVitimas) {
+          if (y > 270) { doc.addPage(); y = 20; }
+          doc.setFont('helvetica', 'bold'); doc.text('VITIMAS', 20, y); y += 6;
+          doc.setFont('helvetica', 'normal');
+          const vitText = doc.splitTextToSize(o.descricaoVitimas, 160);
+          vitText.forEach(line => { doc.text(line, 25, y); y += 4; });
+          y += 3;
+        }
+        
+        // DANOS
+        if (o.houveDanos === 'sim' && o.descricaoDanos) {
+          if (y > 270) { doc.addPage(); y = 20; }
+          doc.setFont('helvetica', 'bold'); doc.text('DANOS', 20, y); y += 6;
+          doc.setFont('helvetica', 'normal');
+          const danText = doc.splitTextToSize(o.descricaoDanos, 160);
+          danText.forEach(line => { doc.text(line, 25, y); y += 4; });
+          y += 3;
+        }
+        
+        // TESTEMUNHAS
+        if (o.testemunhas && o.testemunhas.length > 0) {
+          if (y > 270) { doc.addPage(); y = 20; }
+          doc.setFont('helvetica', 'bold'); doc.text('TESTEMUNHAS', 20, y); y += 6;
+          doc.setFont('helvetica', 'normal');
+          for (let t = 0; t < o.testemunhas.length; t++) {
+            const test = o.testemunhas[t];
+            if (y > 270) { doc.addPage(); y = 20; }
+            doc.text(`${t+1}. ${test.nome || 'N/A'}`, 25, y); y += 4;
+            if (test.documento) doc.text(`   Documento: ${test.documento} | Telefone: ${test.telefone || 'N/A'}`, 30, y); y += 4;
+          }
+          y += 3;
+        }
+        
+        // DESCRICAO DO ACIDENTE
+        if (y > 270) { doc.addPage(); y = 20; }
+        doc.setFont('helvetica', 'bold'); doc.text('DESCRICAO DO ACIDENTE', 20, y); y += 6;
+        doc.setFont('helvetica', 'normal');
+        const descText = doc.splitTextToSize(o.descricaoAcidente || '', 160);
+        descText.forEach(line => { doc.text(line, 25, y); y += 4; });
         y += 5;
-      });
-      y += 5;
+        
+        // RELATO DO MOTORISTA (NOVO CAMPO)
+        if (o.relatoMotorista && o.relatoMotorista.trim() !== '') {
+          if (y > 270) { doc.addPage(); y = 20; }
+          doc.setFont('helvetica', 'bold'); doc.text('RELATO DO MOTORISTA (COLABORADOR)', 20, y); y += 6;
+          doc.setFont('helvetica', 'normal');
+          const relatoMotText = doc.splitTextToSize(o.relatoMotorista, 160);
+          relatoMotText.forEach(line => { doc.text(line, 25, y); y += 4; });
+          y += 5;
+        }
+        
+        // RELATO DE TERCEIROS (NOVO CAMPO)
+        if (o.relatoTerceiros && o.relatoTerceiros.trim() !== '') {
+          if (y > 270) { doc.addPage(); y = 20; }
+          doc.setFont('helvetica', 'bold'); doc.text('RELATO DE TERCEIROS', 20, y); y += 6;
+          doc.setFont('helvetica', 'normal');
+          const relatoTerText = doc.splitTextToSize(o.relatoTerceiros, 160);
+          relatoTerText.forEach(line => { doc.text(line, 25, y); y += 4; });
+          y += 5;
+        }
+        
+        // RESPONSAVEL
+        if (y > 270) { doc.addPage(); y = 20; }
+        doc.setFont('helvetica', 'bold'); doc.text('RESPONSAVEL PELO REGISTRO', 20, y); y += 6;
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Nome: ${o.responsavelNome}`, 25, y); y += 5;
+        doc.text(`Matricula: ${o.responsavelMatricula}`, 25, y); y += 5;
+        doc.text(`Funcao: ${o.responsavelFuncao}`, 25, y); y += 5;
+        doc.text(`Data do registro: ${new Date(o.dataRegistro).toLocaleString('pt-BR')}`, 25, y); y += 10;
+        
+        // Assinaturas
+        doc.setDrawColor(0,0,0);
+        doc.line(20, y, 90, y); 
+        doc.setFontSize(9); doc.text('Assinatura do Responsavel', 55, y+5, { align: 'center' });
+        doc.line(110, y, 180, y); 
+        doc.text('Assinatura do Motorista', 145, y+5, { align: 'center' });
+        y += 15;
+        doc.line(15, y, 195, y);
+        y += 10;
+      }
       
-      doc.setDrawColor(200, 200, 200);
-      doc.line(20, y, 190, y);
-      y += 5;
-    }
-    
-    const nomeArquivo = `relatorio_ocorrencias_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.pdf`;
-    doc.save(nomeArquivo);
-    alert('✅ PDF gerado com sucesso!');
+      doc.save(`relatorio_completo_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.pdf`);
+      alert('PDF completo gerado com sucesso!');
+    } catch(e) { console.error(e); alert('Erro ao gerar PDF'); }
   }
   
-  function gerarPDFResumo() {
-    if (boletins.length === 0) {
-      alert('⚠️ Nenhuma ocorrência registrada!');
-      return;
-    }
-    
+  async function gerarPDFResumo() {
+    if (ocorrencias.length === 0) { alert('Nenhuma ocorrencia!'); return; }
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-    
-    doc.setFontSize(16);
-    doc.setTextColor(0, 150, 100);
-    doc.text('RESUMO DE OCORRÊNCIAS', 148, 20, { align: 'center' });
-    doc.setFontSize(9);
-    doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 148, 32, { align: 'center' });
-    
-    const tableData = boletins.map((b, i) => [
-      i + 1,
-      b.tipo,
-      b.local,
-      b.data.split(' ')[0],
-      b.desc.substring(0, 60) + (b.desc.length > 60 ? '...' : '')
-    ]);
-    
-    doc.autoTable({
-      startY: 45,
-      head: [['#', 'Tipo', 'Local', 'Data', 'Descrição']],
-      body: tableData,
-      theme: 'striped',
-      headStyles: { fillColor: [0, 150, 100], textColor: [255, 255, 255], fontSize: 9 },
-      bodyStyles: { fontSize: 8 },
-      margin: { left: 10, right: 10 }
-    });
-    
-    doc.save(`resumo_ocorrencias_${new Date().toISOString().slice(0, 10)}.pdf`);
-    alert('✅ PDF Resumo gerado com sucesso!');
+    const doc = new jsPDF('landscape');
+    doc.setFontSize(16); doc.text('RESUMO DE OCORRENCIAS', 148, 20, { align: 'center' });
+    const data = ocorrencias.map((o,i) => [i+1, o.nroDBO || '-', o.nomeMotorista, o.dataOcorrencia, o.localOcorrencia, o.veiculos?.length || 0]);
+    doc.autoTable({ startY: 35, head: [['#', 'DBO', 'Motorista', 'Data', 'Local', 'Veiculos']], body: data, headStyles: { fillColor: [0,100,80] } });
+    doc.save(`resumo_ocorrencias_${new Date().toISOString().slice(0,10)}.pdf`);
+    alert('PDF Resumo gerado!');
   }
   
-  function gerarPDFIndividual(index) {
-    const boletim = boletinsFiltrados[index];
-    if (!boletim) {
-      alert('Ocorrência não encontrada!');
-      return;
-    }
-    
+  async function gerarPDFIndividual(id) {
+    const o = ocorrencias.find(x => x.id === id);
+    if (!o) { alert('Ocorrencia nao encontrada!'); return; }
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const doc = new jsPDF('p', 'mm', 'a4');
     let y = 20;
     
-    doc.setFontSize(18);
-    doc.setTextColor(0, 150, 100);
-    doc.text('BOLETIM DE OCORRÊNCIA', 105, y, { align: 'center' });
-    y += 15;
+    doc.setFontSize(18); doc.setTextColor(0,100,80); doc.text('CIDADE REAL', 105, y, { align: 'center' }); y += 12;
+    doc.setFontSize(14); doc.setTextColor(0,120,100); doc.text('BOLETIM DE OCORRENCIA', 105, y, { align: 'center' }); y += 10;
+    doc.setFontSize(10); doc.setTextColor(100,100,100); doc.text(`DBO: ${o.nroDBO || 'N/A'} | RA: ${o.nroRA || 'N/A'}`, 105, y, { align: 'center' }); y += 15;
     
-    doc.setFontSize(11);
-    doc.setTextColor(0, 0, 0);
-    doc.setFont(undefined, 'bold');
-    doc.text('DADOS DA OCORRÊNCIA', 20, y);
-    y += 8;
+    doc.setFontSize(11); doc.setTextColor(0,0,0); doc.setFont('helvetica', 'bold');
+    doc.text('DADOS DA OCORRENCIA', 20, y); y += 7;
+    doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+    doc.text(`Data/Hora: ${formatarData(o.dataOcorrencia)} as ${o.horarioOcorrencia}`, 25, y); y += 5;
+    doc.text(`Local: ${o.localOcorrencia}`, 25, y); y += 5;
+    doc.text(`Condicoes: ${o.condicoesTempo}`, 25, y); y += 10;
     
-    doc.setFontSize(10);
-    doc.setFont(undefined, 'normal');
-    doc.text(`Tipo: ${boletim.tipo}`, 25, y);
-    y += 7;
-    doc.text(`Local: ${boletim.local}`, 25, y);
-    y += 7;
-    doc.text(`Data/Hora: ${boletim.data}`, 25, y);
-    y += 10;
+    doc.setFont('helvetica', 'bold'); doc.text('DADOS DO MOTORISTA', 20, y); y += 6;
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Nome: ${o.nomeMotorista}`, 25, y); y += 5;
+    doc.text(`Matricula: ${o.matriculaMotorista}`, 25, y); y += 5;
+    doc.text(`Carro: ${o.ordemCarro} - ${o.itinerario}`, 25, y); y += 10;
     
-    doc.setFont(undefined, 'bold');
-    doc.text('DESCRIÇÃO DETALHADA', 20, y);
-    y += 8;
-    doc.setFont(undefined, 'normal');
-    
-    const descText = doc.splitTextToSize(boletim.desc, 160);
-    descText.forEach(line => {
-      if (y > 250) {
-        doc.addPage();
-        y = 20;
+    if (o.veiculos && o.veiculos.length > 0) {
+      doc.setFont('helvetica', 'bold'); doc.text('VEICULOS ENVOLVIDOS', 20, y); y += 6;
+      doc.setFont('helvetica', 'normal');
+      for (let v = 0; v < o.veiculos.length; v++) {
+        const veic = o.veiculos[v];
+        if (y > 250) { doc.addPage(); y = 20; }
+        doc.text(`Veiculo ${v+1}: ${veic.veiculo || 'N/A'} - Placa: ${veic.placa || 'N/A'}`, 25, y); y += 4;
+        if (veic.condutorNome) doc.text(`   Condutor: ${veic.condutorNome}`, 30, y); y += 4;
       }
-      doc.text(line, 25, y);
-      y += 6;
-    });
-    y += 15;
-    
-    doc.setDrawColor(0, 0, 0);
-    doc.line(20, y, 90, y);
-    doc.text('Assinatura do Responsável', 55, y + 5, { align: 'center' });
-    doc.line(110, y, 180, y);
-    doc.text('Assinatura do Envolvido', 145, y + 5, { align: 'center' });
-    
-    doc.save(`boletim_${boletim.id}_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.pdf`);
-    alert('✅ PDF individual gerado com sucesso!');
-  }
-  
-  function exportarJSON() {
-    const dataStr = JSON.stringify(boletins, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-    const nomeArquivo = `boletins_exportados_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
-    
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', nomeArquivo);
-    linkElement.click();
-    alert('✅ Dados exportados com sucesso!');
-  }
-  
-  // Funções de Navegação
-  function voltarPagina() {
-    window.history.back();
-  }
-  
-  function sairSistema() {
-    if (confirm("Deseja realmente sair do sistema?")) {
-      sessionStorage.clear();
-      window.location.href = "index.html";
+      y += 5;
     }
+    
+    if (o.houveVitimas === 'sim' && o.descricaoVitimas) {
+      doc.setFont('helvetica', 'bold'); doc.text('VITIMAS', 20, y); y += 6;
+      doc.setFont('helvetica', 'normal');
+      const vt = doc.splitTextToSize(o.descricaoVitimas, 160);
+      vt.forEach(l => { doc.text(l, 25, y); y += 4; });
+      y += 3;
+    }
+    
+    if (o.houveDanos === 'sim' && o.descricaoDanos) {
+      doc.setFont('helvetica', 'bold'); doc.text('DANOS', 20, y); y += 6;
+      doc.setFont('helvetica', 'normal');
+      const dn = doc.splitTextToSize(o.descricaoDanos, 160);
+      dn.forEach(l => { doc.text(l, 25, y); y += 4; });
+      y += 3;
+    }
+    
+    doc.setFont('helvetica', 'bold'); doc.text('DESCRICAO DO ACIDENTE', 20, y); y += 6;
+    doc.setFont('helvetica', 'normal');
+    const desc = doc.splitTextToSize(o.descricaoAcidente || '', 160);
+    desc.forEach(l => { doc.text(l, 25, y); y += 4; });
+    y += 5;
+    
+    // RELATO DO MOTORISTA (NOVO CAMPO)
+    if (o.relatoMotorista && o.relatoMotorista.trim() !== '') {
+      if (y > 270) { doc.addPage(); y = 20; }
+      doc.setFont('helvetica', 'bold'); doc.text('RELATO DO MOTORISTA', 20, y); y += 6;
+      doc.setFont('helvetica', 'normal');
+      const relatoMot = doc.splitTextToSize(o.relatoMotorista, 160);
+      relatoMot.forEach(l => { doc.text(l, 25, y); y += 4; });
+      y += 5;
+    }
+    
+    // RELATO DE TERCEIROS (NOVO CAMPO)
+    if (o.relatoTerceiros && o.relatoTerceiros.trim() !== '') {
+      if (y > 270) { doc.addPage(); y = 20; }
+      doc.setFont('helvetica', 'bold'); doc.text('RELATO DE TERCEIROS', 20, y); y += 6;
+      doc.setFont('helvetica', 'normal');
+      const relatoTer = doc.splitTextToSize(o.relatoTerceiros, 160);
+      relatoTer.forEach(l => { doc.text(l, 25, y); y += 4; });
+      y += 5;
+    }
+    
+    doc.setFont('helvetica', 'bold'); doc.text('RESPONSAVEL', 20, y); y += 6;
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Nome: ${o.responsavelNome}`, 25, y); y += 5;
+    doc.text(`Matricula: ${o.responsavelMatricula}`, 25, y); y += 5;
+    doc.text(`Funcao: ${o.responsavelFuncao}`, 25, y); y += 15;
+    
+    doc.line(20, y, 90, y); doc.text('Assinatura do Responsavel', 55, y+5, { align: 'center' });
+    doc.line(110, y, 180, y); doc.text('Assinatura do Motorista', 145, y+5, { align: 'center' });
+    
+    doc.save(`boletim_${o.nroDBO || o.id}.pdf`);
+    alert('PDF individual gerado!');
   }
   
-  // Inicializar
-  carregarBoletins();
+  // Submit
+  document.getElementById('formOcorrencia').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const occ = {
+      nroDBO: document.getElementById('nroDBO').value, nroRA: document.getElementById('nroRA').value,
+      nomeMotorista: document.getElementById('nomeMotorista').value, matriculaMotorista: document.getElementById('matriculaMotorista').value,
+      localOcorrencia: document.getElementById('localOcorrencia').value, dataOcorrencia: document.getElementById('dataOcorrencia').value,
+      horarioOcorrencia: document.getElementById('horarioOcorrencia').value, condicoesTempo: document.getElementById('condicoesTempo').value,
+      ordemCarro: document.getElementById('ordemCarro').value, itinerario: document.getElementById('itinerario').value,
+      veiculos: coletarVeiculos(), houveVitimas: document.querySelector('input[name="houveVitimas"]:checked').value,
+      descricaoVitimas: document.getElementById('descricaoVitimas').value, houveDanos: document.querySelector('input[name="houveDanos"]:checked').value,
+      descricaoDanos: document.getElementById('descricaoDanos').value, testemunhas: coletarTestemunhas(),
+      descricaoAcidente: document.getElementById('descricaoAcidente').value,
+      relatoMotorista: document.getElementById('relatoMotorista').value,
+      relatoTerceiros: document.getElementById('relatoTerceiros').value,
+      responsavelNome: document.getElementById('responsavelNome').value,
+      responsavelMatricula: document.getElementById('responsavelMatricula').value,
+      responsavelFuncao: document.getElementById('responsavelFuncao').value
+    };
+    if (!occ.nomeMotorista || !occ.localOcorrencia || !occ.descricaoAcidente) { alert('Preencha os campos obrigatorios!'); return; }
+    adicionarOcorrencia(occ); limparFormulario(); alert('Ocorrencia registrada!'); trocarAba('lista');
+  });
+  
+  document.getElementById('dataOcorrencia').valueAsDate = new Date();
+  carregarOcorrencias();
 </script>
-<footer style="text-align: center; padding: 15px; font-size: 12px; color: #666; border-top: 1px solid #e0e0e0; margin-top: 30px;">
-  <p>🚀 Sistema desenvolvido por <strong>Tiago Gazzoni Tagliabui</strong> | © 2026 - TgT Análise Desenvolvimento de Sistemas</p>
-  <p style="font-size: 10px; margin-top: 5px;">Versão 1.0 | Todos os direitos reservados</p>
-</footer>
 </body>
 </html>

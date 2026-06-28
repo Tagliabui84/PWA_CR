@@ -4,7 +4,7 @@ let db = null;
 // Inicializar banco de dados
 function initDB() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open('CidadeRealDB', 7);
+    const request = indexedDB.open('CidadeRealDB', 8);
     
     request.onerror = () => reject('Erro ao abrir banco de dados');
     
@@ -57,16 +57,30 @@ function initDB() {
       
       // Mensagens
       if (!db.objectStoreNames.contains('mensagens')) {
-        db.createObjectStore('mensagens', { keyPath: 'id', autoIncrement: true });
-        const msgStore = db.createObjectStore('mensagens', { keyPath: 'id', autoIncrement: true });
-        msgStore.createIndex('destinatario', 'destinatario', { unique: false });
-        msgStore.createIndex('lida', 'lida', { unique: false });
-      }
+
+  const msgStore = db.createObjectStore('mensagens', {
+    keyPath: 'id',
+    autoIncrement: true
+  });
+
+  msgStore.createIndex('destinatario', 'destinatario', {
+    unique: false
+  });
+
+  msgStore.createIndex('lida', 'lida', {
+    unique: false
+  });
+}
       
       // Boletins
-      if (!db.objectStoreNames.contains('boletins')) {
-        db.createObjectStore('boletins', { keyPath: 'id', autoIncrement: true });
-      }
+      if (!db.objectStoreNames.contains('logs_email')) {
+
+  db.createObjectStore('logs_email', {
+    keyPath: 'id',
+    autoIncrement: true
+  });
+
+}
       
       console.log('Banco de dados inicializado com sucesso');
     };

@@ -3,77 +3,456 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <meta name="theme-color" content="#00aa55" />
+  <meta name="theme-color" content="#2e7d5e" />
   <title>Gestor - Cidade Real</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; }
-    header { background: #1a1a2e; color: #00ff88; padding: 15px; text-align: center; }
-    .container { max-width: 1400px; margin: 20px auto; padding: 0 20px; }
-    .screen { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-    h1 { color: #00aa55; margin-bottom: 10px; }
-    h2 { color: #333; margin: 25px 0 15px; border-bottom: 2px solid #00aa55; padding-bottom: 5px; }
-    h3 { color: #555; margin: 20px 0 10px; }
-    .abas { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; border-bottom: 2px solid #e0e5e8; padding-bottom: 10px; }
-    .aba-btn { padding: 12px 24px; background: none; border: none; font-size: 16px; font-weight: 600; cursor: pointer; color: #666; border-radius: 12px; transition: all 0.3s ease; }
-    .aba-btn:hover { background: rgba(0, 170, 85, 0.1); color: #00aa55; }
-    .aba-btn.active { background: rgba(0, 170, 85, 0.15); color: #00aa55; }
-    .tab-content { display: none; animation: fadeIn 0.3s ease; }
-    .tab-content.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 20px; margin-bottom: 30px; }
-    .stat-card { background: linear-gradient(135deg, rgba(0, 170, 85, 0.1), rgba(0, 136, 68, 0.05)); border-radius: 16px; padding: 20px; text-align: center; }
-    .stat-number { font-size: 32px; font-weight: bold; color: #00aa55; }
-    .stat-label { font-size: 12px; color: #666; margin-top: 8px; }
-    .card-item { background: #f8f9fa; border-radius: 12px; padding: 15px; margin-bottom: 12px; border-left: 4px solid #00aa55; transition: all 0.3s ease; }
-    .card-item:hover { transform: translateX(5px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    .table-responsive { overflow-x: auto; margin: 15px 0; }
-    table { width: 100%; border-collapse: collapse; }
-    th { background: #e8f5e9; color: #00aa55; padding: 12px; text-align: left; font-weight: 700; border-bottom: 2px solid #00aa55; }
-    td { padding: 10px 12px; border-bottom: 1px solid #e0e8e8; vertical-align: top; }
-    tr:hover td { background: rgba(0, 170, 85, 0.05); }
-    .btn { padding: 10px 20px; background: #00aa55; color: white; border: none; border-radius: 8px; cursor: pointer; margin: 5px; font-size: 14px; }
-    .btn-warning { background: #ffaa33; color: #333; }
-    .btn-danger { background: #ff5050; }
-    .btn-sm { padding: 5px 12px; font-size: 12px; }
-    .filtros { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
-    .filtros input, .filtros select { padding: 10px; border: 2px solid #ddd; border-radius: 8px; flex: 1; min-width: 150px; }
-    .nav-bottom { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a2e; padding: 12px; display: flex; justify-content: space-around; z-index: 100; }
-    .nav-btn { padding: 10px 20px; background: #333; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
-    .nav-btn:first-child { background: #666; }
-    footer { text-align: center; padding: 15px; background: #1a1a2e; color: #888; font-size: 12px; margin-top: 80px; }
-    .badge { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; }
+    
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      background: linear-gradient(135deg, #f0f7f0 0%, #e8f0e8 100%);
+      min-height: 100vh;
+    }
+    
+    /* Header Profissional */
+    header {
+      background: linear-gradient(135deg, #1a5f3a, #2e7d5e);
+      color: white;
+      padding: 25px 20px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* Container Principal */
+    .container {
+      max-width: 1400px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    
+    /* Card Principal */
+    .screen {
+      background: white;
+      border-radius: 28px;
+      padding: 35px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+      transition: transform 0.3s ease;
+    }
+    
+    /* Títulos */
+    h1 {
+      color: #1a5f3a;
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+    }
+    
+    h2 {
+      color: #2d3748;
+      font-size: 1.4rem;
+      margin: 30px 0 20px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid #2e7d5e;
+      display: inline-block;
+    }
+    
+    h3 {
+      color: #4a5568;
+      font-size: 1.1rem;
+      margin: 20px 0 15px;
+      font-weight: 600;
+    }
+    
+    /* Abas de Navegação */
+    .abas {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 35px;
+      flex-wrap: wrap;
+      background: #f8faf8;
+      padding: 8px;
+      border-radius: 60px;
+    }
+    
+    .aba-btn {
+      padding: 12px 28px;
+      background: transparent;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: #718096;
+      border-radius: 40px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .aba-btn:hover {
+      background: rgba(46, 125, 94, 0.1);
+      color: #2e7d5e;
+      transform: translateY(-1px);
+    }
+    
+    .aba-btn.active {
+      background: linear-gradient(135deg, #2e7d5e, #1a5f3a);
+      color: white;
+      box-shadow: 0 4px 12px rgba(46, 125, 94, 0.3);
+    }
+    
+    /* Animações das Abas */
+    .tab-content {
+      display: none;
+      animation: fadeInUp 0.4s ease;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Cards de Estatísticas */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      margin-bottom: 35px;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, #ffffff, #f8faf8);
+      border-radius: 20px;
+      padding: 22px 18px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(46, 125, 94, 0.15);
+      border-color: #2e7d5e;
+    }
+    
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #2e7d5e;
+      line-height: 1.2;
+    }
+    
+    .stat-label {
+      font-size: 0.8rem;
+      color: #718096;
+      margin-top: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    /* Cards de Itens */
+    .card-item {
+      background: white;
+      border-radius: 16px;
+      padding: 18px 22px;
+      margin-bottom: 14px;
+      border-left: 4px solid #2e7d5e;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+    
+    .card-item:hover {
+      transform: translateX(6px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    /* Tabelas */
+    .table-responsive {
+      overflow-x: auto;
+      margin: 20px 0;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    
+    th {
+      background: linear-gradient(135deg, #2e7d5e, #1a5f3a);
+      color: white;
+      padding: 14px 12px;
+      text-align: left;
+      font-weight: 600;
+    }
+    
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #4a5568;
+    }
+    
+    tr:hover td {
+      background: #e8f5e9;
+    }
+    
+    /* Botões */
+    .btn {
+      padding: 10px 24px;
+      background: linear-gradient(135deg, #2e7d5e, #1a5f3a);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(46, 125, 94, 0.3);
+    }
+    
+    .btn-warning {
+      background: linear-gradient(135deg, #ed8936, #dd6b20);
+    }
+    
+    .btn-warning:hover {
+      box-shadow: 0 6px 16px rgba(237, 137, 54, 0.3);
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #e53e3e, #c53030);
+    }
+    
+    .btn-sm {
+      padding: 6px 14px;
+      font-size: 0.75rem;
+    }
+    
+    /* Filtros */
+    .filtros {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      align-items: center;
+      background: #f8faf8;
+      padding: 15px;
+      border-radius: 16px;
+    }
+    
+    .filtros input, .filtros select {
+      padding: 10px 14px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      flex: 1;
+      min-width: 160px;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+    
+    .filtros input:focus, .filtros select:focus {
+      outline: none;
+      border-color: #2e7d5e;
+      box-shadow: 0 0 0 3px rgba(46, 125, 94, 0.1);
+    }
+    
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    
     .badge-carro { background: #e3f2fd; color: #1565c0; }
     .badge-viagem { background: #fff3e0; color: #e65100; }
     .badge-troca { background: #e8f5e9; color: #2e7d32; }
     .badge-ocorrencia { background: #fce4ec; color: #c62828; }
-    .relatorio-detalhado { background: #fff; border-radius: 16px; padding: 20px; margin-top: 20px; border: 1px solid #ddd; }
-    .relatorio-secao { margin-bottom: 30px; }
-    .relatorio-titulo { background: #1a1a2e; color: white; padding: 10px 15px; border-radius: 8px; margin-bottom: 15px; }
-    @media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .aba-btn { padding: 8px 16px; font-size: 14px; } }
+    
+    /* Relatório Consolidado */
+    .relatorio-detalhado {
+      background: linear-gradient(135deg, #f8faf8, #ffffff);
+      border-radius: 20px;
+      padding: 25px;
+      margin-top: 25px;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .relatorio-secao {
+      margin-bottom: 35px;
+      page-break-inside: avoid;
+    }
+    
+    .relatorio-titulo {
+      background: linear-gradient(135deg, #2e7d5e, #1a5f3a);
+      color: white;
+      padding: 12px 18px;
+      border-radius: 12px;
+      margin-bottom: 18px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .relatorio-subtitulo {
+      color: #2e7d5e;
+      font-weight: 600;
+      margin: 20px 0 12px;
+      padding-left: 10px;
+      border-left: 3px solid #2e7d5e;
+    }
+    
+    /* Navegação Inferior */
+    .nav-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+      z-index: 100;
+    }
+    
+    .nav-btn {
+      padding: 10px 28px;
+      background: #718096;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    
+    .nav-btn:hover {
+      background: #4a5568;
+      transform: translateY(-1px);
+    }
+    
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #1a5f3a;
+      color: white;
+      font-size: 0.75rem;
+      margin-top: 80px;
+    }
+    
+    /* Details / Summary */
+    details {
+      margin-top: 12px;
+    }
+    
+    summary {
+      cursor: pointer;
+      color: #2e7d5e;
+      font-weight: 600;
+      padding: 8px 0;
+    }
+    
+    summary:hover {
+      color: #1a5f3a;
+    }
+    
+    /* Grid de Botões */
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+    
+    /* Responsividade */
+    @media (max-width: 768px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .aba-btn { padding: 8px 18px; font-size: 0.85rem; }
+      .screen { padding: 20px; }
+      h1 { font-size: 1.4rem; }
+      h2 { font-size: 1.2rem; }
+    }
+    
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .btn-group { flex-direction: column; }
+      .btn-group .btn { width: 100%; justify-content: center; }
+    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 
-<header><h1>Cidade Real • Painel do Gestor</h1></header>
+<header>
+  <h1>🌿 Cidade Real • Painel do Gestor</h1>
+</header>
 
 <div class="container">
   <div class="screen">
-    <h1>Bem-vindo, <span id="nomeGestor">Gestor</span></h1>
-    <p style="margin-bottom: 20px;">Visualize TODOS os registros detalhados do sistema - Fiscalização e Instrução</p>
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
+      <div>
+        <h1>Bem-vindo, <span id="nomeGestor" style="color:#2e7d5e;">Gestor</span></h1>
+        <p style="color: #718096;">Visualize todos os registros do sistema em um só lugar</p>
+      </div>
+    </div>
     
+    <!-- Abas de Navegação -->
     <div class="abas">
-      <button class="aba-btn active" onclick="trocarAba('resumo')">📊 RESUMO GERAL</button>
-      <button class="aba-btn" onclick="trocarAba('fiscalizacao')">📋 FISCALIZAÇÃO</button>
-      <button class="aba-btn" onclick="trocarAba('instrucao')">📝 INSTRUÇÃO</button>
-      <button class="aba-btn" onclick="trocarAba('relatorioCompleto')">📑 RELATÓRIO COMPLETO</button>
+      <button class="aba-btn active" onclick="trocarAba('resumo')">📊 Resumo Geral</button>
+      <button class="aba-btn" onclick="trocarAba('fiscalizacao')">📋 Fiscalização</button>
+      <button class="aba-btn" onclick="trocarAba('instrucao')">📝 Instrução</button>
+      <button class="aba-btn" onclick="trocarAba('relatorioCompleto')">📑 Relatório Consolidado</button>
     </div>
     
     <!-- ==================== ABA RESUMO ==================== -->
     <div id="tabResumo" class="tab-content active">
       <h2>📊 Resumo do Sistema</h2>
+      
       <div class="stats-grid">
         <div class="stat-card"><div class="stat-number" id="totalCarros">0</div><div class="stat-label">Carros na Escala</div></div>
         <div class="stat-card"><div class="stat-number" id="totalViagensPerdidas">0</div><div class="stat-label">Viagens Perdidas</div></div>
@@ -83,18 +462,18 @@
         <div class="stat-card"><div class="stat-number" id="totalTestemunhas">0</div><div class="stat-label">Testemunhas</div></div>
       </div>
       
-      <h3>📋 Últimas Atualizações</h3>
+      <div class="relatorio-titulo" style="margin-bottom: 15px;">📋 Últimas Atualizações</div>
       <div id="ultimasAtualizacoes"></div>
       
-      <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+      <div class="btn-group" style="margin-top: 25px;">
         <button class="btn" onclick="exportarDadosCompletos()">📥 Exportar Todos os Dados (JSON)</button>
-        <button class="btn btn-warning" onclick="gerarRelatorioConsolidadoCompleto()">📑 Gerar Relatório Consolidado Completo</button>
+        <button class="btn btn-warning" onclick="gerarPDFConsolidadoCompleto()">📑 Gerar PDF Consolidado</button>
       </div>
     </div>
     
-    <!-- ==================== ABA FISCALIZAÇÃO (DETALHADA) ==================== -->
+    <!-- ==================== ABA FISCALIZAÇÃO ==================== -->
     <div id="tabFiscalizacao" class="tab-content">
-      <h2>📋 RELATÓRIO DETALHADO DE FISCALIZAÇÃO</h2>
+      <h2>📋 Relatório de Fiscalização</h2>
       
       <div class="stats-grid">
         <div class="stat-card"><div class="stat-number" id="fisCarrosCount">0</div><div class="stat-label">Carros na Escala</div></div>
@@ -102,40 +481,33 @@
         <div class="stat-card"><div class="stat-number" id="fisTrocasCount">0</div><div class="stat-label">Trocas de Carros</div></div>
       </div>
       
-      <!-- CARROS CADASTRADOS - DETALHADO -->
-      <div class="relatorio-secao">
-        <div class="relatorio-titulo">🚌 CARROS CADASTRADOS NA ESCALA (DETALHADO)</div>
-        <div id="listaCarrosDetalhada"></div>
+      <div class="relatorio-titulo">🚌 Carros Cadastrados na Escala</div>
+      <div id="listaCarrosDetalhada"></div>
+      
+      <div class="relatorio-titulo">🚫 Viagens Perdidas</div>
+      <div class="table-responsive">
+        <table>
+          <thead><tr><th>Data</th><th>Carro</th><th>Linha</th><th>Hr Programado</th><th>Hr Perda</th><th>Motivo</th></tr></thead>
+          <tbody id="viagensPerdidasDetalhado"></tbody>
+        </table>
       </div>
       
-      <!-- VIAGENS PERDIDAS - DETALHADO -->
-      <div class="relatorio-secao">
-        <div class="relatorio-titulo">🚫 VIAGENS PERDIDAS (DETALHADO)</div>
-        <div class="table-responsive">
-          <table id="tabelaViagensDetalhada">
-            <thead><tr><th>Data Registro</th><th>Carro</th><th>Linha/Itinerário</th><th>Horário Programado</th><th>Horário da Perda</th><th>Motivo</th><th>Registrado por</th></tr></thead>
-            <tbody id="viagensPerdidasDetalhado"></tbody>
-           </table>
-        </div>
+      <div class="relatorio-titulo">🔄 Trocas de Carros</div>
+      <div class="table-responsive">
+        <table>
+          <thead><tr><th>Data</th><th>Carro Original</th><th>Carro Substituto</th><th>Linha</th><th>Motivo</th></tr></thead>
+          <tbody id="trocasDetalhado"></tbody>
+        </table>
       </div>
       
-      <!-- TROCAS DE CARROS - DETALHADO -->
-      <div class="relatorio-secao">
-        <div class="relatorio-titulo">🔄 TROCAS DE CARROS (DETALHADO)</div>
-        <div class="table-responsive">
-          <table id="tabelaTrocasDetalhada">
-            <thead><tr><th>Data Registro</th><th>Carro Original</th><th>Carro Substituto</th><th>Linha/Itinerário</th><th>Horário</th><th>Motivo</th></tr></thead>
-            <tbody id="trocasDetalhado"></tbody>
-           </table>
-        </div>
+      <div class="btn-group">
+        <button class="btn" onclick="gerarPDFFiscalizacaoDetalhada()">📄 Gerar PDF da Fiscalização</button>
       </div>
-      
-      <button class="btn" onclick="gerarPDFFiscalizacaoDetalhada()">📄 Gerar PDF Fiscalização Detalhada</button>
     </div>
     
-    <!-- ==================== ABA INSTRUÇÃO (OCORRÊNCIAS DETALHADA) ==================== -->
+    <!-- ==================== ABA INSTRUÇÃO ==================== -->
     <div id="tabInstrucao" class="tab-content">
-      <h2>📝 RELATÓRIO DETALHADO DE OCORRÊNCIAS (INSTRUÇÃO)</h2>
+      <h2>📝 Relatório de Ocorrências</h2>
       
       <div class="stats-grid">
         <div class="stat-card"><div class="stat-number" id="occTotal">0</div><div class="stat-label">Total de Ocorrências</div></div>
@@ -145,29 +517,30 @@
       </div>
       
       <div class="filtros">
-        <input type="text" id="filtroOccMotorista" placeholder="Filtrar por motorista..." />
-        <input type="text" id="filtroOccLocal" placeholder="Filtrar por local..." />
-        <input type="text" id="filtroOccDBO" placeholder="Filtrar por DBO/RA..." />
+        <input type="text" id="filtroOccMotorista" placeholder="🔍 Filtrar por motorista..." />
+        <input type="text" id="filtroOccLocal" placeholder="🔍 Filtrar por local..." />
+        <input type="text" id="filtroOccDBO" placeholder="🔍 Filtrar por DBO/RA..." />
         <button class="btn btn-sm" onclick="filtrarOcorrenciasGestor()">🔍 Filtrar</button>
         <button class="btn btn-sm btn-warning" onclick="limparFiltrosOcorrenciasGestor()">🗑️ Limpar</button>
       </div>
       
       <div id="listaOcorrenciasDetalhada"></div>
       
-      <button class="btn" onclick="gerarPDFInstrucaoDetalhada()">📄 Gerar PDF Instrução Detalhada</button>
+      <div class="btn-group">
+        <button class="btn" onclick="gerarPDFInstrucaoDetalhada()">📄 Gerar PDF da Instrução</button>
+      </div>
     </div>
     
-    <!-- ==================== ABA RELATÓRIO COMPLETO ==================== -->
+    <!-- ==================== ABA RELATÓRIO CONSOLIDADO ==================== -->
     <div id="tabRelatorioCompleto" class="tab-content">
-      <h2>📑 RELATÓRIO CONSOLIDADO COMPLETO DO SISTEMA</h2>
-      <p style="margin-bottom: 20px;">Este relatório contém TODOS os dados da Fiscalização e da Instrução de forma detalhada.</p>
+      <h2>📑 Relatório Consolidado Completo</h2>
+      <p style="color: #718096; margin-bottom: 20px;">Relatório contendo TODOS os dados do sistema de forma detalhada</p>
       
-      <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
-        <button class="btn" onclick="gerarPDFConsolidadoCompleto()">📄 Gerar PDF do Relatório Consolidado Completo</button>
+      <div class="btn-group">
+        <button class="btn" onclick="gerarPDFConsolidadoCompleto()">📄 Gerar PDF do Relatório Consolidado</button>
         <button class="btn btn-warning" onclick="exportarDadosCompletos()">📥 Exportar JSON Completo</button>
       </div>
       
-      <!-- RELATÓRIO CONSOLIDADO COMPLETO NA TELA -->
       <div id="relatorioConsolidadoTela" class="relatorio-detalhado"></div>
     </div>
   </div>
@@ -178,37 +551,24 @@
   <button class="nav-btn" onclick="sairSistema()">🚪 Sair</button>
 </nav>
 
-<footer><p>🚀 Sistema desenvolvido por Tiago Gazzoni Tagliabui | © 2026</p></footer>
+<footer>
+  <p>🚀 Sistema desenvolvido por Tiago Gazzoni Tagliabui | © 2026 - TgT Análise Desenvolvimento de Sistemas</p>
+</footer>
 
 <script>
   let usuarioAtual = null;
-  
-  // Dados da Fiscalização (localStorage)
   let carros = [];
   let viagensPerdidas = [];
   let trocas = [];
-  
-  // Dados da Instrução (localStorage)
   let ocorrencias = [];
-  
-  // Filtros
-  let filtroOccMotorista = '';
-  let filtroOccLocal = '';
-  let filtroOccDBO = '';
+  let filtroOccMotorista = '', filtroOccLocal = '', filtroOccDBO = '';
   
   // ==================== VERIFICAÇÃO DE LOGIN ====================
   function verificarLogin() {
     const usuarioStr = sessionStorage.getItem('usuarioLogado');
-    if (!usuarioStr) {
-      window.location.href = 'index.html';
-      return;
-    }
+    if (!usuarioStr) { window.location.href = 'index.html'; return; }
     usuarioAtual = JSON.parse(usuarioStr);
-    if (usuarioAtual.tipo !== 'gestor') {
-      alert('Acesso restrito a gestores!');
-      window.location.href = 'index.html';
-      return;
-    }
+    if (usuarioAtual.tipo !== 'gestor') { alert('Acesso restrito a gestores!'); window.location.href = 'index.html'; return; }
     document.getElementById('nomeGestor').innerHTML = usuarioAtual.nome.split(' ')[0];
   }
   
@@ -217,32 +577,9 @@
     const carrosSalvos = localStorage.getItem('fiscalizacao_carros');
     const viagensSalvas = localStorage.getItem('fiscalizacao_viagens');
     const trocasSalvas = localStorage.getItem('fiscalizacao_trocas');
-    
     carros = carrosSalvos ? JSON.parse(carrosSalvos) : [];
     viagensPerdidas = viagensSalvas ? JSON.parse(viagensSalvas) : [];
     trocas = trocasSalvas ? JSON.parse(trocasSalvas) : [];
-    
-    // Garantir que viagens_perdidas tenha os campos corretos
-    viagensPerdidas = viagensPerdidas.map(v => ({
-      ...v,
-      ordemCarro: v.ordemCarro || v.carro || 'N/A',
-      linha: v.linha || v.itinerario || 'N/A',
-      horarioProgramado: v.horarioProgramado || v.horario || 'N/A',
-      horarioPerda: v.horarioPerda || v.horario || 'N/A',
-      motivo: v.motivo || 'N/A',
-      dataRegistro: v.dataRegistro || new Date().toISOString()
-    }));
-    
-    // Garantir que trocas tenha os campos corretos
-    trocas = trocas.map(t => ({
-      ...t,
-      carroOriginal: t.carroOriginal || t.carro_original || 'N/A',
-      carroSubstituto: t.carroSubstituto || t.carro_substituto || 'N/A',
-      linha: t.linha || t.itinerario || 'N/A',
-      horario: t.horario || 'N/A',
-      motivo: t.motivo || 'N/A',
-      dataRegistro: t.dataRegistro || new Date().toISOString()
-    }));
   }
   
   function carregarDadosInstrucao() {
@@ -257,15 +594,11 @@
     document.getElementById('totalTrocas').textContent = trocas.length;
     document.getElementById('totalOcorrencias').textContent = ocorrencias.length;
     
-    let totalVeiculos = 0;
-    ocorrencias.forEach(occ => { totalVeiculos += occ.veiculos?.length || 0; });
+    let totalVeiculos = 0, totalTestemunhas = 0;
+    ocorrencias.forEach(occ => { totalVeiculos += occ.veiculos?.length || 0; totalTestemunhas += occ.testemunhas?.length || 0; });
     document.getElementById('totalVeiculosEnvolvidos').textContent = totalVeiculos;
-    
-    let totalTestemunhas = 0;
-    ocorrencias.forEach(occ => { totalTestemunhas += occ.testemunhas?.length || 0; });
     document.getElementById('totalTestemunhas').textContent = totalTestemunhas;
     
-    // Últimas atualizações
     const atualizacoes = [];
     carros.forEach(c => atualizacoes.push({ tipo: '🚌 Carro', desc: `Carro ${c.ordem} - ${c.motorista}`, data: c.dataRegistro }));
     viagensPerdidas.forEach(v => atualizacoes.push({ tipo: '🚫 Viagem Perdida', desc: `Carro ${v.ordemCarro} - ${v.linha}`, data: v.dataRegistro }));
@@ -273,16 +606,11 @@
     ocorrencias.forEach(o => atualizacoes.push({ tipo: '📝 Ocorrência', desc: `${o.nomeMotorista} - ${o.localOcorrencia}`, data: o.dataRegistro }));
     
     atualizacoes.sort((a,b) => new Date(b.data) - new Date(a.data));
-    const ultimas = atualizacoes.slice(0, 20);
+    const ultimas = atualizacoes.slice(0, 15);
     
     const container = document.getElementById('ultimasAtualizacoes');
-    if (ultimas.length === 0) {
-      container.innerHTML = '<p style="text-align:center;padding:20px;">Nenhuma atualização recente.</p>';
-    } else {
-      container.innerHTML = ultimas.map(u => `
-        <div class="card-item"><div style="display:flex;justify-content:space-between;"><span>${u.tipo} <strong>${u.desc}</strong></span><small>${new Date(u.data).toLocaleString('pt-BR')}</small></div></div>
-      `).join('');
-    }
+    if (ultimas.length === 0) container.innerHTML = '<div class="card-item" style="text-align:center;">Nenhuma atualização recente.</div>';
+    else container.innerHTML = ultimas.map(u => `<div class="card-item"><div style="display:flex;justify-content:space-between;"><span>${u.tipo} <strong>${u.desc}</strong></span><small>${new Date(u.data).toLocaleString('pt-BR')}</small></div></div>`).join('');
   }
   
   // ==================== FISCALIZAÇÃO DETALHADA ====================
@@ -291,182 +619,80 @@
     document.getElementById('fisViagensCount').textContent = viagensPerdidas.length;
     document.getElementById('fisTrocasCount').textContent = trocas.length;
     
-    // Lista de Carros Detalhada
     const carrosContainer = document.getElementById('listaCarrosDetalhada');
-    if (carros.length === 0) {
-      carrosContainer.innerHTML = '<p>Nenhum carro cadastrado.</p>';
-    } else {
-      carrosContainer.innerHTML = carros.map(carro => `
-        <div class="card-item">
-          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;">
-            <strong>🚌 Carro: ${carro.ordem}</strong>
-            <span class="badge badge-carro">Setor: ${carro.setor || 'N/A'}</span>
-          </div>
-          <table style="width:100%; margin-top:10px;">
-            <tr><td style="width:120px; border:none;"><strong>Itinerário:</strong></td><td style="border:none;">${carro.itinerario}</td></tr>
-            <tr><td style="border:none;"><strong>Motorista:</strong></td><td style="border:none;">${carro.motorista} (${carro.matricula})</td></tr>
-            <tr><td style="border:none;"><strong>Data Cadastro:</strong></td><td style="border:none;">${new Date(carro.dataRegistro).toLocaleString('pt-BR')}</td></tr>
-            <tr><td style="border:none;"><strong>Total Viagens:</strong></td><td style="border:none;">${carro.viagens?.length || 0}</td></tr>
-          </table>
-          ${carro.viagens && carro.viagens.length > 0 ? `
-            <details style="margin-top:10px;">
-              <summary style="cursor:pointer;color:#00aa55;">📋 Detalhe das ${carro.viagens.length} Viagens</summary>
-              <table style="width:100%; margin-top:10px; font-size:13px;">
-                <thead><tr style="background:#f0f0f0;"><th>#</th><th>Horário PI</th><th>Horário PV</th><th>Observações</th></tr></thead>
-                <tbody>
-                  ${carro.viagens.map((v, i) => `<tr><td>${i+1}</td><td>${v.horarioPI || '---'}</td><td>${v.horarioPV || '---'}</td><td>${v.obs || '-'}</td></tr>`).join('')}
-                </tbody>
-              </table>
-            </details>
-          ` : ''}
+    if (carros.length === 0) carrosContainer.innerHTML = '<div class="card-item">Nenhum carro cadastrado.</div>';
+    else carrosContainer.innerHTML = carros.map(carro => `
+      <div class="card-item">
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;">
+          <strong>🚌 Carro ${carro.ordem}</strong>
+          <span class="badge badge-carro">Setor: ${carro.setor || 'N/A'}</span>
         </div>
-      `).join('');
-    }
+        <div><strong>Itinerário:</strong> ${carro.itinerario}</div>
+        <div><strong>Motorista:</strong> ${carro.motorista} (${carro.matricula})</div>
+        <div><strong>Viagens:</strong> ${carro.viagens?.length || 0}</div>
+        ${carro.viagens && carro.viagens.length > 0 ? `
+          <details><summary>📋 Ver ${carro.viagens.length} viagens</summary>
+            <table style="width:100%; margin-top:10px; font-size:13px;">
+              <thead><tr style="background:#e8f5e9;"><th>#</th><th>Horário PI</th><th>Horário PV</th><th>Observações</th></tr></thead>
+              <tbody>${carro.viagens.map((v, i) => `<tr><td>${i+1}</td><td>${v.horarioPI || '---'}</td><td>${v.horarioPV || '---'}</td><td>${v.obs || '-'}</td></tr>`).join('')}</tbody>
+            </table>
+          </details>
+        ` : ''}
+      </div>
+    `).join('');
     
-    // Viagens Perdidas Detalhado
-    const viagensBody = document.getElementById('viagensPerdidasDetalhado');
-    if (viagensPerdidas.length === 0) {
-      viagensBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Nenhuma viagem perdida registrada</td></tr>';
-    } else {
-      viagensBody.innerHTML = viagensPerdidas.map(v => `
-        <tr>
-          <td>${new Date(v.dataRegistro).toLocaleString('pt-BR')}</td>
-          <td>${v.ordemCarro}</td>
-          <td>${v.linha}</td>
-          <td>${v.horarioProgramado}</td>
-          <td>${v.horarioPerda}</td>
-          <td>${v.motivo}</td>
-          <td>${v.responsavel || 'N/A'}</td>
-        </tr>
-      `).join('');
-    }
+    document.getElementById('viagensPerdidasDetalhado').innerHTML = viagensPerdidas.length === 0 ? '<tr><td colspan="6" style="text-align:center;">Nenhuma viagem perdida</td></tr>' : viagensPerdidas.map(v => `
+      <tr><td>${new Date(v.dataRegistro).toLocaleDateString()}</td><td>${v.ordemCarro}</td><td>${v.linha}</td><td>${v.horarioProgramado}</td><td>${v.horarioPerda}</td><td>${v.motivo}</td></tr>
+    `).join('');
     
-    // Trocas Detalhado
-    const trocasBody = document.getElementById('trocasDetalhado');
-    if (trocas.length === 0) {
-      trocasBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Nenhuma troca registrada</td></tr>';
-    } else {
-      trocasBody.innerHTML = trocas.map(t => `
-        <tr>
-          <td>${new Date(t.dataRegistro).toLocaleString('pt-BR')}</td>
-          <td>${t.carroOriginal}</td>
-          <td>${t.carroSubstituto}</td>
-          <td>${t.linha}</td>
-          <td>${t.horario}</td>
-          <td>${t.motivo}</td>
-        </tr>
-      `).join('');
-    }
+    document.getElementById('trocasDetalhado').innerHTML = trocas.length === 0 ? '<tr><td colspan="5" style="text-align:center;">Nenhuma troca registrada</td></tr>' : trocas.map(t => `
+      <tr><td>${new Date(t.dataRegistro).toLocaleDateString()}</td><td>${t.carroOriginal}</td><td>${t.carroSubstituto}</td><td>${t.linha}</td><td>${t.motivo}</td></tr>
+    `).join('');
   }
   
   // ==================== INSTRUÇÃO DETALHADA ====================
+  function formatarData(data) { if (!data) return ''; const [ano, mes, dia] = data.split('-'); return `${dia}/${mes}/${ano}`; }
+  
   function atualizarInstrucaoDetalhada() {
-    const total = ocorrencias.length;
     const hoje = new Date().toISOString().split('T')[0];
     const dataAtual = new Date();
-    
-    const ocorrenciasMes = ocorrencias.filter(o => {
-      const dataOcc = new Date(o.dataOcorrencia);
-      return dataOcc.getMonth() === dataAtual.getMonth() && dataOcc.getFullYear() === dataAtual.getFullYear();
-    });
-    
-    const ocorrenciasHoje = ocorrencias.filter(o => o.dataOcorrencia === hoje);
-    const comVeiculos = ocorrencias.filter(o => o.veiculos?.length > 0);
-    
-    document.getElementById('occTotal').textContent = total;
-    document.getElementById('occMes').textContent = ocorrenciasMes.length;
-    document.getElementById('occHoje').textContent = ocorrenciasHoje.length;
-    document.getElementById('occComVeiculos').textContent = comVeiculos.length;
-    
+    document.getElementById('occTotal').textContent = ocorrencias.length;
+    document.getElementById('occMes').textContent = ocorrencias.filter(o => { const d = new Date(o.dataOcorrencia); return d.getMonth() === dataAtual.getMonth() && d.getFullYear() === dataAtual.getFullYear(); }).length;
+    document.getElementById('occHoje').textContent = ocorrencias.filter(o => o.dataOcorrencia === hoje).length;
+    document.getElementById('occComVeiculos').textContent = ocorrencias.filter(o => o.veiculos?.length > 0).length;
     atualizarListaOcorrenciasDetalhada();
-  }
-  
-  function formatarData(data) {
-    if (!data) return '';
-    const [ano, mes, dia] = data.split('-');
-    return `${dia}/${mes}/${ano}`;
   }
   
   function atualizarListaOcorrenciasDetalhada() {
     let filtradas = [...ocorrencias];
-    
-    if (filtroOccMotorista) {
-      filtradas = filtradas.filter(o => o.nomeMotorista?.toLowerCase().includes(filtroOccMotorista));
-    }
-    if (filtroOccLocal) {
-      filtradas = filtradas.filter(o => o.localOcorrencia?.toLowerCase().includes(filtroOccLocal));
-    }
-    if (filtroOccDBO) {
-      filtradas = filtradas.filter(o => 
-        o.nroDBO?.toLowerCase().includes(filtroOccDBO) || 
-        o.nroRA?.toLowerCase().includes(filtroOccDBO)
-      );
-    }
+    if (filtroOccMotorista) filtradas = filtradas.filter(o => o.nomeMotorista?.toLowerCase().includes(filtroOccMotorista));
+    if (filtroOccLocal) filtradas = filtradas.filter(o => o.localOcorrencia?.toLowerCase().includes(filtroOccLocal));
+    if (filtroOccDBO) filtradas = filtradas.filter(o => (o.nroDBO?.toLowerCase().includes(filtroOccDBO) || o.nroRA?.toLowerCase().includes(filtroOccDBO)));
     
     const container = document.getElementById('listaOcorrenciasDetalhada');
-    if (filtradas.length === 0) {
-      container.innerHTML = '<p style="text-align:center;padding:40px;">Nenhuma ocorrência encontrada.</p>';
-      return;
-    }
+    if (filtradas.length === 0) { container.innerHTML = '<div class="card-item" style="text-align:center;">Nenhuma ocorrência encontrada.</div>'; return; }
     
     container.innerHTML = filtradas.map(occ => `
-      <div class="card-item" style="border-left-color:#ffaa33;">
-        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;margin-bottom:10px;">
+      <div class="card-item" style="border-left-color:#ed8936;">
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;margin-bottom:8px;">
           <strong>📋 DBO: ${occ.nroDBO || 'N/A'} | RA: ${occ.nroRA || 'N/A'}</strong>
-          <span>📅 Ocorrência: ${formatarData(occ.dataOcorrencia)} às ${occ.horarioOcorrencia}</span>
+          <span>📅 ${formatarData(occ.dataOcorrencia)} às ${occ.horarioOcorrencia}</span>
         </div>
-        
-        <table style="width:100%; margin:10px 0;">
-          <tr><td style="width:140px;"><strong>👨‍✈️ Motorista:</strong></td><td>${occ.nomeMotorista} (${occ.matriculaMotorista})</td></tr>
-          <tr><td><strong>📍 Local:</strong></td><td>${occ.localOcorrencia}</td></tr>
-          <tr><td><strong>🚌 Carro/Itinerário:</strong></td><td>${occ.ordemCarro} - ${occ.itinerario}</td></tr>
-          <tr><td><strong>🌤️ Condições do Tempo:</strong></td><td>${occ.condicoesTempo}</td></tr>
-          <tr><td><strong>🚗 Veículos Envolvidos:</strong></td><td>${occ.veiculos?.length || 0}</td></tr>
-          <tr><td><strong>👤 Responsável pelo Registro:</strong></td><td>${occ.responsavelNome} (${occ.responsavelFuncao}) - Mat: ${occ.responsavelMatricula}</td></tr>
-          <tr><td><strong>📅 Data do Registro:</strong></td><td>${new Date(occ.dataRegistro).toLocaleString('pt-BR')}</td></tr>
-        </table>
-        
-        <details>
-          <summary style="cursor:pointer;color:#00aa55;font-weight:bold;">📝 Ver Detalhes Completos</summary>
-          <div style="margin-top:15px;padding:15px;background:#f5f5f5;border-radius:8px;">
-            <p><strong>📝 DESCRIÇÃO DO ACIDENTE:</strong></p>
-            <p style="margin-left:15px;">${occ.descricaoAcidente || 'Não informado'}</p>
-            
-            ${occ.relatoMotorista ? `<p><strong>💬 RELATO DO MOTORISTA:</strong></p><p style="margin-left:15px;">${occ.relatoMotorista}</p>` : ''}
-            ${occ.relatoTerceiros ? `<p><strong>💬 RELATO DE TERCEIROS:</strong></p><p style="margin-left:15px;">${occ.relatoTerceiros}</p>` : ''}
-            
-            ${occ.veiculos && occ.veiculos.length > 0 ? `
-              <p><strong>🚗 VEÍCULOS ENVOLVIDOS (DETALHADO):</strong></p>
-              ${occ.veiculos.map((veic, idx) => `
-                <div style="margin-left:15px; margin-bottom:10px; padding:10px; background:white; border-radius:8px;">
-                  <strong>Veículo ${idx+1}:</strong><br/>
-                  • Tipo: ${veic.veiculo || 'N/A'}<br/>
-                  • Placa: ${veic.placa || 'N/A'}<br/>
-                  • Modelo/Cor: ${veic.modelo || 'N/A'} / ${veic.cor || 'N/A'}<br/>
-                  • Proprietário: ${veic.proprietario || 'N/A'} (RG: ${veic.rg || 'N/A'})<br/>
-                  • CNH: ${veic.cnh || 'N/A'} (Validade: ${veic.cnhValidade || 'N/A'})<br/>
-                  • Condutor: ${veic.condutorNome || 'N/A'} (RG: ${veic.condutorRg || 'N/A'})<br/>
-                  • CNH Condutor: ${veic.condutorCnh || 'N/A'} (Validade: ${veic.condutorCnhValidade || 'N/A'})
-                </div>
-              `).join('')}
-            ` : ''}
-            
-            ${occ.testemunhas && occ.testemunhas.length > 0 ? `
-              <p><strong>👁️ TESTEMUNHAS:</strong></p>
-              ${occ.testemunhas.map((test, idx) => `
-                <div style="margin-left:15px;">${idx+1}. ${test.nome || 'N/A'} - ${test.documento || 'N/A'} - Tel: ${test.telefone || 'N/A'}</div>
-              `).join('')}
-            ` : ''}
-            
-            ${occ.descricaoVitimas ? `<p><strong>👥 VÍTIMAS:</strong></p><p style="margin-left:15px;">${occ.descricaoVitimas}</p>` : ''}
-            ${occ.descricaoDanos ? `<p><strong>💥 DANOS:</strong></p><p style="margin-left:15px;">${occ.descricaoDanos}</p>` : ''}
+        <div><strong>👨‍✈️ Motorista:</strong> ${occ.nomeMotorista} (${occ.matriculaMotorista})</div>
+        <div><strong>📍 Local:</strong> ${occ.localOcorrencia}</div>
+        <div><strong>🚌 Carro:</strong> ${occ.ordemCarro} - ${occ.itinerario}</div>
+        <details><summary style="margin-top:8px;">📝 Ver detalhes completos</summary>
+          <div style="margin-top:12px;padding:12px;background:#f5f5f5;border-radius:8px;">
+            <p><strong>Descrição:</strong> ${occ.descricaoAcidente || 'N/A'}</p>
+            ${occ.relatoMotorista ? `<p><strong>Relato do Motorista:</strong> ${occ.relatoMotorista}</p>` : ''}
+            ${occ.relatoTerceiros ? `<p><strong>Relato de Terceiros:</strong> ${occ.relatoTerceiros}</p>` : ''}
+            <p><strong>Responsável:</strong> ${occ.responsavelNome} (${occ.responsavelFuncao})</p>
           </div>
         </details>
       </div>
     `).join('');
   }
   
-  // ==================== FILTROS ====================
   function filtrarOcorrenciasGestor() {
     filtroOccMotorista = document.getElementById('filtroOccMotorista').value.toLowerCase();
     filtroOccLocal = document.getElementById('filtroOccLocal').value.toLowerCase();
@@ -478,115 +704,70 @@
     document.getElementById('filtroOccMotorista').value = '';
     document.getElementById('filtroOccLocal').value = '';
     document.getElementById('filtroOccDBO').value = '';
-    filtroOccMotorista = '';
-    filtroOccLocal = '';
-    filtroOccDBO = '';
+    filtroOccMotorista = filtroOccLocal = filtroOccDBO = '';
     atualizarListaOcorrenciasDetalhada();
   }
   
-  // ==================== RELATÓRIO CONSOLIDADO COMPLETO ====================
-  function gerarRelatorioConsolidadoCompleto() {
-    const relatorioDiv = document.getElementById('relatorioConsolidadoTela');
-    
+  // ==================== RELATÓRIO CONSOLIDADO NA TELA ====================
+  function gerarRelatorioConsolidadoTela() {
     let totalViagensRegistradas = 0;
-    carros.forEach(c => { totalViagensRegistradas += c.viagens?.length || 0; });
+    carros.forEach(c => totalViagensRegistradas += c.viagens?.length || 0);
+    let totalVeiculos = 0, totalTestemunhas = 0;
+    ocorrencias.forEach(o => { totalVeiculos += o.veiculos?.length || 0; totalTestemunhas += o.testemunhas?.length || 0; });
     
-    let totalVeiculosEnvolvidos = 0;
-    ocorrencias.forEach(o => { totalVeiculosEnvolvidos += o.veiculos?.length || 0; });
-    
-    let totalTestemunhas = 0;
-    ocorrencias.forEach(o => { totalTestemunhas += o.testemunhas?.length || 0; });
-    
-    let ocorrenciasComVitimas = ocorrencias.filter(o => o.houveVitimas === 'sim').length;
-    let ocorrenciasComDanos = ocorrencias.filter(o => o.houveDanos === 'sim').length;
-    
+    const relatorioDiv = document.getElementById('relatorioConsolidadoTela');
     relatorioDiv.innerHTML = `
       <div style="text-align:center; margin-bottom:30px;">
-        <h2 style="color:#00aa55;">CIDADE REAL</h2>
+        <h2 style="color:#2e7d5e;">CIDADE REAL</h2>
         <h3>RELATÓRIO CONSOLIDADO COMPLETO DO SISTEMA</h3>
         <p>Data de emissão: ${new Date().toLocaleString('pt-BR')}</p>
         <p>Emitido por: ${usuarioAtual?.nome || 'Gestor'}</p>
       </div>
       
       <div class="relatorio-secao">
-        <div class="relatorio-titulo">📊 RESUMO GERAL DO SISTEMA</div>
+        <div class="relatorio-titulo">📊 RESUMO GERAL</div>
         <table style="width:100%;">
-          <tr><td style="width:50%;"><strong>Total de Carros na Escala:</strong></td><td>${carros.length}</td></tr>
-          <tr><td><strong>Total de Viagens Perdidas:</strong></td><td>${viagensPerdidas.length}</td></tr>
-          <tr><td><strong>Total de Trocas de Carros:</strong></td><td>${trocas.length}</td></tr>
-          <tr><td><strong>Total de Viagens Registradas:</strong></td><td>${totalViagensRegistradas}</td></tr>
-          <tr><td><strong>Total de Ocorrências:</strong></td><td>${ocorrencias.length}</td></tr>
-          <tr><td><strong>Total de Veículos Envolvidos em Ocorrências:</strong></td><td>${totalVeiculosEnvolvidos}</td></tr>
-          <tr><td><strong>Total de Testemunhas Registradas:</strong></td><td>${totalTestemunhas}</td></tr>
-          <tr><td><strong>Ocorrências com Vítimas:</strong></td><td>${ocorrenciasComVitimas}</td></tr>
-          <tr><td><strong>Ocorrências com Danos:</strong></td><td>${ocorrenciasComDanos}</td></tr>
+          <tr><td style="width:50%;"><strong>Carros na Escala:</strong></td><td>${carros.length}</td></tr>
+          <tr><td><strong>Viagens Perdidas:</strong></td><td>${viagensPerdidas.length}</td></tr>
+          <tr><td><strong>Trocas de Carros:</strong></td><td>${trocas.length}</td></tr>
+          <tr><td><strong>Viagens Registradas:</strong></td><td>${totalViagensRegistradas}</td></tr>
+          <tr><td><strong>Ocorrências:</strong></td><td>${ocorrencias.length}</td></tr>
+          <tr><td><strong>Veículos Envolvidos:</strong></td><td>${totalVeiculos}</td></tr>
+          <tr><td><strong>Testemunhas:</strong></td><td>${totalTestemunhas}</td></tr>
         </table>
       </div>
       
       <div class="relatorio-secao">
-        <div class="relatorio-titulo">🚌 DETALHAMENTO DA FISCALIZAÇÃO</div>
-        <h4>Carros Cadastrados na Escala:</h4>
+        <div class="relatorio-titulo">🚌 FISCALIZAÇÃO</div>
+        <div class="relatorio-subtitulo">Carros Cadastrados (${carros.length})</div>
         ${carros.length === 0 ? '<p>Nenhum carro cadastrado.</p>' : `
-          <table style="width:100%; border-collapse:collapse;">
-            <thead><tr style="background:#e8f5e9;"><th>Ordem</th><th>Itinerário</th><th>Motorista</th><th>Matrícula</th><th>Setor</th><th>Viagens</th></tr></thead>
-            <tbody>
-              ${carros.map(c => `<tr><td>${c.ordem}</td><td>${c.itinerario}</td><td>${c.motorista}</td><td>${c.matricula}</td><td>${c.setor || 'N/A'}</td><td>${c.viagens?.length || 0}</td></tr>`).join('')}
-            </tbody>
+          <table style="width:100%;">
+            <thead><tr><th>Ordem</th><th>Itinerário</th><th>Motorista</th><th>Setor</th><th>Viagens</th></tr></thead>
+            <tbody>${carros.map(c => `<tr><td>${c.ordem}</td><td>${c.itinerario}</td><td>${c.motorista}</td><td>${c.setor || 'N/A'}</td><td>${c.viagens?.length || 0}</td></tr>`).join('')}</tbody>
           </table>
         `}
         
-        <h4 style="margin-top:20px;">Viagens Perdidas:</h4>
-        ${viagensPerdidas.length === 0 ? '<p>Nenhuma viagem perdida registrada.</p>' : `
-          <table style="width:100%; border-collapse:collapse;">
-            <thead><tr style="background:#e8f5e9;"><th>Data</th><th>Carro</th><th>Linha</th><th>Hr Programado</th><th>Hr Perda</th><th>Motivo</th></tr></thead>
-            <tbody>
-              ${viagensPerdidas.map(v => `<tr><td>${new Date(v.dataRegistro).toLocaleDateString('pt-BR')}</td><td>${v.ordemCarro}</td><td>${v.linha}</td><td>${v.horarioProgramado}</td><td>${v.horarioPerda}</td><td>${v.motivo}</td></tr>`).join('')}
-            </tbody>
-          </table>
-        `}
-        
-        <h4 style="margin-top:20px;">Trocas de Carros:</h4>
-        ${trocas.length === 0 ? '<p>Nenhuma troca registrada.</p>' : `
-          <table style="width:100%; border-collapse:collapse;">
-            <thead><tr style="background:#e8f5e9;"><th>Data</th><th>Carro Original</th><th>Carro Substituto</th><th>Linha</th><th>Motivo</th></tr></thead>
-            <tbody>
-              ${trocas.map(t => `<tr><td>${new Date(t.dataRegistro).toLocaleDateString('pt-BR')}</td><td>${t.carroOriginal}</td><td>${t.carroSubstituto}</td><td>${t.linha}</td><td>${t.motivo}</td></tr>`).join('')}
-            </tbody>
+        <div class="relatorio-subtitulo">Viagens Perdidas (${viagensPerdidas.length})</div>
+        ${viagensPerdidas.length === 0 ? '<p>Nenhuma viagem perdida.</p>' : `
+          <table style="width:100%;">
+            <thead><tr><th>Data</th><th>Carro</th><th>Linha</th><th>Motivo</th></tr></thead>
+            <tbody>${viagensPerdidas.slice(0,20).map(v => `<tr><td>${new Date(v.dataRegistro).toLocaleDateString()}</td><td>${v.ordemCarro}</td><td>${v.linha}</td><td>${v.motivo.substring(0,50)}</td></tr>`).join('')}</tbody>
           </table>
         `}
       </div>
       
       <div class="relatorio-secao">
-        <div class="relatorio-titulo">📝 DETALHAMENTO DA INSTRUÇÃO (OCORRÊNCIAS)</div>
-        ${ocorrencias.length === 0 ? '<p>Nenhuma ocorrência registrada.</p>' : ocorrencias.map((occ, idx) => `
-          <div style="margin-bottom:25px; padding:15px; border:1px solid #ddd; border-radius:8px;">
-            <h4 style="color:#00aa55;">OCORRÊNCIA #${idx+1} - DBO: ${occ.nroDBO || 'N/A'} | RA: ${occ.nroRA || 'N/A'}</h4>
-            <table style="width:100%; margin-top:10px;">
-              <tr><td style="width:180px;"><strong>Data/Hora:</strong></td><td>${formatarData(occ.dataOcorrencia)} às ${occ.horarioOcorrencia}</td></tr>
-              <tr><td><strong>Local:</strong></td><td>${occ.localOcorrencia}</td></tr>
-              <tr><td><strong>Motorista:</strong></td><td>${occ.nomeMotorista} (${occ.matriculaMotorista})</td></tr>
-              <tr><td><strong>Carro/Itinerário:</strong></td><td>${occ.ordemCarro} - ${occ.itinerario}</td></tr>
-              <tr><td><strong>Condições do Tempo:</strong></td><td>${occ.condicoesTempo}</td></tr>
-              <tr><td><strong>Responsável:</strong></td><td>${occ.responsavelNome} (${occ.responsavelFuncao}) - Mat: ${occ.responsavelMatricula}</td></tr>
-              <tr><td><strong>Descrição:</strong></td><td>${occ.descricaoAcidente || 'N/A'}</td></tr>
-              ${occ.relatoMotorista ? `<tr><td><strong>Relato do Motorista:</strong></td><td>${occ.relatoMotorista}</td></tr>` : ''}
-              ${occ.relatoTerceiros ? `<tr><td><strong>Relato de Terceiros:</strong></td><td>${occ.relatoTerceiros}</td></tr>` : ''}
-            </table>
-            ${occ.veiculos && occ.veiculos.length > 0 ? `
-              <h5 style="margin-top:10px;">Veículos Envolvidos:</h5>
-              <table style="width:100%; font-size:13px;">
-                <thead><tr style="background:#f0f0f0;"><th>#</th><th>Veículo</th><th>Placa</th><th>Condutor</th><th>Proprietário</th></tr></thead>
-                <tbody>
-                  ${occ.veiculos.map((veic, vidx) => `<tr><td>${vidx+1}</td><td>${veic.veiculo || 'N/A'}</td><td>${veic.placa || 'N/A'}</td><td>${veic.condutorNome || 'N/A'}</td><td>${veic.proprietario || 'N/A'}</td></tr>`).join('')}
-                </tbody>
-              </table>
-            ` : ''}
-            ${occ.testemunhas && occ.testemunhas.length > 0 ? `
-              <h5 style="margin-top:10px;">Testemunhas:</h5>
-              <ul>${occ.testemunhas.map(t => `<li>${t.nome || 'N/A'} - ${t.documento || 'N/A'} - Tel: ${t.telefone || 'N/A'}</li>`).join('')}</ul>
-            ` : ''}
+        <div class="relatorio-titulo">📝 INSTRUÇÃO (OCORRÊNCIAS)</div>
+        ${ocorrencias.length === 0 ? '<p>Nenhuma ocorrência registrada.</p>' : ocorrencias.slice(0,15).map((occ, idx) => `
+          <div style="margin-bottom:20px; padding:12px; border:1px solid #e2e8f0; border-radius:12px;">
+            <h4 style="color:#2e7d5e;">Ocorrência #${idx+1} - DBO: ${occ.nroDBO || 'N/A'}</h4>
+            <p><strong>Data:</strong> ${formatarData(occ.dataOcorrencia)} às ${occ.horarioOcorrencia}</p>
+            <p><strong>Motorista:</strong> ${occ.nomeMotorista}</p>
+            <p><strong>Local:</strong> ${occ.localOcorrencia}</p>
+            <p><strong>Descrição:</strong> ${occ.descricaoAcidente?.substring(0,100)}...</p>
           </div>
         `).join('')}
+        ${ocorrencias.length > 15 ? `<p style="text-align:center;">... e mais ${ocorrencias.length - 15} ocorrências</p>` : ''}
       </div>
       
       <div style="margin-top:30px; text-align:center; border-top:1px solid #ddd; padding-top:15px;">
@@ -594,184 +775,658 @@
         <p>Data: ${new Date().toLocaleString('pt-BR')}</p>
       </div>
     `;
-    
-    alert('Relatório consolidado gerado na tela!');
   }
   
-  // ==================== PDFs COMPLETOS ====================
+  // ==================== FUNÇÕES DE PDF ====================
   async function gerarPDFFiscalizacaoDetalhada() {
-    if (carros.length === 0 && viagensPerdidas.length === 0 && trocas.length === 0) {
-      alert('Nenhum dado de fiscalização para gerar PDF!');
-      return;
-    }
-    
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'mm', 'a4');
-    let y = 20;
-    
-    doc.setFontSize(18); doc.text('RELATORIO DETALHADO DE FISCALIZACAO', 105, y, { align: 'center' }); y += 15;
-    doc.setFontSize(10); doc.text(`Data: ${new Date().toLocaleString('pt-BR')}`, 105, y, { align: 'center' }); y += 15;
-    
-    doc.setFontSize(12); doc.text(`Carros na Escala: ${carros.length}`, 20, y); y += 8;
-    doc.text(`Viagens Perdidas: ${viagensPerdidas.length}`, 20, y); y += 8;
-    doc.text(`Trocas de Carros: ${trocas.length}`, 20, y); y += 15;
-    
-    if (carros.length > 0) {
-      doc.setFontSize(12); doc.text('CARROS CADASTRADOS:', 20, y); y += 8;
-      for (const c of carros) {
-        if (y > 260) { doc.addPage(); y = 20; }
-        doc.setFontSize(9);
-        doc.text(`Carro: ${c.ordem} - ${c.itinerario}`, 25, y); y += 5;
-        doc.text(`Motorista: ${c.motorista} (${c.matricula}) - Setor: ${c.setor || 'N/A'}`, 30, y); y += 5;
-        doc.text(`Viagens: ${c.viagens?.length || 0}`, 30, y); y += 5;
-      }
-      y += 5;
-    }
-    
-    if (viagensPerdidas.length > 0) {
-      if (y > 260) { doc.addPage(); y = 20; }
-      doc.setFontSize(12); doc.text('VIAGENS PERDIDAS:', 20, y); y += 8;
-      for (const v of viagensPerdidas) {
-        if (y > 260) { doc.addPage(); y = 20; }
-        doc.setFontSize(9);
-        doc.text(`Carro: ${v.ordemCarro} - Linha: ${v.linha}`, 25, y); y += 5;
-        doc.text(`Horario Programado: ${v.horarioProgramado} | Perda: ${v.horarioPerda}`, 30, y); y += 5;
-        doc.text(`Motivo: ${v.motivo}`, 30, y); y += 5;
-      }
-    }
-    
-    doc.save(`relatorio_fiscalizacao_detalhado_${new Date().toISOString().slice(0,10)}.pdf`);
-    alert('PDF gerado!');
+    if (carros.length === 0 && viagensPerdidas.length === 0) { alert('⚠️ Nenhum dado para gerar PDF!'); return; }
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      let y = 20;
+      doc.setFontSize(20); doc.setTextColor(0,100,80); doc.text('CIDADE REAL', 105, y, { align: 'center' }); y += 12;
+      doc.setFontSize(14); doc.setTextColor(0,120,100); doc.text('RELATÓRIO DETALHADO DE FISCALIZAÇÃO', 105, y, { align: 'center' }); y += 12;
+      doc.setFontSize(9); doc.setTextColor(100,100,100); doc.text(`Data: ${new Date().toLocaleString('pt-BR')}`, 105, y, { align: 'center' }); y += 15;
+      doc.setFontSize(11); doc.text(`Carros: ${carros.length} | Viagens Perdidas: ${viagensPerdidas.length} | Trocas: ${trocas.length}`, 14, y); y += 15;
+      for (const c of carros) { if (y > 270) { doc.addPage(); y = 20; } doc.setFontSize(10); doc.text(`Carro ${c.ordem}: ${c.itinerario} - ${c.motorista}`, 14, y); y += 6; }
+      doc.save(`relatorio_fiscalizacao_${new Date().toISOString().slice(0,10)}.pdf`);
+      alert('✅ PDF gerado com sucesso!');
+    } catch(e) { alert('❌ Erro ao gerar PDF'); }
   }
   
+    // ==================== PDF DA INSTRUÇÃO (COMPLETO, IGUAL AO DA INSTRUÇÃO) ====================
   async function gerarPDFInstrucaoDetalhada() {
-    if (ocorrencias.length === 0) {
-      alert('Nenhuma ocorrencia para gerar PDF!');
-      return;
+    if (ocorrencias.length === 0) { 
+      alert('⚠️ Nenhuma ocorrência para gerar PDF!'); 
+      return; 
     }
     
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'mm', 'a4');
-    let y = 20;
-    
-    doc.setFontSize(18); doc.text('RELATORIO DETALHADO DE OCORRENCIAS', 105, y, { align: 'center' }); y += 15;
-    doc.setFontSize(10); doc.text(`Total: ${ocorrencias.length} ocorrencias`, 105, y, { align: 'center' }); y += 15;
-    
-    for (let i = 0; i < ocorrencias.length; i++) {
-      const o = ocorrencias[i];
-      if (y > 260) { doc.addPage(); y = 20; }
+    try {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      let y = 20;
       
-      doc.setFontSize(11); doc.setFont('helvetica', 'bold');
-      doc.text(`OCORRENCIA #${i+1} - DBO: ${o.nroDBO || 'N/A'}`, 20, y); y += 7;
-      doc.setFontSize(9); doc.setFont('helvetica', 'normal');
-      doc.text(`Data: ${formatarData(o.dataOcorrencia)} as ${o.horarioOcorrencia}`, 25, y); y += 5;
-      doc.text(`Motorista: ${o.nomeMotorista} (${o.matriculaMotorista})`, 25, y); y += 5;
-      doc.text(`Local: ${o.localOcorrencia}`, 25, y); y += 5;
-      doc.text(`Carro: ${o.ordemCarro} - ${o.itinerario}`, 25, y); y += 5;
-      doc.text(`Responsavel: ${o.responsavelNome} (${o.responsavelFuncao})`, 25, y); y += 5;
-      doc.text(`Descricao: ${(o.descricaoAcidente || '').substring(0, 150)}...`, 25, y); y += 8;
-      if (o.relatoMotorista) doc.text(`Relato Motorista: ${(o.relatoMotorista || '').substring(0, 100)}...`, 25, y); y += 5;
-      doc.line(20, y, 190, y); y += 5;
+      // ===== CABEÇALHO =====
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(20); 
+      doc.setTextColor(0, 100, 80); 
+      doc.text('CIDADE REAL', 105, y, { align: 'center' }); 
+      y += 10;
+      
+      doc.setFontSize(16); 
+      doc.setTextColor(0, 120, 100); 
+      doc.text('BOLETIM DE OCORRENCIA OPERACIONAL', 105, y, { align: 'center' }); 
+      y += 10;
+      
+      doc.setFontSize(10); 
+      doc.setTextColor(100, 100, 100);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Emitido em: ${new Date().toLocaleString('pt-BR')}`, 105, y, { align: 'center' }); 
+      y += 15;
+      
+      // ===== PERCORRE TODAS AS OCORRÊNCIAS =====
+      for (let idx = 0; idx < ocorrencias.length; idx++) {
+        const o = ocorrencias[idx];
+        
+        // Verifica se precisa de nova página
+        if (y > 260) { 
+          doc.addPage(); 
+          y = 20; 
+        }
+        
+        // ===== LINHA SEPARADORA =====
+        doc.setDrawColor(0, 100, 80);
+        doc.line(15, y-2, 195, y-2);
+        
+        // ===== TÍTULO DA OCORRÊNCIA =====
+        doc.setFillColor(0, 100, 80); 
+        doc.rect(15, y, 180, 8, 'F'); 
+        doc.setTextColor(255, 255, 255); 
+        doc.setFontSize(11); 
+        doc.setFont('helvetica', 'bold');
+        doc.text(`OCORRENCIA #${idx+1} - DBO: ${o.nroDBO || 'N/A'} | RA: ${o.nroRA || 'N/A'}`, 20, y+6); 
+        y += 12;
+        
+        // ===== DADOS DA OCORRENCIA =====
+        doc.setTextColor(0, 0, 0); 
+        doc.setFontSize(10); 
+        doc.setFont('helvetica', 'normal');
+        
+        doc.setFont('helvetica', 'bold'); 
+        doc.text('DADOS DA OCORRENCIA', 20, y); 
+        y += 6;
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Data/Hora: ${formatarData(o.dataOcorrencia)} as ${o.horarioOcorrencia}`, 25, y); 
+        y += 5;
+        doc.text(`Local: ${o.localOcorrencia}`, 25, y); 
+        y += 5;
+        doc.text(`Condicoes do Tempo: ${o.condicoesTempo || 'N/A'}`, 25, y); 
+        y += 8;
+        
+        // ===== DADOS DO MOTORISTA =====
+        doc.setFont('helvetica', 'bold'); 
+        doc.text('DADOS DO MOTORISTA', 20, y); 
+        y += 6;
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Nome: ${o.nomeMotorista}`, 25, y); 
+        y += 5;
+        doc.text(`Matricula: ${o.matriculaMotorista}`, 25, y); 
+        y += 5;
+        doc.text(`Carro: ${o.ordemCarro} - Itinerario: ${o.itinerario}`, 25, y); 
+        y += 8;
+        
+        // ===== VEICULOS ENVOLVIDOS =====
+        if (o.veiculos && o.veiculos.length > 0) {
+          if (y > 260) { 
+            doc.addPage(); 
+            y = 20; 
+          }
+          doc.setFont('helvetica', 'bold'); 
+          doc.text('VEICULOS ENVOLVIDOS', 20, y); 
+          y += 6;
+          doc.setFont('helvetica', 'normal');
+          
+          for (let v = 0; v < o.veiculos.length; v++) {
+            const veic = o.veiculos[v];
+            if (y > 270) { 
+              doc.addPage(); 
+              y = 20; 
+            }
+            doc.text(`Veiculo ${v+1}: ${veic.veiculo || 'N/A'} - Placa: ${veic.placa || 'N/A'}`, 25, y); 
+            y += 4;
+            if (veic.modelo) doc.text(`   Modelo: ${veic.modelo} | Cor: ${veic.cor || 'N/A'}`, 30, y); 
+            y += 4;
+            if (veic.proprietario) doc.text(`   Proprietario: ${veic.proprietario} | RG: ${veic.rg || 'N/A'}`, 30, y); 
+            y += 4;
+            if (veic.cnh) doc.text(`   CNH: ${veic.cnh} | Validade: ${veic.cnhValidade || 'N/A'}`, 30, y); 
+            y += 4;
+            if (veic.condutorNome) doc.text(`   Condutor: ${veic.condutorNome} | RG: ${veic.condutorRg || 'N/A'}`, 30, y); 
+            y += 4;
+            if (veic.condutorCnh) doc.text(`   CNH Condutor: ${veic.condutorCnh} | Validade: ${veic.condutorCnhValidade || 'N/A'}`, 30, y); 
+            y += 4;
+          }
+          y += 3;
+        }
+        
+        // ===== VITIMAS =====
+        if (o.houveVitimas === 'sim' && o.descricaoVitimas) {
+          if (y > 270) { 
+            doc.addPage(); 
+            y = 20; 
+          }
+          doc.setFont('helvetica', 'bold'); 
+          doc.text('VITIMAS', 20, y); 
+          y += 6;
+          doc.setFont('helvetica', 'normal');
+          const vitText = doc.splitTextToSize(o.descricaoVitimas, 160);
+          vitText.forEach(line => { 
+            if (y > 270) { 
+              doc.addPage(); 
+              y = 20; 
+            }
+            doc.text(line, 25, y); 
+            y += 4; 
+          });
+          y += 3;
+        }
+        
+        // ===== DANOS =====
+        if (o.houveDanos === 'sim' && o.descricaoDanos) {
+          if (y > 270) { 
+            doc.addPage(); 
+            y = 20; 
+          }
+          doc.setFont('helvetica', 'bold'); 
+          doc.text('DANOS', 20, y); 
+          y += 6;
+          doc.setFont('helvetica', 'normal');
+          const danText = doc.splitTextToSize(o.descricaoDanos, 160);
+          danText.forEach(line => { 
+            if (y > 270) { 
+              doc.addPage(); 
+              y = 20; 
+            }
+            doc.text(line, 25, y); 
+            y += 4; 
+          });
+          y += 3;
+        }
+        
+        // ===== TESTEMUNHAS =====
+        if (o.testemunhas && o.testemunhas.length > 0) {
+          if (y > 270) { 
+            doc.addPage(); 
+            y = 20; 
+          }
+          doc.setFont('helvetica', 'bold'); 
+          doc.text('TESTEMUNHAS', 20, y); 
+          y += 6;
+          doc.setFont('helvetica', 'normal');
+          for (let t = 0; t < o.testemunhas.length; t++) {
+            const test = o.testemunhas[t];
+            if (y > 270) { 
+              doc.addPage(); 
+              y = 20; 
+            }
+            doc.text(`${t+1}. ${test.nome || 'N/A'}`, 25, y); 
+            y += 4;
+            if (test.documento) doc.text(`   Documento: ${test.documento} | Telefone: ${test.telefone || 'N/A'}`, 30, y); 
+            y += 4;
+          }
+          y += 3;
+        }
+        
+        // ===== DESCRICAO DO ACIDENTE =====
+        if (y > 270) { 
+          doc.addPage(); 
+          y = 20; 
+        }
+        doc.setFont('helvetica', 'bold'); 
+        doc.text('DESCRICAO DO ACIDENTE', 20, y); 
+        y += 6;
+        doc.setFont('helvetica', 'normal');
+        const descText = doc.splitTextToSize(o.descricaoAcidente || '', 160);
+        descText.forEach(line => { 
+          if (y > 270) { 
+            doc.addPage(); 
+            y = 20; 
+          }
+          doc.text(line, 25, y); 
+          y += 4; 
+        });
+        y += 5;
+        
+        // ===== RELATO DO MOTORISTA =====
+        if (o.relatoMotorista && o.relatoMotorista.trim() !== '') {
+          if (y > 270) { 
+            doc.addPage(); 
+            y = 20; 
+          }
+          doc.setFont('helvetica', 'bold'); 
+          doc.text('RELATO DO MOTORISTA (COLABORADOR)', 20, y); 
+          y += 6;
+          doc.setFont('helvetica', 'normal');
+          const relatoMotText = doc.splitTextToSize(o.relatoMotorista, 160);
+          relatoMotText.forEach(line => { 
+            if (y > 270) { 
+              doc.addPage(); 
+              y = 20; 
+            }
+            doc.text(line, 25, y); 
+            y += 4; 
+          });
+          y += 5;
+        }
+        
+        // ===== RELATO DE TERCEIROS =====
+        if (o.relatoTerceiros && o.relatoTerceiros.trim() !== '') {
+          if (y > 270) { 
+            doc.addPage(); 
+            y = 20; 
+          }
+          doc.setFont('helvetica', 'bold'); 
+          doc.text('RELATO DE TERCEIROS', 20, y); 
+          y += 6;
+          doc.setFont('helvetica', 'normal');
+          const relatoTerText = doc.splitTextToSize(o.relatoTerceiros, 160);
+          relatoTerText.forEach(line => { 
+            if (y > 270) { 
+              doc.addPage(); 
+              y = 20; 
+            }
+            doc.text(line, 25, y); 
+            y += 4; 
+          });
+          y += 5;
+        }
+        
+        // ===== RESPONSAVEL =====
+        if (y > 270) { 
+          doc.addPage(); 
+          y = 20; 
+        }
+        doc.setFont('helvetica', 'bold'); 
+        doc.text('RESPONSAVEL PELO REGISTRO', 20, y); 
+        y += 6;
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Nome: ${o.responsavelNome}`, 25, y); 
+        y += 5;
+        doc.text(`Matricula: ${o.responsavelMatricula}`, 25, y); 
+        y += 5;
+        doc.text(`Funcao: ${o.responsavelFuncao}`, 25, y); 
+        y += 5;
+        doc.text(`Data do registro: ${new Date(o.dataRegistro).toLocaleString('pt-BR')}`, 25, y); 
+        y += 10;
+        
+        // ===== ASSINATURAS =====
+        doc.setDrawColor(0, 0, 0);
+        doc.line(20, y, 90, y); 
+        doc.setFontSize(9); 
+        doc.text('Assinatura do Responsavel', 55, y+5, { align: 'center' });
+        doc.line(110, y, 180, y); 
+        doc.text('Assinatura do Motorista', 145, y+5, { align: 'center' });
+        y += 15;
+        doc.line(15, y, 195, y);
+        y += 10;
+      }
+      
+      // ===== SALVAR PDF =====
+      const nomeArquivo = `relatorio_instrucao_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.pdf`;
+      doc.save(nomeArquivo);
+      alert('✅ PDF da Instrução gerado com sucesso!');
+      
+    } catch(e) { 
+      console.error(e); 
+      alert('❌ Erro ao gerar PDF da Instrução'); 
     }
-    
-    doc.save(`relatorio_instrucao_detalhado_${new Date().toISOString().slice(0,10)}.pdf`);
-    alert('PDF gerado!');
   }
   
+    // ==================== FUNÇÃO PRINCIPAL: PDF CONSOLIDADO COM DESIGN DA FISCALIZAÇÃO ====================
   async function gerarPDFConsolidadoCompleto() {
+    // Verifica se há dados
+    const totalViagens = carros.reduce((sum, c) => sum + (c.viagens ? c.viagens.length : 0), 0);
+    
     if (carros.length === 0 && viagensPerdidas.length === 0 && trocas.length === 0 && ocorrencias.length === 0) {
-      alert('Nenhum dado para gerar o relatorio consolidado!');
+      alert('⚠️ Não há dados para gerar o relatório consolidado!');
       return;
     }
     
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('p', 'mm', 'a4');
-    let y = 20;
-    
-    doc.setFontSize(20); doc.setTextColor(0,100,80); doc.text('CIDADE REAL', 105, y, { align: 'center' }); y += 12;
-    doc.setFontSize(16); doc.setTextColor(0,120,100); doc.text('RELATORIO CONSOLIDADO COMPLETO', 105, y, { align: 'center' }); y += 12;
-    doc.setFontSize(10); doc.setTextColor(100,100,100); doc.text(`Emitido em: ${new Date().toLocaleString('pt-BR')}`, 105, y, { align: 'center' }); y += 15;
-    doc.setTextColor(0,0,0);
-    
-    doc.setFontSize(12); doc.text('RESUMO GERAL:', 20, y); y += 8;
-    doc.setFontSize(10);
-    doc.text(`Carros na Escala: ${carros.length}`, 25, y); y += 6;
-    doc.text(`Viagens Perdidas: ${viagensPerdidas.length}`, 25, y); y += 6;
-    doc.text(`Trocas de Carros: ${trocas.length}`, 25, y); y += 6;
-    doc.text(`Ocorrencias Registradas: ${ocorrencias.length}`, 25, y); y += 10;
-    
-    doc.setFontSize(12); doc.text('FISCALIZACAO - DETALHES:', 20, y); y += 8;
-    doc.setFontSize(10);
-    for (const c of carros) {
-      if (y > 260) { doc.addPage(); y = 20; }
-      doc.text(`Carro: ${c.ordem} - ${c.itinerario} (${c.motorista})`, 25, y); y += 5;
-      doc.text(`   Setor: ${c.setor || 'N/A'} | Viagens: ${c.viagens?.length || 0}`, 30, y); y += 5;
+    try {
+      const { jsPDF } = window.jspdf;
+      
+      // ===== CONFIGURAÇÃO DO DOCUMENTO =====
+      const doc = new jsPDF({ 
+        orientation: 'portrait', 
+        unit: 'mm', 
+        format: 'a4',
+        compress: true
+      });
+      
+      let yOffset = 20;
+      const margemEsquerda = 14;
+      const margemDireita = 14;
+      const larguraUtil = 210 - margemEsquerda - margemDireita;
+      
+      // ===== CABEÇALHO =====
+      // Título principal - Usando texto simples sem caracteres especiais problemáticos
+      doc.setFontSize(22);
+      doc.setTextColor(0, 100, 80);
+      doc.setFont(undefined, 'bold');
+      doc.text('CIDADE REAL', 105, yOffset, { align: 'center' });
+      yOffset += 12;
+      
+      // Subtítulo
+      doc.setFontSize(16);
+      doc.setTextColor(0, 120, 100);
+      doc.setFont(undefined, 'bold');
+      doc.text('RELATORIO CONSOLIDADO DE FISCALIZACAO', 105, yOffset, { align: 'center' });
+      yOffset += 10;
+      
+      // Data de emissão
+      doc.setFontSize(9);
+      doc.setTextColor(80, 80, 80);
+      doc.setFont(undefined, 'normal');
+      doc.text(`Data de emissao: ${new Date().toLocaleString('pt-BR')}`, 105, yOffset, { align: 'center' });
+      yOffset += 8;
+      
+      // Emitido por
+      doc.text(`Emitido por: ${usuarioAtual?.nome || 'Gestor'}`, 105, yOffset, { align: 'center' });
+      yOffset += 15;
+      
+      // ===== RESUMO GERAL =====
+      // Calcula total de viagens registradas
+      let totalViagensRegistradas = 0;
+      carros.forEach(c => totalViagensRegistradas += c.viagens?.length || 0);
+      
+      let totalVeiculos = 0, totalTestemunhas = 0;
+      ocorrencias.forEach(o => { 
+        totalVeiculos += o.veiculos?.length || 0; 
+        totalTestemunhas += o.testemunhas?.length || 0; 
+      });
+      
+      doc.setFontSize(11);
+      doc.setTextColor(0, 0, 0);
+      doc.setFont(undefined, 'bold');
+      doc.text('RESUMO GERAL', margemEsquerda, yOffset);
+      yOffset += 8;
+      
+      doc.setFontSize(9);
+      doc.setFont(undefined, 'normal');
+      
+      const resumoItems = [
+        `• Total de carros cadastrados: ${carros.length}`,
+        `• Total de viagens registradas: ${totalViagensRegistradas}`,
+        `• Total de viagens perdidas: ${viagensPerdidas.length}`,
+        `• Total de trocas de carros: ${trocas.length}`,
+        `• Total de ocorrencias: ${ocorrencias.length}`,
+        `• Total de veiculos envolvidos: ${totalVeiculos}`,
+        `• Total de testemunhas: ${totalTestemunhas}`
+      ];
+      
+      resumoItems.forEach(item => {
+        if (yOffset > 270) {
+          doc.addPage();
+          yOffset = 20;
+        }
+        doc.text(item, margemEsquerda + 6, yOffset);
+        yOffset += 6;
+      });
+      
+      yOffset += 5;
+      
+      // ===== 1. ESCALA DE CARROS =====
+      if (carros.length > 0) {
+        if (yOffset > 250) {
+          doc.addPage();
+          yOffset = 20;
+        }
+        
+        doc.setFontSize(12);
+        doc.setTextColor(0, 120, 100);
+        doc.setFont(undefined, 'bold');
+        doc.text('1. ESCALA DE CARROS PI/PV', margemEsquerda, yOffset);
+        yOffset += 10;
+        
+        for (const carro of carros) {
+          if (yOffset > 260) {
+            doc.addPage();
+            yOffset = 20;
+          }
+          
+          doc.setFontSize(10);
+          doc.setTextColor(0, 0, 0);
+          doc.setFont(undefined, 'bold');
+          doc.text(`Carro: ${carro.ordem} | Itinerario: ${carro.itinerario}`, margemEsquerda, yOffset);
+          yOffset += 6;
+          
+          doc.setFontSize(8);
+          doc.setFont(undefined, 'normal');
+          doc.text(`Motorista: ${carro.motorista} | Matricula: ${carro.matricula} | Setor: ${carro.setor || 'N/A'}`, margemEsquerda, yOffset);
+          yOffset += 8;
+          
+          if (carro.viagens && carro.viagens.length > 0) {
+            const viagensData = carro.viagens.map((viagem, idx) => [
+              idx + 1,
+              viagem.horarioPI || '---',
+              viagem.horarioPV || '---',
+              viagem.obs || '---'
+            ]);
+            
+            doc.autoTable({
+              startY: yOffset,
+              head: [['#', 'Horario PI', 'Horario PV', 'Observacoes']],
+              body: viagensData,
+              theme: 'striped',
+              headStyles: { 
+                fillColor: [0, 120, 100], 
+                textColor: [255, 255, 255], 
+                fontStyle: 'bold',
+                fontSize: 8
+              },
+              bodyStyles: { fontSize: 7 },
+              margin: { left: margemEsquerda, right: margemDireita },
+              columnStyles: {
+                0: { cellWidth: 15 },
+                1: { cellWidth: 35 },
+                2: { cellWidth: 35 },
+                3: { cellWidth: 'auto' }
+              }
+            });
+            
+            yOffset = doc.lastAutoTable.finalY + 8;
+          } else {
+            doc.setFontSize(8);
+            doc.text('Sem viagens registradas.', margemEsquerda + 4, yOffset);
+            yOffset += 8;
+          }
+          yOffset += 4;
+        }
+        yOffset += 5;
+      }
+      
+      // ===== 2. VIAGENS PERDIDAS =====
+      if (viagensPerdidas.length > 0) {
+        if (yOffset > 250) {
+          doc.addPage();
+          yOffset = 20;
+        }
+        
+        doc.setFontSize(12);
+        doc.setTextColor(0, 120, 100);
+        doc.setFont(undefined, 'bold');
+        doc.text('2. VIAGENS PERDIDAS', margemEsquerda, yOffset);
+        yOffset += 10;
+        
+        const viagensData = viagensPerdidas.map(item => [
+          item.ordemCarro,
+          item.linha,
+          item.horarioProgramado,
+          item.horarioPerda,
+          item.motivo.length > 40 ? item.motivo.substring(0, 37) + '...' : item.motivo
+        ]);
+        
+        doc.autoTable({
+          startY: yOffset,
+          head: [['Nº Ordem', 'Linha/Itinerario', 'H. Programado', 'H. Perda', 'Motivo']],
+          body: viagensData,
+          theme: 'striped',
+          headStyles: { 
+            fillColor: [0, 120, 100], 
+            textColor: [255, 255, 255], 
+            fontStyle: 'bold',
+            fontSize: 8
+          },
+          bodyStyles: { fontSize: 7 },
+          margin: { left: margemEsquerda, right: margemDireita }
+        });
+        
+        yOffset = doc.lastAutoTable.finalY + 10;
+      }
+      
+      // ===== 3. TROCAS DE CARROS =====
+      if (trocas.length > 0) {
+        if (yOffset > 250) {
+          doc.addPage();
+          yOffset = 20;
+        }
+        
+        doc.setFontSize(12);
+        doc.setTextColor(0, 120, 100);
+        doc.setFont(undefined, 'bold');
+        doc.text('3. TROCAS DE CARROS', margemEsquerda, yOffset);
+        yOffset += 10;
+        
+        const trocasData = trocas.map(item => [
+          item.carroOriginal,
+          item.carroSubstituto,
+          item.linha,
+          item.horario,
+          item.motivo.length > 40 ? item.motivo.substring(0, 37) + '...' : item.motivo
+        ]);
+        
+        doc.autoTable({
+          startY: yOffset,
+          head: [['Carro Original', 'Carro Substituto', 'Linha/Itinerario', 'Horario', 'Motivo']],
+          body: trocasData,
+          theme: 'striped',
+          headStyles: { 
+            fillColor: [0, 120, 100], 
+            textColor: [255, 255, 255], 
+            fontStyle: 'bold',
+            fontSize: 8
+          },
+          bodyStyles: { fontSize: 7 },
+          margin: { left: margemEsquerda, right: margemDireita }
+        });
+        
+        yOffset = doc.lastAutoTable.finalY + 10;
+      }
+      
+      // ===== 4. OCORRÊNCIAS (INSTRUÇÃO) =====
+      if (ocorrencias.length > 0) {
+        if (yOffset > 250) {
+          doc.addPage();
+          yOffset = 20;
+        }
+        
+        doc.setFontSize(12);
+        doc.setTextColor(0, 120, 100);
+        doc.setFont(undefined, 'bold');
+        doc.text('4. OCORRENCIAS REGISTRADAS', margemEsquerda, yOffset);
+        yOffset += 10;
+        
+        const ocorrenciasData = ocorrencias.slice(0, 20).map(item => [
+          item.nroDBO || 'N/A',
+          item.nomeMotorista || 'N/A',
+          item.localOcorrencia || 'N/A',
+          item.dataOcorrencia ? formatarData(item.dataOcorrencia) : 'N/A',
+          item.descricaoAcidente ? (item.descricaoAcidente.length > 30 ? item.descricaoAcidente.substring(0, 27) + '...' : item.descricaoAcidente) : 'N/A'
+        ]);
+        
+        doc.autoTable({
+          startY: yOffset,
+          head: [['DBO/RA', 'Motorista', 'Local', 'Data', 'Descricao']],
+          body: ocorrenciasData,
+          theme: 'striped',
+          headStyles: { 
+            fillColor: [0, 120, 100], 
+            textColor: [255, 255, 255], 
+            fontStyle: 'bold',
+            fontSize: 8
+          },
+          bodyStyles: { fontSize: 7 },
+          margin: { left: margemEsquerda, right: margemDireita },
+          columnStyles: {
+            0: { cellWidth: 25 },
+            1: { cellWidth: 35 },
+            2: { cellWidth: 40 },
+            3: { cellWidth: 25 },
+            4: { cellWidth: 'auto' }
+          }
+        });
+        
+        yOffset = doc.lastAutoTable.finalY + 10;
+        
+        if (ocorrencias.length > 20) {
+          doc.setFontSize(8);
+          doc.setTextColor(80, 80, 80);
+          doc.text(`... e mais ${ocorrencias.length - 20} ocorrencias nao listadas.`, margemEsquerda, yOffset);
+          yOffset += 10;
+        }
+      }
+      
+      // ===== RODAPÉ (NEGRITO E MAIS ESCURO) =====
+      if (yOffset > 250) {
+        doc.addPage();
+        yOffset = 20;
+      }
+      
+      // Linha separadora
+      doc.setDrawColor(200, 200, 200);
+      doc.line(margemEsquerda, yOffset, 210 - margemDireita, yOffset);
+      yOffset += 8;
+      
+      // Rodapé em NEGRITO e cor mais ESCURA
+      doc.setFontSize(9);
+      doc.setTextColor(60, 60, 60); // Cinza escuro para melhor visibilidade
+      doc.setFont(undefined, 'bold'); // NEGRITO ativado
+      
+      doc.text(`Relatorio gerado por: ${usuarioAtual?.nome || 'Gestor'}`, margemEsquerda, yOffset);
+      yOffset += 5;
+      doc.text(`Data: ${new Date().toLocaleString('pt-BR')}`, margemEsquerda, yOffset);
+      yOffset += 5;
+      doc.text('Sistema: Cidade Real - Fiscalizacao Operacional', margemEsquerda, yOffset);
+      
+      // ===== SALVAR PDF =====
+      const nomeArquivo = `relatorio_consolidado_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.pdf`;
+      doc.save(nomeArquivo);
+      alert('✅ Relatorio Consolidado gerado com sucesso!');
+      
+    } catch (error) {
+      console.error('Erro ao gerar PDF consolidado:', error);
+      alert('❌ Erro ao gerar o PDF consolidado. Tente novamente.');
     }
-    
-    for (const v of viagensPerdidas) {
-      if (y > 260) { doc.addPage(); y = 20; }
-      doc.text(`Viagem Perdida - Carro: ${v.ordemCarro} / ${v.linha}`, 25, y); y += 5;
-      doc.text(`   Motivo: ${v.motivo}`, 30, y); y += 5;
-    }
-    
-    for (const t of trocas) {
-      if (y > 260) { doc.addPage(); y = 20; }
-      doc.text(`Troca: ${t.carroOriginal} -> ${t.carroSubstituto}`, 25, y); y += 5;
-      doc.text(`   Motivo: ${t.motivo}`, 30, y); y += 5;
-    }
-    
-    doc.setFontSize(12); doc.text('OCORRENCIAS - DETALHES:', 20, y); y += 8;
-    doc.setFontSize(10);
-    for (const o of ocorrencias) {
-      if (y > 260) { doc.addPage(); y = 20; }
-      doc.text(`DBO: ${o.nroDBO || 'N/A'} - ${o.nomeMotorista}`, 25, y); y += 5;
-      doc.text(`   Local: ${o.localOcorrencia} - Data: ${formatarData(o.dataOcorrencia)}`, 30, y); y += 5;
-      doc.text(`   Descricao: ${(o.descricaoAcidente || '').substring(0, 80)}...`, 30, y); y += 5;
-    }
-    
-    doc.save(`relatorio_consolidado_completo_${new Date().toISOString().slice(0,10)}.pdf`);
-    alert('PDF Consolidado gerado!');
   }
-  
   function exportarDadosCompletos() {
-    const dados = { 
-      fiscalizacao: { carros, viagensPerdidas, trocas }, 
-      instrucao: { ocorrencias }, 
-      dataExportacao: new Date().toISOString() 
-    };
+    const dados = { fiscalizacao: { carros, viagensPerdidas, trocas }, instrucao: { ocorrencias }, dataExportacao: new Date().toISOString() };
     const dataStr = JSON.stringify(dados, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url;
-    a.download = `dados_completos_sistema_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.json`;
+    a.href = URL.createObjectURL(blob);
+    a.download = `dados_completos_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.json`;
     a.click();
-    URL.revokeObjectURL(url);
-    alert('Dados completos exportados!');
+    URL.revokeObjectURL(blob);
+    alert('✅ Dados exportados com sucesso!');
   }
   
   // ==================== NAVEGAÇÃO ====================
   function trocarAba(aba) {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.aba-btn').forEach(b => b.classList.remove('active'));
-    
-    if (aba === 'resumo') {
-      document.getElementById('tabResumo').classList.add('active');
-      document.querySelector('.aba-btn:first-child').classList.add('active');
-      atualizarResumo();
-    } else if (aba === 'fiscalizacao') {
-      document.getElementById('tabFiscalizacao').classList.add('active');
-      document.querySelector('.aba-btn:nth-child(2)').classList.add('active');
-      atualizarFiscalizacaoDetalhada();
-    } else if (aba === 'instrucao') {
-      document.getElementById('tabInstrucao').classList.add('active');
-      document.querySelector('.aba-btn:nth-child(3)').classList.add('active');
-      atualizarInstrucaoDetalhada();
-    } else {
-      document.getElementById('tabRelatorioCompleto').classList.add('active');
-      document.querySelector('.aba-btn:nth-child(4)').classList.add('active');
-      gerarRelatorioConsolidadoCompleto();
-    }
+    if (aba === 'resumo') { document.getElementById('tabResumo').classList.add('active'); document.querySelectorAll('.aba-btn')[0].classList.add('active'); atualizarResumo(); }
+    else if (aba === 'fiscalizacao') { document.getElementById('tabFiscalizacao').classList.add('active'); document.querySelectorAll('.aba-btn')[1].classList.add('active'); atualizarFiscalizacaoDetalhada(); }
+    else if (aba === 'instrucao') { document.getElementById('tabInstrucao').classList.add('active'); document.querySelectorAll('.aba-btn')[2].classList.add('active'); atualizarInstrucaoDetalhada(); }
+    else { document.getElementById('tabRelatorioCompleto').classList.add('active'); document.querySelectorAll('.aba-btn')[3].classList.add('active'); gerarRelatorioConsolidadoTela(); }
   }
   
   function voltarPagina() { window.location.href = 'index.html'; }
