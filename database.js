@@ -213,3 +213,51 @@ async function enviarPDFPorEmail(email, assunto, pdfBase64, nomeArquivo) {
   await addToStore('logs_email', logEnvio);
   return true;
 }
+
+
+// ===== BACKUP DO INDEXEDDB =====
+async function exportarIndexedDB() {
+    try {
+        const dados = {
+            colaboradores: await getStoreData('colaboradores'),
+            mensagens: await getStoreData('mensagens'),
+            logs_email: await getStoreData('logs_email'),
+            data_exportacao: new Date().toISOString()
+        };
+        
+        const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `backup_indexeddb_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        return true;
+    } catch (error) {
+        console.error('Erro ao exportar IndexedDB:', error);
+        return false;
+    }
+}
+
+async function importarIndexedDB(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const dados = JSON.parse(e.target.result);
+                
+                if (dados.colaboradores) {
+                    for (let colab of dados.colaboradores) {
+                        await salvarColaborador(colab);
+                    }
+                }
+                
+                resolve(true);
+            } catch (error) {
+                reject(error);
+            }
+        };
+        reader.readAsText(file);
+    });
+}
