@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backup - Cidade Real</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .backup-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .backup-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .backup-card h3 {
+            color: #00aa55;
+            margin-bottom: 15px;
+        }
+        .backup-info {
+            background: #f5f7fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        .backup-info p {
+            margin: 5px 0;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .btn-success {
+            background: #00aa55;
+            color: white;
+        }
+        .btn-warning {
+            background: #ffaa33;
+            color: #333;
+        }
+        .btn-danger {
+            background: #ff5050;
+            color: white;
+        }
+        .btn-info {
+            background: #0096ff;
+            color: white;
+        }
+        .btn-secondary {
+            background: #666;
+            color: white;
+        }
+        .hidden {
+            display: none;
+        }
+        #fileInput {
+            display: none;
+        }
+        .status {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+        }
+        .status.success {
+            display: block;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            display: block;
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.info {
+            display: block;
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🏛️ Cidade Real</h1>
+        <p>Gerenciamento de Backup</p>
+    </header>
+    
+    <div class="container">
+        <div class="backup-container">
+            <h1>📦 Backup dos Dados</h1>
+            <p>Gerencie seus backups e proteja seus dados</p>
+            
+            <!-- Status -->
+            <div id="status" class="status"></div>
+            
+            <!-- Informações -->
+            <div class="backup-card">
+                <h3>📊 Informações</h3>
+                <div class="backup-info">
+                    <p><strong>Último backup:</strong> <span id="ultimoBackup">Nunca</span></p>
+                    <p><strong>Total de carros:</strong> <span id="totalCarros">0</span></p>
+                    <p><strong>Total de viagens perdidas:</strong> <span id="totalViagens">0</span></p>
+                    <p><strong>Total de trocas:</strong> <span id="totalTrocas">0</span></p>
+                    <p><strong>Total de ocorrências:</strong> <span id="totalOcorrencias">0</span></p>
+                </div>
+            </div>
+            
+            <!-- Ações -->
+            <div class="backup-card">
+                <h3>🛡️ Ações</h3>
+                <div class="btn-group">
+                    <button class="btn btn-success" onclick="fazerBackup()">💾 Fazer Backup Agora</button>
+                    <button class="btn btn-info" onclick="exportarBackup()">📤 Exportar Backup</button>
+                    <button class="btn btn-warning" onclick="document.getElementById('fileInput').click()">📥 Importar Backup</button>
+                    <button class="btn btn-danger" onclick="restaurarBackup()">🔄 Restaurar Último Backup</button>
+                    <button class="btn btn-secondary" onclick="verificarDados()">🔍 Verificar Integridade</button>
+                </div>
+                <input type="file" id="fileInput" accept=".json" onchange="importarBackup(event)">
+            </div>
+            
+            <!-- Dicas -->
+            <div class="backup-card">
+                <h3>💡 Dicas</h3>
+                <ul>
+                    <li><strong>Backup automático:</strong> Seus dados são salvos automaticamente a cada 5 minutos</li>
+                    <li><strong>Exportar:</strong> Baixe um arquivo .json com todos os dados</li>
+                    <li><strong>Importar:</strong> Restaure dados de um arquivo .json exportado anteriormente</li>
+                    <li><strong>Recomendação:</strong> Exporte um backup sempre que fizer alterações importantes</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <nav class="nav-bottom">
+        <button class="nav-btn" onclick="window.location.href='index.html'">← Voltar</button>
+        <button class="nav-btn" onclick="sairSistema()">🚪 Sair</button>
+    </nav>
+    
+    <script src="backup.js"></script>
+    <script>
+        // ===== ATUALIZAR INFORMAÇÕES =====
+        function atualizarInformacoes() {
+            const ultimoBackup = localStorage.getItem('cidade_real_ultimo_backup');
+            document.getElementById('ultimoBackup').textContent = ultimoBackup || 'Nunca';
+            
+            const carros = JSON.parse(localStorage.getItem('fiscalizacao_carros') || '[]');
+            const viagens = JSON.parse(localStorage.getItem('fiscalizacao_viagens') || '[]');
+            const trocas = JSON.parse(localStorage.getItem('fiscalizacao_trocas') || '[]');
+            const ocorrencias = JSON.parse(localStorage.getItem('ocorrencias_completas') || '[]');
+            
+            document.getElementById('totalCarros').textContent = carros.length;
+            document.getElementById('totalViagens').textContent = viagens.length;
+            document.getElementById('totalTrocas').textContent = trocas.length;
+            document.getElementById('totalOcorrencias').textContent = ocorrencias.length;
+        }
+        
+        // ===== FUNÇÕES =====
+        function fazerBackup() {
+            if (salvarBackup()) {
+                mostrarStatus('✅ Backup realizado com sucesso!', 'success');
+                atualizarInformacoes();
+            } else {
+                mostrarStatus('❌ Erro ao fazer backup!', 'error');
+            }
+        }
+        
+        function exportarBackup() {
+            window.exportarBackup();
+        }
+        
+        function importarBackup(event) {
+            window.importarBackup(event);
+            setTimeout(() => {
+                atualizarInformacoes();
+                mostrarStatus('✅ Backup importado com sucesso!', 'success');
+            }, 1000);
+        }
+        
+        function restaurarBackup() {
+            if (confirm('⚠️ Isso restaurará o último backup salvo. Continuar?')) {
+                if (window.restaurarBackup()) {
+                    mostrarStatus('✅ Backup restaurado com sucesso!', 'success');
+                    atualizarInformacoes();
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    mostrarStatus('❌ Nenhum backup encontrado!', 'error');
+                }
+            }
+        }
+        
+        function verificarDados() {
+            const integro = window.verificarIntegridadeDados();
+            if (integro) {
+                mostrarStatus('✅ Todos os dados estão íntegros!', 'success');
+            } else {
+                mostrarStatus('⚠️ Alguns dados podem estar corrompidos. Faça um backup imediatamente!', 'error');
+            }
+        }
+        
+        function mostrarStatus(mensagem, tipo) {
+            const status = document.getElementById('status');
+            status.textContent = mensagem;
+            status.className = `status ${tipo}`;
+            setTimeout(() => {
+                status.className = 'status';
+            }, 5000);
+        }
+        
+        function sairSistema() {
+            if (confirm('Deseja sair?')) {
+                sessionStorage.clear();
+                window.location.href = 'index.html';
+            }
+        }
+        
+        // ===== INICIALIZAR =====
+        document.addEventListener('DOMContentLoaded', function() {
+            atualizarInformacoes();
+            
+            // Fazer backup automático ao carregar
+            setTimeout(() => {
+                salvarBackup();
+            }, 5000);
+        });
+    </script>
+    
+    <footer>
+        <p>🚀 Sistema desenvolvido por Tiago Gazzoni Tagliabui | © 2026</p>
+    </footer>
+</body>
+</html>
