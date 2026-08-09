@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Gerar Ícones Cidade Real</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            max-width: 800px;
+        }
+        .icone-preview {
+            width: 256px;
+            height: 256px;
+            background: #1a1a2e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50px;
+            margin: 20px auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .icone-preview span {
+            font-size: 150px;
+            color: #00ff88;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+        }
+        .btn {
+            background: #00ff88;
+            color: #1a1a2e;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #00cc77;
+        }
+        .btn-secondary {
+            background: #1a1a2e;
+            color: #00ff88;
+        }
+        .btn-secondary:hover {
+            background: #2a2a4e;
+        }
+        .instrucoes {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px auto;
+            text-align: left;
+        }
+        .tamanhos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .tamanho-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .status.success {
+            display: block;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏛️ Gerador de Ícones - Cidade Real</h1>
+        <p>Clique nos botões abaixo para baixar os ícones necessários</p>
+        
+        <div class="icone-preview" id="iconePreview">
+            <span>CR</span>
+        </div>
+        
+        <div>
+            <button class="btn" onclick="baixarTodosIcones()">📦 Baixar TODOS os ícones</button>
+            <button class="btn btn-secondary" onclick="baixarIcone512()">📥 Baixar 512x512</button>
+            <button class="btn btn-secondary" onclick="baixarIcone192()">📥 Baixar 192x192</button>
+        </div>
+        
+        <div class="instrucoes">
+            <h3>📋 Como usar no GitHub:</h3>
+            <ol>
+                <li>Clique em <strong>"Baixar TODOS os ícones"</strong></li>
+                <li>Extraia o arquivo ZIP</li>
+                <li>Crie uma pasta <code>icons/</code> na raiz do seu projeto</li>
+                <li>Coloque todos os ícones na pasta <code>icons/</code></li>
+                <li>Faça commit e push para o GitHub</li>
+            </ol>
+            
+            <h4>📐 Tamanhos necessários:</h4>
+            <div class="tamanhos">
+                <div class="tamanho-item">72x72</div>
+                <div class="tamanho-item">96x96</div>
+                <div class="tamanho-item">128x128</div>
+                <div class="tamanho-item">144x144</div>
+                <div class="tamanho-item">152x152</div>
+                <div class="tamanho-item">192x192</div>
+                <div class="tamanho-item">384x384</div>
+                <div class="tamanho-item">512x512</div>
+            </div>
+            
+            <div id="status" class="status"></div>
+        </div>
+    </div>
+
+    <script>
+        function gerarIcone(tamanho) {
+            const canvas = document.createElement('canvas');
+            canvas.width = tamanho;
+            canvas.height = tamanho;
+            const ctx = canvas.getContext('2d');
+            
+            // Fundo com cantos arredondados
+            const raio = tamanho * 0.15;
+            ctx.fillStyle = '#1a1a2e';
+            ctx.beginPath();
+            ctx.moveTo(raio, 0);
+            ctx.lineTo(tamanho - raio, 0);
+            ctx.quadraticCurveTo(tamanho, 0, tamanho, raio);
+            ctx.lineTo(tamanho, tamanho - raio);
+            ctx.quadraticCurveTo(tamanho, tamanho, tamanho - raio, tamanho);
+            ctx.lineTo(raio, tamanho);
+            ctx.quadraticCurveTo(0, tamanho, 0, tamanho - raio);
+            ctx.lineTo(0, raio);
+            ctx.quadraticCurveTo(0, 0, raio, 0);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Texto "CR"
+            ctx.fillStyle = '#00ff88';
+            const fontSize = tamanho * 0.6;
+            ctx.font = `bold ${fontSize}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('CR', tamanho/2, tamanho/2 + tamanho * 0.05);
+            
+            return canvas;
+        }
+
+        function baixarIcone512() {
+            const canvas = gerarIcone(512);
+            const link = document.createElement('a');
+            link.download = 'icon-512x512.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            mostrarStatus('Ícone 512x512 baixado com sucesso! ✅');
+        }
+
+        function baixarIcone192() {
+            const canvas = gerarIcone(192);
+            const link = document.createElement('a');
+            link.download = 'icon-192x192.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            mostrarStatus('Ícone 192x192 baixado com sucesso! ✅');
+        }
+
+        function baixarTodosIcones() {
+            const tamanhos = [72, 96, 128, 144, 152, 192, 384, 512];
+            const zip = new JSZip();
+            
+            tamanhos.forEach(t => {
+                const canvas = gerarIcone(t);
+                const dataUrl = canvas.toDataURL('image/png');
+                const binary = atob(dataUrl.split(',')[1]);
+                const array = [];
+                for (let i = 0; i < binary.length; i++) {
+                    array.push(binary.charCodeAt(i));
+                }
+                const blob = new Blob([new Uint8Array(array)], {type: 'image/png'});
+                zip.file(`icon-${t}x${t}.png`, blob);
+            });
+            
+            // Adicionar também o apple-touch-icon
+            const canvasApple = gerarIcone(180);
+            const dataUrlApple = canvasApple.toDataURL('image/png');
+            const binaryApple = atob(dataUrlApple.split(',')[1]);
+            const arrayApple = [];
+            for (let i = 0; i < binaryApple.length; i++) {
+                arrayApple.push(binaryApple.charCodeAt(i));
+            }
+            const blobApple = new Blob([new Uint8Array(arrayApple)], {type: 'image/png'});
+            zip.file('apple-touch-icon.png', blobApple);
+            
+            zip.generateAsync({type: 'blob'}).then(function(content) {
+                const link = document.createElement('a');
+                link.download = 'icones-cidade-real.zip';
+                link.href = URL.createObjectURL(content);
+                link.click();
+                mostrarStatus('Todos os ícones baixados com sucesso! 📦✅');
+            });
+        }
+
+        function mostrarStatus(mensagem) {
+            const status = document.getElementById('status');
+            status.textContent = mensagem;
+            status.className = 'status success';
+            setTimeout(() => {
+                status.className = 'status';
+            }, 5000);
+        }
+
+        // Adicionar JSZip se não tiver
+        if (typeof JSZip === 'undefined') {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+            document.head.appendChild(script);
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</body>
+</html>
