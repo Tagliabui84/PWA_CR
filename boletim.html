@@ -111,13 +111,16 @@
             <div class="form-group"><label>Cor</label><input type="text" class="veiculo-cor" placeholder="Ex: Branco" /></div></div>
             <div class="form-row"><div class="form-group"><label>Proprietário</label><input type="text" class="veiculo-proprietario" placeholder="Nome" /></div>
             <div class="form-group"><label>RG</label><input type="text" class="veiculo-rg" placeholder="RG" /></div></div>
+            <!-- NOVO CAMPO: Telefone do Proprietário -->
+            <div class="form-row"><div class="form-group"><label>Telefone do Proprietário</label><input type="tel" class="veiculo-proprietario-telefone" placeholder="(00) 00000-0000" /></div></div>
             <div class="form-row"><div class="form-group"><label>CNH</label><input type="text" class="veiculo-cnh" placeholder="CNH" /></div>
             <div class="form-group"><label>Validade CNH</label><input type="date" class="veiculo-cnhValidade" /></div></div>
             <div class="form-row"><div class="form-group"><label>Condutor - Nome</label><input type="text" class="condutor-nome" placeholder="Nome" /></div>
             <div class="form-group"><label>Condutor - RG</label><input type="text" class="condutor-rg" placeholder="RG" /></div></div>
-            <div class="form-row"><div class="form-<div class="form-group"><label>Validade CNH</label><input type="date" class="condutor-cnhValidade" /></div><div class="form-group"><label>Telefone</label><input type="tel" class="testemunha-telefone" placeholder="(00) 00000-0000" /></div>
-            
-            
+            <!-- NOVO CAMPO: Telefone do Condutor -->
+            <div class="form-row"><div class="form-group"><label>Telefone do Condutor</label><input type="tel" class="condutor-telefone" placeholder="(00) 00000-0000" /></div></div>
+            <div class="form-row"><div class="form-group"><label>Condutor - CNH</label><input type="text" class="condutor-cnh" placeholder="CNH" /></div>
+            <div class="form-group"><label>Validade CNH</label><input type="date" class="condutor-cnhValidade" /></div></div>
             <button type="button" class="btn-remove" onclick="removerVeiculo(this)">🗑️ Remover</button>
           </div>
         </div>
@@ -230,10 +233,12 @@
     <div class="form-group"><label>Cor</label><input type="text" class="veiculo-cor" /></div></div>
     <div class="form-row"><div class="form-group"><label>Proprietário</label><input type="text" class="veiculo-proprietario" /></div>
     <div class="form-group"><label>RG</label><input type="text" class="veiculo-rg" /></div></div>
+    <div class="form-row"><div class="form-group"><label>Telefone do Proprietário</label><input type="tel" class="veiculo-proprietario-telefone" /></div></div>
     <div class="form-row"><div class="form-group"><label>CNH</label><input type="text" class="veiculo-cnh" /></div>
     <div class="form-group"><label>Validade CNH</label><input type="date" class="veiculo-cnhValidade" /></div></div>
     <div class="form-row"><div class="form-group"><label>Condutor Nome</label><input type="text" class="condutor-nome" /></div>
     <div class="form-group"><label>Condutor RG</label><input type="text" class="condutor-rg" /></div></div>
+    <div class="form-row"><div class="form-group"><label>Telefone do Condutor</label><input type="tel" class="condutor-telefone" /></div></div>
     <div class="form-row"><div class="form-group"><label>Condutor CNH</label><input type="text" class="condutor-cnh" /></div>
     <div class="form-group"><label>Validade CNH</label><input type="date" class="condutor-cnhValidade" /></div></div>
     <button type="button" class="btn-remove" onclick="removerVeiculo(this)">🗑️ Remover</button>`;
@@ -265,10 +270,12 @@
         cor: el.querySelector('.veiculo-cor')?.value || '',
         proprietario: el.querySelector('.veiculo-proprietario')?.value || '',
         rg: el.querySelector('.veiculo-rg')?.value || '',
+        proprietarioTelefone: el.querySelector('.veiculo-proprietario-telefone')?.value || '',
         cnh: el.querySelector('.veiculo-cnh')?.value || '',
         cnhValidade: el.querySelector('.veiculo-cnhValidade')?.value || '',
         condutorNome: el.querySelector('.condutor-nome')?.value || '',
         condutorRg: el.querySelector('.condutor-rg')?.value || '',
+        condutorTelefone: el.querySelector('.condutor-telefone')?.value || '',
         condutorCnh: el.querySelector('.condutor-cnh')?.value || '',
         condutorCnhValidade: el.querySelector('.condutor-cnhValidade')?.value || ''
       });
@@ -396,8 +403,10 @@
             doc.text(`Veiculo ${v+1}: ${veic.veiculo || 'N/A'} - Placa: ${veic.placa || 'N/A'}`, 25, y); y += 4;
             if (veic.modelo) doc.text(`   Modelo: ${veic.modelo} | Cor: ${veic.cor || 'N/A'}`, 30, y); y += 4;
             if (veic.proprietario) doc.text(`   Proprietario: ${veic.proprietario} | RG: ${veic.rg || 'N/A'}`, 30, y); y += 4;
+            if (veic.proprietarioTelefone) doc.text(`   Telefone do Proprietario: ${veic.proprietarioTelefone}`, 30, y); y += 4;
             if (veic.cnh) doc.text(`   CNH: ${veic.cnh} | Validade: ${veic.cnhValidade || 'N/A'}`, 30, y); y += 4;
             if (veic.condutorNome) doc.text(`   Condutor: ${veic.condutorNome} | RG: ${veic.condutorRg || 'N/A'}`, 30, y); y += 4;
+            if (veic.condutorTelefone) doc.text(`   Telefone do Condutor: ${veic.condutorTelefone}`, 30, y); y += 4;
             if (veic.condutorCnh) doc.text(`   CNH Condutor: ${veic.condutorCnh} | Validade: ${veic.condutorCnhValidade || 'N/A'}`, 30, y); y += 4;
           }
           y += 3;
@@ -532,7 +541,10 @@
         const veic = o.veiculos[v];
         if (y > 250) { doc.addPage(); y = 20; }
         doc.text(`Veiculo ${v+1}: ${veic.veiculo || 'N/A'} - Placa: ${veic.placa || 'N/A'}`, 25, y); y += 4;
+        if (veic.proprietario) doc.text(`   Proprietario: ${veic.proprietario}`, 30, y); y += 4;
+        if (veic.proprietarioTelefone) doc.text(`   Telefone do Proprietario: ${veic.proprietarioTelefone}`, 30, y); y += 4;
         if (veic.condutorNome) doc.text(`   Condutor: ${veic.condutorNome}`, 30, y); y += 4;
+        if (veic.condutorTelefone) doc.text(`   Telefone do Condutor: ${veic.condutorTelefone}`, 30, y); y += 4;
       }
       y += 5;
     }
